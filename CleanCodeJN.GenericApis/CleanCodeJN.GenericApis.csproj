@@ -21,6 +21,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="1.1.1" />
     <PackageReference Include="MediatR" Version="12.2.0" />
