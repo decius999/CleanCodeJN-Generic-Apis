@@ -15,7 +15,6 @@ business logic by the power of the the Integration/Operation Segregation Princip
 
 ### How to use
 
-- [Use CleanCodeJN Generic Repositories](https://www.nuget.org/packages/CleanCodeJN.Repository.EntityFramework/)
 - Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs
 - Add app.RegisterApis() to your Program.cs
 - Start writing Apis by implementing IApi
