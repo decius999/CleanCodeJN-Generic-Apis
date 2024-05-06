@@ -5,13 +5,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
-public class ApiControllerBase : ControllerBase
+public class ApiBase : ControllerBase
 {
     public IMediator CommandBus { get; }
 
     public IMapper Mapper { get; }
 
-    public ApiControllerBase(IMediator commandBus, IMapper mapper)
+    public ApiBase(IMediator commandBus, IMapper mapper)
     {
         CommandBus = commandBus;
         Mapper = mapper;

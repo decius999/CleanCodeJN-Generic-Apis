@@ -23,13 +23,14 @@ public static class ServiveCollectionExtensions
         where TDataContext : class, IDataContext
     {
         commandAssemblies ??= [];
-        List<Assembly> assemblies = [typeof(ApiControllerBase).Assembly, Assembly.GetCallingAssembly(), .. commandAssemblies];
+        List<Assembly> assemblies = [typeof(ApiBase).Assembly, Assembly.GetCallingAssembly(), .. commandAssemblies];
 
         services.AddScoped(typeof(GetBase<,>), typeof(Get<,>));
         services.AddScoped(typeof(GetByIdBase<,>), typeof(GetById<,>));
         services.AddScoped(typeof(PutBase<,,>), typeof(Put<,,>));
         services.AddScoped(typeof(PostBase<,,>), typeof(Post<,,>));
         services.AddScoped(typeof(DeleteBase<,>), typeof(Delete<,>));
+        services.AddScoped(typeof(ApiBase));
 
         services.AddScoped<ICommandExecutionContext, CommandExecutionContext>();
 

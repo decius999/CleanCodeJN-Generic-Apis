@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
 
-public abstract class GetBase<TEntity, TGetDto> : ApiControllerBase
+public abstract class GetBase<TEntity, TGetDto> : ApiBase
     where TEntity : class
     where TGetDto : class, IDto
 {

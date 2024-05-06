@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
 
-public abstract class PostBase<TEntity, TPostDto, TGetDto> : ApiControllerBase
+public abstract class PostBase<TEntity, TPostDto, TGetDto> : ApiBase
     where TEntity : class
     where TGetDto : class, IDto
     where TPostDto : class, IDto
