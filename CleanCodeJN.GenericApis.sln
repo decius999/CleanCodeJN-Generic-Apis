@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34601.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis", "CleanCodeJN.GenericApis\CleanCodeJN.GenericApis.csproj", "{DA4DF77F-6852-4705-A38E-F71BA198DBB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Sample", "CleanCodeJN.GenericApis.Sample\CleanCodeJN.GenericApis.Sample.csproj", "{0E222085-B39A-4EC6-9381-63B5A25834DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA4DF77F-6852-4705-A38E-F71BA198DBB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4DF77F-6852-4705-A38E-F71BA198DBB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4DF77F-6852-4705-A38E-F71BA198DBB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA4DF77F-6852-4705-A38E-F71BA198DBB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FEEEA9D-012B-4BE7-87C8-2CE0DB2857CE}
+	EndGlobalSection
+EndGlobal

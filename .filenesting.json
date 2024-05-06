@@ -1,0 +1,31 @@
+{
+  "help": "https://go.microsoft.com/fwlink/?linkid=866610",
+  "root": true,
+
+  "dependentFileProviders": {
+    "add": {
+      "fileToFile": {
+        "add": {
+          "Request.cs": [ "Command.cs", "Query.cs" ],
+          "Response.cs": [ "Command.cs", "Query.cs" ],
+          "Extensions.cs": [ "Command.cs", "Query.cs" ],
+          "Data.cs": [ "Request.cs", "Response.cs" ],
+          ".Production.json": [ ".json" ],
+          ".Test.json": [ ".json" ],
+          ".Development.json": [ ".json" ]
+        }
+      },
+      "fileSuffixToExtension": {
+        "add": {
+          "Request.cs": [ "Command.cs", "Query.cs" ],
+          "Response.cs": [ "Command.cs", "Query.cs" ],
+          "Data.cs": [ "Request.cs", "Response.cs" ],
+          "Extensions.cs": [ "Command.cs", "Query.cs" ],
+          ".Production.json": [ ".json" ],
+          ".Test.json": [ ".json" ],
+          ".Development.json": [ ".json" ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+/TalentHub/bin/*
+/TalentHub/obj/*
+*/obj/*
+*.suo
+*/bin/*
+/.vs/TalentHub/DesignTimeBuild/*
+/.vs/TalentHub/v16/.suo
+/.vs/TalentHub/config/*
+/TalentHub.Site/ClientApp/package-lock.json
+*.orig
+*.csproj.user
+**/node_modules/
+/Tests/cypress/reports*
+/Tests/cypress/screenshots
+/Tests/cypress/videos
+/TalentHub.Site/ClientApp/src/search/assets/fonts/LICENSE.txt
+/TalentHub.Site/ClientApp/src/search/assets/fonts/README.txt
+/.vs/*
+/.vscode/vscode-chrome-debug-userdatadir
+/TalentHub.EmailNotification/PLZ.tab
+*/.azuredatastudio
+.DS_Store
+TalentHub.Admin/ClientApp/config.codekit3
+TalentHub.Site/ClientApp/config.codekit3
+/.vs/TalentHub/config/applicationhost.config
+/OpenRouteService
+.idea/
+.history/
+
+.sonar/
+.sonarqube/
+.scannerwork/
+TalentHub.UI/dist/
+
+TalentHub.UI/TalentHub.UI.njsproj.user
+/TalentHub.sln.DotSettings.user
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Exclude all .tfvars files, which are likely to contain sentitive data, such as
+# password, private keys, and other secrets. These should not be part of version
+# control as they are data points which are potentially sensitive and subject
+# to change depending on the environment.
+#
+*.tfvars
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+backend.conf
+
+# Azurite
+__blobstorage__/
+__queuestorage__/
+__*azurite*__.json
+TalentHub.sln.startup.json

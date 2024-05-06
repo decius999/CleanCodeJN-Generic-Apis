@@ -1,0 +1,64 @@
+﻿using AutoMapper;
+using CleanCodeJN.GenericApis.Commands;
+using CleanCodeJN.GenericApis.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CleanCodeJN.GenericApis.API;
+public class ApiControllerBase : ControllerBase
+{
+    public IMediator CommandBus { get; }
+
+    public IMapper Mapper { get; }
+
+    public ApiControllerBase(IMediator commandBus, IMapper mapper)
+    {
+        CommandBus = commandBus;
+        Mapper = mapper;
+    }
+
+    public async Task<IResult> Handle<TEntity, TDto>(IRequest<BaseListResponse<TEntity>> request, Func<BaseListResponse<TEntity>, TDto> map = null)
+    {
+        try
+        {
+            var domainResult = await CommandBus.Send(request);
+
+            return domainResult.AsHttpResult(map == null ? Mapper.Map<TDto>(domainResult.Data) : map(domainResult));
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(title: e.Message, detail: e.StackTrace, statusCode: 500);
+        }
+    }
+
+    public async Task<IResult> Handle<TEntity, TDto>(IRequest<BaseResponse<TEntity>> request, Func<BaseResponse<TEntity>, TDto> map = null)
+        where TEntity : class
+    {
+        try
+        {
+            var domainResult = await CommandBus.Send(request);
+
+            return domainResult.AsHttpResult(map == null ? Mapper.Map<TDto>(domainResult.Data) : map(domainResult));
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(title: e.Message, detail: e.StackTrace, statusCode: 500);
+        }
+    }
+
+    public async Task<IResult> Handle<TEntity>(IRequest<Response> request)
+        where TEntity : class
+    {
+        try
+        {
+            var domainResult = await CommandBus.Send(request);
+
+            return domainResult.AsHttpResult();
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(title: e.Message, detail: e.StackTrace, statusCode: 500);
+        }
+    }
+}
+
