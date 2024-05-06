@@ -1,39 +1,21 @@
-/TalentHub/bin/*
-/TalentHub/obj/*
 */obj/*
 *.suo
 */bin/*
-/.vs/TalentHub/DesignTimeBuild/*
-/.vs/TalentHub/v16/.suo
-/.vs/TalentHub/config/*
-/TalentHub.Site/ClientApp/package-lock.json
 *.orig
 *.csproj.user
 **/node_modules/
 /Tests/cypress/reports*
 /Tests/cypress/screenshots
 /Tests/cypress/videos
-/TalentHub.Site/ClientApp/src/search/assets/fonts/LICENSE.txt
-/TalentHub.Site/ClientApp/src/search/assets/fonts/README.txt
 /.vs/*
 /.vscode/vscode-chrome-debug-userdatadir
-/TalentHub.EmailNotification/PLZ.tab
 */.azuredatastudio
-.DS_Store
-TalentHub.Admin/ClientApp/config.codekit3
-TalentHub.Site/ClientApp/config.codekit3
-/.vs/TalentHub/config/applicationhost.config
-/OpenRouteService
 .idea/
 .history/
 
 .sonar/
 .sonarqube/
 .scannerwork/
-TalentHub.UI/dist/
-
-TalentHub.UI/TalentHub.UI.njsproj.user
-/TalentHub.sln.DotSettings.user
 
 # Local .terraform directories
 **/.terraform/*
