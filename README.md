@@ -24,7 +24,7 @@ business logic by the power of the the Integration/Operation Segregation Princip
 
 ### Step by step explanation
 
-_Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs:_
+__Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs:__
 ```C#
 builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
 {
@@ -34,12 +34,12 @@ builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
 });
 ```
 
-_Add app.RegisterApis() to your Program.cs:_
+__Add app.RegisterApis() to your Program.cs:__
 ```C#
 app.RegisterApis();
 ```
 
-_Start writing Apis by implementing IApi:_
+__Start writing Apis by implementing IApi:__
 ```C#
 public class CustomersV1Api : IApi
 {
@@ -60,7 +60,7 @@ public class CustomersV1Api : IApi
 }
 ```
 
-_Extend standard CRUD operations by specific Where() and Include() clauses_
+__Extend standard CRUD operations by specific Where() and Include() clauses__
 ```C#
 public class CustomersV1Api : IApi
 {
@@ -72,6 +72,43 @@ public class CustomersV1Api : IApi
     [
          app => app.MapGet<Customer, CustomerGetDto>(Route, Tags, where: x => x.Name.StartsWith("a")),
     ];
+}
+```
+
+__Use IOSP for complex business logic__
+
+Derive from BaseIntegrationCommand:
+```C#
+public class YourIntegrationCommand(ICommandExecutionContext executionContext)
+    : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse>
+```
+
+Write Extensions on ICommandExecutionContext with Built in Requests or with your own:
+```C#
+public static ICommandExecutionContext CustomerGetByIdRequest(
+    this ICommandExecutionContext executionContext, int customerId) 
+    => executionContext.WithRequest(
+            () => new GetByIdRequest<Customer>
+            {
+                Id = customerId,
+                Includes = [x => x.Invoices, x => x.OtherDependentTable],
+            },
+            CommandConstants.CustomerGetById);
+```
+
+__See the how clean your code will look like at the end__
+```C#
+public class YourIntegrationCommand(ICommandExecutionContext executionContext)
+    : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse>
+{
+    public async Task<BaseResponse> Handle(YourIntegrationRequest request, CancellationToken cancellationToken) =>
+        await ExecutionContext
+            .CandidateGetByIdRequest(request.Dto.CandidateId)
+            .CustomerGetByIdRequest(request.Dto.CustomerIds)
+            .GetOtherStuffRequest(request.Dto.XYZType)
+            .PostSomethingRequest(request.Dto)
+            .SendMailRequest()
+            .Execute(cancellationToken);
 }
 ```
 
