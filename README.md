@@ -52,7 +52,9 @@ public class CustomersV1Api : IApi
         app => app.MapGetById<Customer, CustomerGetDto>(Route, Tags),
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
         app => app.MapPost<Customer, CustomerPostDto, CustomerGetDto>(Route, Tags),
-        app => app.MapDelete<Customer, CustomerGetDto>(Route, Tags)
+        // Or use a custom Command
+        app => app.MapDeleteRequest(Route, Tags, async (int id, [FromServices] ApiBase api) =>
+                await api.Handle<Customer, CustomerGetDto>(new DeleteRequest<Customer> { Id = id }))
     ];
 }
 ```
