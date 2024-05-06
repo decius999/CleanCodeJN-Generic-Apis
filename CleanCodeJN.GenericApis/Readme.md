@@ -58,4 +58,4 @@ public class CustomersV1Api : IApi
 ```
 
 ### Sample Code
-[GitHub Full Sample](https://github.com/decius999/CleanCodeJNGenericRepository/tree/dev/CleanCodeJN.Sample)
+[GitHub Full Sample](https://github.com/decius999/CleanCodeJN-Generic-Apis/tree/dev/CleanCodeJN.GenericApis.Sample)
