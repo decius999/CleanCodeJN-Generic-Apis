@@ -32,7 +32,7 @@ public static class ServiveCollectionExtensions
         services.AddScoped(typeof(DeleteBase<,>), typeof(Delete<,>));
         services.AddScoped(typeof(ApiBase));
 
-        services.AddScoped<ICommandExecutionContext, CommandExecutionContext>();
+        services.AddTransient<ICommandExecutionContext, CommandExecutionContext>();
 
         services.AddMediatR(config =>
         {
