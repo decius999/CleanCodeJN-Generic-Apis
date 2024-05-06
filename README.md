@@ -19,6 +19,7 @@ business logic by the power of the the Integration/Operation Segregation Princip
 - Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs
 - Add app.RegisterApis() to your Program.cs
 - Start writing Apis by implementing IApi
+- Extend standard CRUD operations by specific Where() and Include() clauses
 - Use IOSP for complex business logic
 
 ### Step by step explanation
@@ -55,6 +56,21 @@ public class CustomersV1Api : IApi
         // Or use a custom Command
         app => app.MapDeleteRequest(Route, Tags, async (int id, [FromServices] ApiBase api) =>
                 await api.Handle<Customer, CustomerGetDto>(new DeleteRequest<Customer> { Id = id }))
+    ];
+}
+```
+
+_Extend standard CRUD operations by specific Where() and Include() clauses_
+```C#
+public class CustomersV1Api : IApi
+{
+    public List<string> Tags => ["Customers V1"];
+
+    public string Route => $"api/v1/customers";
+
+    public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
+    [
+         app => app.MapGet<Customer, CustomerGetDto>(Route, Tags, where: x => x.Name.StartsWith("a")),
     ];
 }
 ```

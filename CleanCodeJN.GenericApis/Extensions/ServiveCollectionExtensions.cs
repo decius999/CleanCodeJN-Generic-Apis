@@ -13,7 +13,7 @@ namespace CleanCodeJN.GenericApis.Extensions;
 public static class ServiveCollectionExtensions
 {
     /// <summary>
-    /// Register Generic Apis DbContext and generic Repositories and automapper.
+    /// Register Generic Apis DbContext, generic Repositories and automapper.
     /// </summary>
     /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
     /// <param name="services">Service Collection</param>

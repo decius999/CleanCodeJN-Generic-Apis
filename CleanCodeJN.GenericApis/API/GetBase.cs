@@ -1,8 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Contracts;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
 
@@ -14,7 +14,14 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
     {
     }
 
-    [HttpGet]
+    public List<Expression<Func<TEntity, object>>> Includes { get; set; }
+
+    public Expression<Func<TEntity, bool>> Where { get; set; }
+
     public virtual async Task<IResult> Get() =>
-        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity>());
+        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity>
+        {
+            Includes = Includes ?? [],
+            Where = Where ?? (x => true),
+        });
 }

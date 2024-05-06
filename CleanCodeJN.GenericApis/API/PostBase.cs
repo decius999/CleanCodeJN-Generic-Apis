@@ -15,7 +15,6 @@ public abstract class PostBase<TEntity, TPostDto, TGetDto> : ApiBase
     {
     }
 
-    [HttpPost]
     public virtual async Task<IResult> Post([FromBody] TPostDto dto) =>
         await Handle<TEntity, TGetDto>(new PostRequest<TEntity, TPostDto> { Dto = dto });
 }

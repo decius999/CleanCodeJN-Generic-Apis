@@ -15,7 +15,6 @@ public abstract class PutBase<TEntity, TPutDto, TGetDto> : ApiBase
     {
     }
 
-    [HttpPut]
     public virtual async Task<IResult> Put([FromBody] TPutDto dto) =>
         await Handle<TEntity, TGetDto>(new PutRequest<TEntity, TPutDto> { Dto = dto });
 }

@@ -2,7 +2,6 @@
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Contracts;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
 
@@ -14,7 +13,6 @@ public abstract class DeleteBase<TEntity, TGetDto> : ApiBase
     {
     }
 
-    [HttpDelete]
     public virtual async Task<IResult> Delete(int id) =>
         await Handle<TEntity, TGetDto>(new DeleteRequest<TEntity> { Id = id });
 }
