@@ -26,14 +26,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.RoutePrefix = "api/v2/swagger";
-    c.SwaggerEndpoint("/api/v2/swagger/v2/swagger.json", "v2");
-    c.ConfigObject.AdditionalItems.Add("syntaxHighlight", false);
-});
-
 app.RegisterApis();
 
 app.Run();
