@@ -98,6 +98,7 @@ public class SpecificDeleteCommand(IIntRepository<Customer> repository) : IReque
 ```
 
 __Use IOSP for complex business logic__
+
 Derive from BaseIntegrationCommand:
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
