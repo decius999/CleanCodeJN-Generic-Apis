@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CleanCodeJN.GenericApis.Sample.Controllers;
 
 [Tags("Invoices Controller based")]
-[Route($"api/v3/[controller]")]
+[Route($"api/v2/[controller]")]
 
 public class InvoicesController(IMediator commandBus, IMapper mapper)
     : ApiCrudControllerBase<Invoice, InvoiceGetDto, InvoicePostDto, InvoicePutDto, Guid>(commandBus, mapper)
