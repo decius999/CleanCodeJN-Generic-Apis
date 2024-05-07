@@ -1,8 +1,9 @@
 # Generic Web Apis
-### CRUD support for (Minimal) WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework
+### CRUD support for WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework
 
-_This CleanCodeJN package uses build-in Command-Abstraction to use basic CRUD operations with the ability to customize complex 
-business logic by the power of the the Integration/Operation Segregation Principle._
+> _This CleanCodeJN package uses ready to use build-in Minimal API Extensions to have basic 
+CRUD operations with the ability to customize complex business logic by the power of the the 
+Integration/Operation Segregation Principle using Commands and Repository Patterns._
 
 ### Features
 
@@ -21,7 +22,7 @@ business logic by the power of the the Integration/Operation Segregation Princip
 - Extend standard CRUD operations by specific Where() and Include() clauses
 - Use IOSP for complex business logic
 
-### Step by step explanation
+# Step by step explanation
 
 __Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs:__
 ```C#
@@ -134,5 +135,5 @@ public class YourIntegrationCommand(ICommandExecutionContext executionContext)
 }
 ```
 
-### Sample Code
+# Sample Code
 [GitHub Full Sample](https://github.com/decius999/CleanCodeJN-Generic-Apis/tree/dev/CleanCodeJN.GenericApis.Sample)
