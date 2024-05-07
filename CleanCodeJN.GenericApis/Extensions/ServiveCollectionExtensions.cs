@@ -52,36 +52,42 @@ public static class ServiveCollectionExtensions
 
     private static void RegisterGenericCommands(IServiceCollection services, List<Assembly> assemblies)
     {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity<int>));
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity));
         var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto));
 
         foreach (var entityType in entities)
         {
             var dtoPostType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Post" + "Dto");
             var dtoPutType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Put" + "Dto");
+            var idType = entityType.GetProperties().First(x => x.Name == "Id").PropertyType;
 
-            var (handler, command) = GetTypes(entityType);
-            var getByIdTypes = GetByIdTypes(entityType);
-            var getByIdsTypes = GetByIdsTypes(entityType);
-            var deleteTypes = DeleteTypes(entityType);
-
-            services.AddScoped(handler, command);
-            services.AddScoped(deleteTypes.handler, deleteTypes.command);
-            services.AddScoped(getByIdTypes.handler, getByIdTypes.command);
-            services.AddScoped(getByIdsTypes.handler, getByIdsTypes.command);
+            Register(services, entityType, idType);
 
             if (dtoPostType is not null)
             {
-                var postTypes = PostTypes(entityType, dtoPostType);
-                services.AddScoped(postTypes.handler, postTypes.command);
+                var (handler, command) = PostTypes(entityType, dtoPostType, idType);
+                services.AddScoped(handler, command);
             }
 
             if (dtoPutType is not null)
             {
-                var putTypes = PutTypes(entityType, dtoPutType);
-                services.AddScoped(putTypes.handler, putTypes.command);
+                var (handler, command) = PutTypes(entityType, dtoPutType, idType);
+                services.AddScoped(handler, command);
             }
         }
+    }
+
+    private static void Register(IServiceCollection services, Type entityType, Type idType)
+    {
+        var (handler, command) = GetTypes(entityType, idType);
+        var (handlerById, commandById) = GetByIdTypes(entityType, idType);
+        var getByIdsTypes = GetByIdsTypes(entityType, idType);
+        var deleteTypes = DeleteTypes(entityType, idType);
+
+        services.AddScoped(deleteTypes.handler, deleteTypes.command);
+        services.AddScoped(handlerById, commandById);
+        services.AddScoped(getByIdsTypes.handler, getByIdsTypes.command);
+        services.AddScoped(handler, command);
     }
 
     private static IEnumerable<Type> GetTypesImplementingInterfaces(List<Assembly> assemblies, params Type[] interfaces) => assemblies.SelectMany(x => x.GetTypes())
@@ -99,80 +105,91 @@ public static class ServiveCollectionExtensions
         return (handlerGenericType, commandGenericType);
     }
 
-    private static (Type handler, Type command) GetTypes(Type type)
+    private static (Type handler, Type command) MakeGenericTypeWith2Arguments(Type type, Type idType, Type requestType, Type commandType, Type responseType, Type handlerType)
     {
-        var requestType = typeof(GetRequest<>);
-        var commandType = typeof(GetCommand<>);
+        var typeArgs = new List<Type> { type, idType }.ToArray();
+        var requestGenericType = requestType.MakeGenericType(typeArgs);
+        var commandGenericType = commandType.MakeGenericType(typeArgs);
+        var responseGenericType = responseType.MakeGenericType([type]);
+        var handlerGenericType = handlerType.MakeGenericType(requestGenericType, responseGenericType);
+
+        return (handlerGenericType, commandGenericType);
+    }
+
+    private static (Type handler, Type command) GetTypes(Type type, Type idType)
+    {
+        var requestType = typeof(GetRequest<,>);
+        var commandType = typeof(GetCommand<,>);
         var responseType = typeof(BaseListResponse<>);
         var handlerType = typeof(IRequestHandler<,>);
 
-        var (handler, command) = MakeGenericType(type, requestType, commandType, responseType, handlerType);
+        var (handler, command) = MakeGenericTypeWith2Arguments(type, idType, requestType, commandType, responseType, handlerType);
 
         return (handler, command);
     }
 
-    private static (Type handler, Type command) DeleteTypes(Type type)
+    private static (Type handler, Type command) DeleteTypes(Type type, Type idType)
     {
-        var requestType = typeof(DeleteRequest<>);
-        var commandType = typeof(DeleteCommand<>);
+        var requestType = typeof(DeleteRequest<,>);
+        var commandType = typeof(DeleteCommand<,>);
         var responseType = typeof(BaseResponse<>);
         var handlerType = typeof(IRequestHandler<,>);
 
-        var (handler, command) = MakeGenericType(type, requestType, commandType, responseType, handlerType);
+        var (handler, command) = MakeGenericTypeWith2Arguments(type, idType, requestType, commandType, responseType, handlerType);
 
         return (handler, command);
     }
 
-    private static (Type handler, Type command) GetByIdTypes(Type type)
+    private static (Type handler, Type command) GetByIdTypes(Type type, Type idType)
     {
-        var requestType = typeof(GetByIdRequest<>);
-        var commandType = typeof(GetByIdCommand<>);
+        var requestType = typeof(GetByIdRequest<,>);
+        var commandType = typeof(GetByIdCommand<,>);
         var responseType = typeof(BaseResponse<>);
         var handlerType = typeof(IRequestHandler<,>);
 
-        var (handler, command) = MakeGenericType(type, requestType, commandType, responseType, handlerType);
+        var (handler, command) = MakeGenericTypeWith2Arguments(type, idType, requestType, commandType, responseType, handlerType);
 
         return (handler, command);
     }
 
-    private static (Type handler, Type command) GetByIdsTypes(Type type)
+    private static (Type handler, Type command) GetByIdsTypes(Type type, Type idType)
     {
-        var requestType = typeof(GetByIdsRequest<>);
-        var commandType = typeof(GetByIdsCommand<>);
+        var requestType = typeof(GetByIdsRequest<,>);
+        var commandType = typeof(GetByIdsCommand<,>);
         var responseType = typeof(BaseListResponse<>);
         var handlerType = typeof(IRequestHandler<,>);
 
-        var (handler, command) = MakeGenericType(type, requestType, commandType, responseType, handlerType);
+        var (handler, command) = MakeGenericTypeWith2Arguments(type, idType, requestType, commandType, responseType, handlerType);
 
         return (handler, command);
     }
 
-    private static (Type handler, Type command) PostTypes(Type type, Type dtoType)
+    private static (Type handler, Type command) PostTypes(Type type, Type dtoType, Type idType)
     {
         var requestType = typeof(PostRequest<,>);
-        var commandType = typeof(PostCommand<,>);
+        var commandType = typeof(PostCommand<,,>);
         var responseType = typeof(BaseResponse<>);
         var handlerType = typeof(IRequestHandler<,>);
 
         var typeArgs = new List<Type> { type }.ToArray();
         var requestGenericType = requestType.MakeGenericType(new[] { type, dtoType });
-        var commandGenericType = commandType.MakeGenericType(new[] { type, dtoType });
+        var commandGenericType = commandType.MakeGenericType(new[] { type, dtoType, idType });
         var responseGenericType = responseType.MakeGenericType(typeArgs);
         var handlerGenericType = handlerType.MakeGenericType(requestGenericType, responseGenericType);
 
         return (handlerGenericType, commandGenericType);
     }
 
-    private static (Type handler, Type command) PutTypes(Type type, Type dtoType)
+    private static (Type handler, Type command) PutTypes(Type type, Type dtoType, Type idType)
     {
         var requestType = typeof(PutRequest<,>);
-        var commandType = typeof(PutCommand<,>);
+        var commandType = typeof(PutCommand<,,>);
         var responseType = typeof(BaseResponse<>);
         var handlerType = typeof(IRequestHandler<,>);
 
         var typeArgs = new List<Type> { type }.ToArray();
         var requestGenericType = requestType.MakeGenericType(new[] { type, dtoType });
-        var commandGenericType = commandType.MakeGenericType(new[] { type, dtoType });
+        var commandGenericType = commandType.MakeGenericType(new[] { type, dtoType, idType });
         var responseGenericType = responseType.MakeGenericType(typeArgs);
         var handlerGenericType = handlerType.MakeGenericType(requestGenericType, responseGenericType);
 

@@ -4,10 +4,10 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
 
-public class GetCommand<TEntity>(IIntRepository<TEntity> repository) : IRequestHandler<GetRequest<TEntity>, BaseListResponse<TEntity>>
-    where TEntity : class, IEntity<int>
+public class GetCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : IRequestHandler<GetRequest<TEntity, TKey>, BaseListResponse<TEntity>>
+    where TEntity : class, IEntity<TKey>
 {
-    public async Task<BaseListResponse<TEntity>> Handle(GetRequest<TEntity> request, CancellationToken cancellationToken)
+    public async Task<BaseListResponse<TEntity>> Handle(GetRequest<TEntity, TKey> request, CancellationToken cancellationToken)
     {
         var query = repository.Query(request.Includes?.ToArray() ?? []);
 

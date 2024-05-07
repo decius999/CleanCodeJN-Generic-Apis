@@ -16,6 +16,10 @@ builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
     cfg.CreateMap<Customer, CustomerPutDto>().ReverseMap();
     cfg.CreateMap<Customer, CustomerPostDto>().ReverseMap();
     cfg.CreateMap<Customer, CustomerGetDto>().ReverseMap();
+
+    cfg.CreateMap<Invoice, InvoicePutDto>().ReverseMap();
+    cfg.CreateMap<Invoice, InvoicePostDto>().ReverseMap();
+    cfg.CreateMap<Invoice, InvoiceGetDto>().ReverseMap();
 });
 
 var app = builder.Build();

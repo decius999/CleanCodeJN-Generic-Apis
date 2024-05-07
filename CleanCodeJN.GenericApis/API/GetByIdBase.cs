@@ -18,8 +18,8 @@ public abstract class GetByIdBase<TEntity, TGetDto> : ApiBase
 
     public Expression<Func<TEntity, bool>> Where { get; set; }
 
-    public virtual async Task<IResult> Get(int id) =>
-        await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity>
+    public virtual async Task<IResult> Get<TKey>(TKey id) =>
+        await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity, TKey>
         {
             Id = id,
             Includes = Includes ?? [],

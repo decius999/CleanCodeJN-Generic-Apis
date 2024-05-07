@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.Sample.Controllers;
 
-[Tags("Customers V3")]
-[Route($"api/v3/[controller]")]
+[Tags("Customers Controller based")]
+[Route($"api/v2/[controller]")]
 
 public class CustomersController(IMediator commandBus, IMapper mapper)
-    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto>(commandBus, mapper)
+    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
     public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
 }

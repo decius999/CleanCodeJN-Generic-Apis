@@ -10,14 +10,14 @@ namespace CleanCodeJN.GenericApis.Sample.Apis;
 
 public class CustomersV1Api : IApi
 {
-    public List<string> Tags => ["Customers V1"];
+    public List<string> Tags => ["Customers Minimal API"];
 
     public string Route => $"api/v1/Customers";
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
-        app => app.MapGet<Customer, CustomerGetDto>(Route, Tags, where: x => x.Name.StartsWith("a")),
-        app => app.MapGetById<Customer, CustomerGetDto>(Route, Tags),
+        app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags, where: x => x.Name.StartsWith("a")),
+        app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
         app => app.MapPost<Customer, CustomerPostDto, CustomerGetDto>(Route, Tags),
         app => app.MapDeleteRequest(Route, Tags, async (int id, [FromServices] ApiBase api) =>

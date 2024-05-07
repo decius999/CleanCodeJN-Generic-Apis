@@ -4,8 +4,8 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
 
-public class PutCommand<TEntity, TDto>(IMapper mapper, IIntRepository<TEntity> repository) : IRequestHandler<PutRequest<TEntity, TDto>, BaseResponse<TEntity>>
-    where TEntity : class, IEntity<int>
+public class PutCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntity, TKey> repository) : IRequestHandler<PutRequest<TEntity, TDto>, BaseResponse<TEntity>>
+    where TEntity : class, IEntity<TKey>
 {
     public async Task<BaseResponse<TEntity>> Handle(PutRequest<TEntity, TDto> request, CancellationToken cancellationToken)
     {

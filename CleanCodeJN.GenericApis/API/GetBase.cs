@@ -18,8 +18,8 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
 
     public Expression<Func<TEntity, bool>> Where { get; set; }
 
-    public virtual async Task<IResult> Get() =>
-        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity>
+    public virtual async Task<IResult> Get<TKey>() =>
+        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey>
         {
             Includes = Includes ?? [],
             Where = Where ?? (x => true),

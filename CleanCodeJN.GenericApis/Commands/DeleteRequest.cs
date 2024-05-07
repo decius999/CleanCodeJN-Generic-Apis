@@ -2,8 +2,8 @@
 
 namespace CleanCodeJN.GenericApis.Commands;
 
-public class DeleteRequest<TEntity> : IRequest<BaseResponse<TEntity>>
+public class DeleteRequest<TEntity, TKey> : IRequest<BaseResponse<TEntity>>
     where TEntity : class
 {
-    public int Id { get; init; }
+    public TKey Id { get; init; }
 }

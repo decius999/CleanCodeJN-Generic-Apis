@@ -13,6 +13,6 @@ public abstract class DeleteBase<TEntity, TGetDto> : ApiBase
     {
     }
 
-    public virtual async Task<IResult> Delete(int id) =>
-        await Handle<TEntity, TGetDto>(new DeleteRequest<TEntity> { Id = id });
+    public virtual async Task<IResult> Delete<TKey>(TKey id) =>
+        await Handle<TEntity, TGetDto>(new DeleteRequest<TEntity, TKey> { Id = id });
 }

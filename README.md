@@ -50,14 +50,14 @@ __Start writing Minimal Apis by implementing IApi__
 ```C#
 public class CustomersV1Api : IApi
 {
-    public List<string> Tags => ["Customers V1"];
+    public List<string> Tags => ["Customers Minimal API"];
 
     public string Route => $"api/v1/Customers";
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
-        app => app.MapGet<Customer, CustomerGetDto>(Route, Tags),
-        app => app.MapGetById<Customer, CustomerGetDto>(Route, Tags),
+        app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags),
+        app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
         app => app.MapPost<Customer, CustomerPostDto, CustomerGetDto>(Route, Tags),
 
@@ -72,35 +72,35 @@ __Extend standard CRUD operations by specific Where() and Include() clauses__
 ```C#
 public class CustomersV1Api : IApi
 {
-    public List<string> Tags => ["Customers V1"];
+    public List<string> Tags => ["Customers Minimal API"];
 
     public string Route => $"api/v1/Customers";
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
-         app => app.MapGet<Customer, CustomerGetDto>(Route, Tags, where: x => x.Name.StartsWith("a")),
+         app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags, where: x => x.Name.StartsWith("a")),
     ];
 }
 ```
 
 __Or use ApiCrudControllerBase for CRUD operations in controllers__
 ```C#
-[Tags("Customers V3")]
-[Route($"api/v3/[controller]")]
+[Tags("Customers Controller based")]
+[Route($"api/v2/[controller]")]
 
 public class CustomersController(IMediator commandBus, IMapper mapper)
-    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto>(commandBus, mapper)
+    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
 }
 ```
 
 __You can also override your Where and Include clauses__
 ```C#
-[Tags("Customers V3")]
-[Route($"api/v3/[controller]")]
+[Tags("Customers Controller based")]
+[Route($"api/v2/[controller]")]
 
 public class CustomersController(IMediator commandBus, IMapper mapper)
-    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto>(commandBus, mapper)
+    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
     public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
 
@@ -119,7 +119,7 @@ public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 
 __With your own specific Command using CleanCodeJN.Repository__
 ```C#
-public class SpecificDeleteCommand(IIntRepository<Customer> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
+public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
 {
     public async Task<BaseResponse<Customer>> Handle(SpecificDeleteRequest request, CancellationToken cancellationToken)
     {

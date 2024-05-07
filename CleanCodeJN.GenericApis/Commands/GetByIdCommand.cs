@@ -3,15 +3,15 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
 
-public class GetByIdCommand<TEntity>(IIntRepository<TEntity> repository) : IRequestHandler<GetByIdRequest<TEntity>, BaseResponse<TEntity>>
-    where TEntity : class, IEntity<int>
+public class GetByIdCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : IRequestHandler<GetByIdRequest<TEntity, TKey>, BaseResponse<TEntity>>
+    where TEntity : class, IEntity<TKey>
 {
-    public async Task<BaseResponse<TEntity>> Handle(GetByIdRequest<TEntity> request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<TEntity>> Handle(GetByIdRequest<TEntity, TKey> request, CancellationToken cancellationToken)
     {
         var entity = repository
             .Query(request.Includes?.ToArray() ?? [])
             .Where(request.Where)
-            .FirstOrDefault(x => x.Id == request.Id);
+            .FirstOrDefault(x => x.Id.Equals(request.Id));
 
         return await BaseResponse<TEntity>.Create(entity is not null, entity);
     }

@@ -3,10 +3,10 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
 
-public class DeleteCommand<TEntity>(IIntRepository<TEntity> repository) : IRequestHandler<DeleteRequest<TEntity>, BaseResponse<TEntity>>
-    where TEntity : class, IEntity<int>
+public class DeleteCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : IRequestHandler<DeleteRequest<TEntity, TKey>, BaseResponse<TEntity>>
+    where TEntity : class, IEntity<TKey>
 {
-    public async Task<BaseResponse<TEntity>> Handle(DeleteRequest<TEntity> request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<TEntity>> Handle(DeleteRequest<TEntity, TKey> request, CancellationToken cancellationToken)
     {
         var entity = await repository.Delete(request.Id, cancellationToken);
 

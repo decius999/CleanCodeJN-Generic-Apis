@@ -8,25 +8,25 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class MinimalAPIExtensions
 {
-    public static RouteHandlerBuilder MapGet<TEntity, TGetDto>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null)
+    public static RouteHandlerBuilder MapGet<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null)
         where TEntity : class
         where TGetDto : class, IDto => app.MapGet(route, async ([FromServices] GetBase<TEntity, TGetDto> service) =>
         {
             service.Includes = includes;
             service.Where = where;
-            return await service.Get();
+            return await service.Get<TKey>();
         }).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapGetRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
       => app.MapGet(route, handler).WithTags(tags.ToArray());
 
-    public static RouteHandlerBuilder MapGetById<TEntity, TGetDto>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null)
+    public static RouteHandlerBuilder MapGetById<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null)
         where TEntity : class
-        where TGetDto : class, IDto => app.MapGet(route + "/{id:int}", async (int id, [FromServices] GetByIdBase<TEntity, TGetDto> service) =>
+        where TGetDto : class, IDto => app.MapGet(route + "/{id}", async (TKey id, [FromServices] GetByIdBase<TEntity, TGetDto> service) =>
         {
             service.Includes = includes;
             service.Where = where;
-            return await service.Get(id);
+            return await service.Get<TKey>(id);
         }).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapGetByIdRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
@@ -48,9 +48,9 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapPostRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
        => app.MapPost(route, handler).WithTags(tags.ToArray());
 
-    public static RouteHandlerBuilder MapDelete<TEntity, TGetDto>(this WebApplication app, string route, List<string> tags)
+    public static RouteHandlerBuilder MapDelete<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
-        where TGetDto : class, IDto => app.MapDelete(route, async (int id, [FromServices] DeleteBase<TEntity, TGetDto> service) => await service.Delete(id)).WithTags(tags.ToArray());
+        where TGetDto : class, IDto => app.MapDelete(route, async (TKey id, [FromServices] DeleteBase<TEntity, TGetDto> service) => await service.Delete(id)).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapDeleteRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
         => app.MapDelete(route, handler).WithTags(tags.ToArray());

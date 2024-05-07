@@ -2,10 +2,10 @@
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
-public class GetByIdsCommand<TEntity>(IIntRepository<TEntity> repository) : IRequestHandler<GetByIdsRequest<TEntity>, BaseListResponse<TEntity>>
-    where TEntity : class, IEntity<int>
+public class GetByIdsCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : IRequestHandler<GetByIdsRequest<TEntity, TKey>, BaseListResponse<TEntity>>
+    where TEntity : class, IEntity<TKey>
 {
-    public async Task<BaseListResponse<TEntity>> Handle(GetByIdsRequest<TEntity> request, CancellationToken cancellationToken)
+    public async Task<BaseListResponse<TEntity>> Handle(GetByIdsRequest<TEntity, TKey> request, CancellationToken cancellationToken)
     {
         var entities = repository
             .Query(request.Includes?.ToArray() ?? [])

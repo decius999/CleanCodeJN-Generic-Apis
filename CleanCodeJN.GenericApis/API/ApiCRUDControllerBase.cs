@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CleanCodeJN.GenericApis.API;
 
 [ApiController]
-public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto>(
+public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
     IMediator commandBus,
     IMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
@@ -26,11 +26,11 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto>(
 
     [HttpGet()]
     public virtual async Task<IResult> Get() =>
-        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity> { Includes = GetIncludes, Where = GetWhere });
+        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey> { Includes = GetIncludes, Where = GetWhere });
 
-    [HttpGet("{id:int}")]
-    public virtual async Task<IResult> Get(int id) =>
-        await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity> { Id = id, Includes = GetByIdIncludes, Where = GetByIdWhere });
+    [HttpGet("{id}")]
+    public virtual async Task<IResult> Get(TKey id) =>
+        await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity, TKey> { Id = id, Includes = GetByIdIncludes, Where = GetByIdWhere });
 
     [HttpPost]
     public virtual async Task<IResult> Post([FromBody] TPostDto dto) =>
@@ -40,7 +40,7 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto>(
     public virtual async Task<IResult> Put([FromBody] TPutDto dto) =>
         await Handle<TEntity, TGetDto>(new PutRequest<TEntity, TPutDto> { Dto = dto });
 
-    [HttpDelete("{id:int}")]
-    public virtual async Task<IResult> Delete(int id) =>
-        await Handle<TEntity, TGetDto>(new DeleteRequest<TEntity> { Id = id });
+    [HttpDelete("{id}")]
+    public virtual async Task<IResult> Delete(TKey id) =>
+        await Handle<TEntity, TGetDto>(new DeleteRequest<TEntity, TKey> { Id = id });
 }
