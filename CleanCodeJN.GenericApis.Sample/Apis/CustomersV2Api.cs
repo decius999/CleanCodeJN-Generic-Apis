@@ -9,7 +9,7 @@ public class CustomersV2Api : IApi
 {
     public List<string> Tags => ["Customers V2"];
 
-    public string Route => $"api/v2/customers";
+    public string Route => $"api/v2/Customers";
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [

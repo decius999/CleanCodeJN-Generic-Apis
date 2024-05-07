@@ -9,6 +9,8 @@ var configuration = builder.Configuration;
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+
 builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
 {
     cfg.CreateMap<Customer, CustomerPutDto>().ReverseMap();
@@ -27,6 +29,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.RegisterApis();
+app.MapControllers();
 
 app.Run();
 

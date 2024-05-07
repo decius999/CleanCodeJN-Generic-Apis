@@ -10,6 +10,6 @@ public class DeleteCommand<TEntity>(IIntRepository<TEntity> repository) : IReque
     {
         var entity = await repository.Delete(request.Id, cancellationToken);
 
-        return new BaseResponse<TEntity>(entity is not null);
+        return new BaseResponse<TEntity>(entity is not null, entity);
     }
 }

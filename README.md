@@ -7,7 +7,7 @@ Integration/Operation Segregation Principle using Commands and Repository Patter
 
 ### Features
 
-- CRUD APIs build in seconds
+- CRUD APIs (Minimal or Controller based) build in seconds
 - Uses Mediator to abstract build-in and custom complex business logic
 - Uses DataRepositories to abstract Entity Framework from business logic
 - Enforces IOSP (Integration/Operation Segregation Principle) for commands
@@ -17,14 +17,14 @@ Integration/Operation Segregation Principle using Commands and Repository Patter
 ### How to use
 
 - Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs
-- Add app.RegisterApis() to your Program.cs
+- Add app.RegisterApis() to your Program.cs or use AddControllers + MapControllers()
 - Start writing Apis by implementing IApi
 - Extend standard CRUD operations by specific Where() and Include() clauses
 - Use IOSP for complex business logic
 
 # Step by step explanation
 
-__Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs:__
+__Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs__
 ```C#
 builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
 {
@@ -34,12 +34,20 @@ builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
 });
 ```
 
-__Add app.RegisterApis() to your Program.cs:__
+__Add app.RegisterApis() when using Minimal APIs to your Program.cs__
 ```C#
 app.RegisterApis();
 ```
 
-__Start writing Apis by implementing IApi:__
+__When using Controllers add this to your Program.cs__
+```C#
+builder.Services.AddControllers();
+
+// After Build()
+app.MapControllers();
+```
+
+__Start writing Minimal Apis by implementing IApi__
 ```C#
 public class CustomersV1Api : IApi
 {
@@ -76,6 +84,31 @@ public class CustomersV1Api : IApi
 }
 ```
 
+__Or use ApiCrudControllerBase for CRUD operations in controllers__
+```C#
+[Tags("Customers V3")]
+[Route($"api/v3/[controller]")]
+
+public class CustomersController(IMediator commandBus, IMapper mapper)
+    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto>(commandBus, mapper)
+{
+}
+```
+
+__You can also override your Where and Include clauses__
+```C#
+[Tags("Customers V3")]
+[Route($"api/v3/[controller]")]
+
+public class CustomersController(IMediator commandBus, IMapper mapper)
+    : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto>(commandBus, mapper)
+{
+    public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
+
+    public override List<Expression<Func<Customer, object>>> GetIncludes => [x => x.Invoices];
+}
+```
+
 # More Advanced Topics
 __Implement your own specific Request:__
 ```C#
@@ -85,7 +118,7 @@ public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 }
 ```
 
-__With your own specific Command using CleanCodeJN.Repository:__
+__With your own specific Command using CleanCodeJN.Repository__
 ```C#
 public class SpecificDeleteCommand(IIntRepository<Customer> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
 {
@@ -106,7 +139,7 @@ public class YourIntegrationCommand(ICommandExecutionContext executionContext)
     : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse>
 ```
 
-Write Extensions on ICommandExecutionContext with Built in Requests or with your own:
+Write Extensions on ICommandExecutionContext with Built in Requests or with your own
 ```C#
 public static ICommandExecutionContext CustomerGetByIdRequest(
     this ICommandExecutionContext executionContext, int customerId) 
