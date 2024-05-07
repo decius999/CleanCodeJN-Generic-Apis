@@ -53,7 +53,7 @@ public class CustomersV1Api : IApi
 {
     public List<string> Tags => ["Customers V1"];
 
-    public string Route => $"api/v1/customers";
+    public string Route => $"api/v1/Customers";
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
@@ -75,7 +75,7 @@ public class CustomersV1Api : IApi
 {
     public List<string> Tags => ["Customers V1"];
 
-    public string Route => $"api/v1/customers";
+    public string Route => $"api/v1/Customers";
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
