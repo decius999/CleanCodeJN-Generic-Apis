@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for (Minimal) WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>WebAPIs;MinimalAPIs;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper</PackageTags>
-    <PackageReleaseNotes>Fixes + Logo added.</PackageReleaseNotes>
+    <PackageReleaseNotes>New Logo added.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <VersionPrefix>1.0.2</VersionPrefix>
-    <PackageIcon>CleanCodeJNIcon.png</PackageIcon>
+    <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
+    <VersionPrefix>1.0.3</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@
 
 
   <ItemGroup>
-    <None Include="CleanCodeJNIcon.png" Pack="true" PackagePath="\" />
+    <None Include="CleanCodeJN-Icon-Green.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
