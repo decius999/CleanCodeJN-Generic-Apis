@@ -60,6 +60,22 @@ public class CustomersV1Api : IApi
 }
 ```
 
+__Extend standard CRUD operations by specific Where() and Include() clauses__
+```C#
+public class CustomersV1Api : IApi
+{
+    public List<string> Tags => ["Customers V1"];
+
+    public string Route => $"api/v1/customers";
+
+    public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
+    [
+         app => app.MapGet<Customer, CustomerGetDto>(Route, Tags, where: x => x.Name.StartsWith("a")),
+    ];
+}
+```
+
+# More Advanced Topics
 __Implement your own specific Request:__
 ```C#
 public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
@@ -81,23 +97,7 @@ public class SpecificDeleteCommand(IIntRepository<Customer> repository) : IReque
 }
 ```
 
-__Extend standard CRUD operations by specific Where() and Include() clauses__
-```C#
-public class CustomersV1Api : IApi
-{
-    public List<string> Tags => ["Customers V1"];
-
-    public string Route => $"api/v1/customers";
-
-    public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
-    [
-         app => app.MapGet<Customer, CustomerGetDto>(Route, Tags, where: x => x.Name.StartsWith("a")),
-    ];
-}
-```
-
 __Use IOSP for complex business logic__
-
 Derive from BaseIntegrationCommand:
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
@@ -117,7 +117,7 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
             CommandConstants.CustomerGetById);
 ```
 
-__See the how clean your code will look like at the end__
+__See the how clean your code will look like in the end__
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
     : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse>
