@@ -55,8 +55,29 @@ public class CustomersV1Api : IApi
 
         // Or use a custom Command with MapRequest
         app => app.MapDeleteRequest(Route, Tags, async (int id, [FromServices] ApiBase api) =>
-                await api.Handle<Customer, CustomerGetDto>(new MyOwnDeleteRequest { Id = id }))
+                await api.Handle<Customer, CustomerGetDto>(new SpecificDeleteRequest { Id = id }))
     ];
+}
+```
+
+__Implement your own specific Request:__
+```C#
+public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
+{
+    public required int Id { get; init; }
+}
+```
+
+__With your own specific Command using CleanCodeJN.Repository:__
+```C#
+public class SpecificDeleteCommand(IIntRepository<Customer> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
+{
+    public async Task<BaseResponse<Customer>> Handle(SpecificDeleteRequest request, CancellationToken cancellationToken)
+    {
+        var deletedCustomer = await repository.Delete(request.Id, cancellationToken);
+
+        return await BaseResponse<Customer>.Create(deletedCustomer is not null, deletedCustomer);
+    }
 }
 ```
 
