@@ -8,5 +8,7 @@ public class MyDbContext : DbContext, IDataContext
 {
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<Invoice> Invoices { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("MyDatabase");
 }
