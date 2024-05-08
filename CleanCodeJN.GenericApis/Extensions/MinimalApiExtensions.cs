@@ -26,11 +26,11 @@ public static class MinimalAPIExtensions
         {
             service.Includes = includes;
             service.Where = where;
-            return await service.Get<TKey>(id);
+            return await service.Get(id);
         }).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapGetByIdRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
-        => app.MapGet(route + "/{id:int}", handler).WithTags(tags.ToArray());
+        => app.MapGet(route + "/{id}", handler).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapPut<TEntity, TPutDto, TGetDto>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
@@ -53,7 +53,7 @@ public static class MinimalAPIExtensions
         where TGetDto : class, IDto => app.MapDelete(route, async (TKey id, [FromServices] DeleteBase<TEntity, TGetDto> service) => await service.Delete(id)).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapDeleteRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
-        => app.MapDelete(route, handler).WithTags(tags.ToArray());
+        => app.MapDelete(route + "/{id}", handler).WithTags(tags.ToArray());
 
     public static WebApplication RegisterApis(this WebApplication app)
     {

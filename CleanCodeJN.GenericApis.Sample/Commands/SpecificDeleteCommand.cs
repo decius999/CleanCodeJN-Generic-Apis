@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Sample.Commands;
 
-public class SpecificDeleteCommand(IIntRepository<Customer> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
+public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
 {
     public async Task<BaseResponse<Customer>> Handle(SpecificDeleteRequest request, CancellationToken cancellationToken)
     {
