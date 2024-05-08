@@ -2,6 +2,7 @@
 using CleanCodeJN.GenericApis.Extensions;
 using CleanCodeJN.GenericApis.Sample.Context;
 using CleanCodeJN.GenericApis.Sample.Dtos;
+using CleanCodeJN.GenericApis.Sample.Extensions;
 using CleanCodeJN.GenericApis.Sample.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,9 @@ app.UseHttpsRedirection();
 
 app.RegisterApis();
 app.MapControllers();
+
+// For seeding of in-memory db only
+app.EnsureDatabaseCreated();
 
 app.Run();
 
