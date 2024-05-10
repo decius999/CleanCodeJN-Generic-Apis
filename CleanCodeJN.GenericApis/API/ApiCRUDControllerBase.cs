@@ -24,6 +24,18 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
 
     public virtual Expression<Func<TEntity, bool>> GetByIdWhere { get; set; } = x => true;
 
+    [HttpGet("paged")]
+    public virtual async Task<IResult> Get(int page, int pageSize, string direction, string sortBy)
+        => await HandlePagination<TEntity, TGetDto>(new GetRequest<TEntity, TKey>
+        {
+            Skip = page,
+            Take = pageSize,
+            SortOrder = direction?.ToLowerInvariant() == "descending" ? "-1" : "1",
+            SortField = sortBy,
+            Includes = GetIncludes,
+            Where = GetWhere,
+        });
+
     [HttpGet()]
     public virtual async Task<IResult> Get() =>
         await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey> { Includes = GetIncludes, Where = GetWhere });

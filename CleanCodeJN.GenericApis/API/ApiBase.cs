@@ -17,6 +17,23 @@ public class ApiBase : ControllerBase
         Mapper = mapper;
     }
 
+    public async Task<IResult> HandlePagination<TEntity, TDto>(IRequest<BaseListResponse<TEntity>> request)
+    {
+        try
+        {
+            var domainResult = await CommandBus.Send(request);
+
+            var dtos = Mapper.Map<List<TDto>>(domainResult.Data);
+            var response = await BaseListResponse<TDto>.Create(domainResult.Success, dtos, domainResult.Message, domainResult.Count);
+
+            return domainResult.AsHttpResult(response);
+        }
+        catch (Exception e)
+        {
+            return Results.Problem(title: e.Message, detail: e.StackTrace, statusCode: 500);
+        }
+    }
+
     public async Task<IResult> Handle<TEntity, TDto>(IRequest<BaseListResponse<TEntity>> request, Func<BaseListResponse<TEntity>, TDto> map = null)
     {
         try
