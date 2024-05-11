@@ -24,7 +24,7 @@ public class ApiBase : ControllerBase
             var domainResult = await CommandBus.Send(request);
 
             var dtos = Mapper.Map<List<TDto>>(domainResult.Data);
-            var response = await BaseListResponse<TDto>.Create(domainResult.Success, dtos, domainResult.Message, domainResult.Count);
+            var response = await BaseListResponse<TDto>.Create(domainResult.ResultState, dtos, domainResult.Message, domainResult.Count);
 
             return domainResult.AsHttpResult(response);
         }

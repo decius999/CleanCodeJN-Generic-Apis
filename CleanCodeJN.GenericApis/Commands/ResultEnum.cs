@@ -1,0 +1,14 @@
+﻿namespace CleanCodeJN.GenericApis.Commands;
+
+public enum ResultEnum
+{
+    SUCCESS = 200,
+    SUCCESS_CREATED = 201,
+    SUCCESS_ACCEPTED = 202,
+    SUCCESS_NO_CONTENT = 204,
+    FAILURE_BAD_REQUEST = 400,
+    FAILURE_UNAUTHORIZED = 401,
+    FAILURE_FORBIDDEN = 403,
+    FAILURE_NOT_FOUND = 404,
+    FAILURE_INTERNAL_SERVER_ERROR = 500,
+}

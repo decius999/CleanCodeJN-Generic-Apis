@@ -1,5 +1,6 @@
 ﻿using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Contracts;
+using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.Context;
@@ -46,19 +47,19 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
 
             if (response == null && !builder.continueOnCheckError)
             {
-                return await BaseResponse<T>.Create(false, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
+                return await BaseResponse<T>.Create(ResultEnum.FAILURE_BAD_REQUEST, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
             }
 
-            if (response is Response baseResponse && !baseResponse.Success && !builder.continueOnCheckError)
+            if (response is Response baseResponse && !baseResponse.ResultState.Succeeded() && !builder.continueOnCheckError)
             {
                 var request = builder.func.DynamicInvoke();
 
-                return await BaseResponse<T>.Create(false, message: baseResponse.Message, info: builder.blockName);
+                return await BaseResponse<T>.Create(baseResponse.ResultState, message: baseResponse.Message, info: builder.blockName);
             }
 
             if (response is Response interruptResponse && interruptResponse.Interrupt)
             {
-                return await BaseResponse<T>.Create(interruptResponse.Success, message: interruptResponse.Message, info: builder.blockName, interrupt: interruptResponse.Interrupt);
+                return await BaseResponse<T>.Create(interruptResponse.ResultState, message: interruptResponse.Message, info: builder.blockName, interrupt: interruptResponse.Interrupt);
             }
 
             AddToCache(response, builder);
@@ -67,7 +68,7 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         var responseData = response?.Data as T;
         var responseInfo = response?.Info as string;
 
-        return await BaseResponse<T>.Create(true, data: responseData, info: responseInfo);
+        return await BaseResponse<T>.Create(ResultEnum.SUCCESS, data: responseData, info: responseInfo);
     }
 
     public async Task<BaseListResponse<T>> ExecuteList<T>(CancellationToken cancellationToken)
@@ -79,23 +80,23 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
 
             if (response == null && !builder.continueOnCheckError)
             {
-                return await BaseListResponse<T>.Create(false, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
+                return await BaseListResponse<T>.Create(ResultEnum.FAILURE_BAD_REQUEST, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
             }
 
-            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.Success)
+            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.ResultState.Succeeded())
             {
-                return await BaseListResponse<T>.Create(false, message: baseResponse.Message, info: builder.blockName);
+                return await BaseListResponse<T>.Create(baseResponse.ResultState, message: baseResponse.Message, info: builder.blockName);
             }
 
             if (response is Response interruptResponse && interruptResponse.Interrupt)
             {
-                return await BaseListResponse<T>.Create(interruptResponse.Success, message: interruptResponse.Message, info: builder.blockName, interrupt: interruptResponse.Interrupt);
+                return await BaseListResponse<T>.Create(interruptResponse.ResultState, message: interruptResponse.Message, info: builder.blockName, interrupt: interruptResponse.Interrupt);
             }
 
             AddToCache(response, builder);
         }
 
-        return await BaseListResponse<T>.Create(true, data: response?.Data, message: response?.Message, count: response?.Count);
+        return await BaseListResponse<T>.Create(ResultEnum.SUCCESS, data: response?.Data, message: response?.Message, count: response?.Count);
     }
 
     public async Task<Response> Execute(CancellationToken cancellationToken)
@@ -107,23 +108,23 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
 
             if (response == null && !builder.continueOnCheckError)
             {
-                return new Response(false, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
+                return new Response(ResultEnum.FAILURE_BAD_REQUEST, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
             }
 
-            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.Success && !baseResponse.Interrupt)
+            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.ResultState.Succeeded() && !baseResponse.Interrupt)
             {
-                return new Response(false, message: baseResponse.Message, interrupt: baseResponse.Interrupt, info: builder.blockName);
+                return new Response(baseResponse.ResultState, message: baseResponse.Message, interrupt: baseResponse.Interrupt, info: builder.blockName);
             }
 
             if (response is Response interruptResponse && interruptResponse.Interrupt)
             {
-                return new Response(interruptResponse.Success, message: interruptResponse.Message, info: builder.blockName, interrupt: interruptResponse.Interrupt);
+                return new Response(interruptResponse.ResultState, message: interruptResponse.Message, info: builder.blockName, interrupt: interruptResponse.Interrupt);
             }
 
             AddToCache(response, builder);
         }
 
-        return new Response(true, message: response?.Message, count: response?.Count);
+        return new Response(ResultEnum.SUCCESS, message: response?.Message, count: response?.Count);
     }
 
     public T Get<T>(string blockName)
@@ -158,11 +159,11 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
 
                 if (!((dynamic)responseItem).Success)
                 {
-                    return new Response(false);
+                    return new Response(ResultEnum.FAILURE_BAD_REQUEST);
                 }
             }
 
-            return new Response(true);
+            return new Response(ResultEnum.SUCCESS);
         }
         else
         {

@@ -11,6 +11,6 @@ public class PostCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntit
     {
         var entity = await repository.Create(mapper.Map<TEntity>(request.Dto), cancellationToken);
 
-        return new BaseResponse<TEntity>(entity is not null, entity);
+        return await BaseResponse<TEntity>.Create(entity is not null, entity);
     }
 }

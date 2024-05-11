@@ -11,6 +11,6 @@ public class PutCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntity
     {
         var entity = await repository.Update(mapper.Map<TEntity>(request.Dto), cancellationToken);
 
-        return new BaseResponse<TEntity>(entity is not null, entity);
+        return await BaseResponse<TEntity>.Create(entity is not null, entity);
     }
 }

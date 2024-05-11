@@ -1,9 +1,9 @@
 ﻿namespace CleanCodeJN.GenericApis.Commands;
 public class Response
 {
-    public Response(bool success, string message = null, TimeSpan? delay = null, string info = null, int? count = 0, bool? interrupt = false)
+    public Response(ResultEnum resultState, string message = null, TimeSpan? delay = null, string info = null, int? count = 0, bool? interrupt = false)
     {
-        Success = success;
+        ResultState = resultState;
         Message = message;
         Delay = delay;
         Info = info;
@@ -11,7 +11,7 @@ public class Response
         Interrupt = interrupt.Value;
     }
 
-    public bool Success { get; }
+    public ResultEnum ResultState { get; }
 
     public string Message { get; }
 

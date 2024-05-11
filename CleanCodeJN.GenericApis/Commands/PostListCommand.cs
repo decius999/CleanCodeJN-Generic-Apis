@@ -10,6 +10,6 @@ public class PostListCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TE
     {
         var entities = await repository.Create(request.Dtos.Select(dto => mapper.Map<TEntity>(dto)).ToList(), cancellationToken);
 
-        return new BaseListResponse<TEntity>(entities is not null, entities.ToList());
+        return await BaseListResponse<TEntity>.Create(entities is not null, entities.ToList());
     }
 }

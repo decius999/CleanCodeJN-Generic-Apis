@@ -10,6 +10,6 @@ public class DeleteCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository)
     {
         var entity = await repository.Delete(request.Id, cancellationToken);
 
-        return new BaseResponse<TEntity>(entity is not null, entity);
+        return await BaseResponse<TEntity>.Create(entity is not null, entity);
     }
 }
