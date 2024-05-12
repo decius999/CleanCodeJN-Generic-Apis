@@ -24,4 +24,15 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
             Includes = Includes ?? [],
             Where = Where ?? (x => true),
         });
+
+    public virtual async Task<IResult> Get<TKey>(int page, int pageSize, string direction, string sortBy)
+       => await HandlePagination<TEntity, TGetDto>(new GetRequest<TEntity, TKey>
+       {
+           Skip = page,
+           Take = pageSize,
+           SortOrder = direction?.ToLowerInvariant() == "descending" ? "-1" : "1",
+           SortField = sortBy,
+           Includes = Includes ?? [],
+           Where = Where ?? (x => true),
+       });
 }

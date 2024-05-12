@@ -17,6 +17,15 @@ public static class MinimalAPIExtensions
             return await service.Get<TKey>();
         }).WithTags(tags.ToArray());
 
+    public static RouteHandlerBuilder MapGetPaged<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null)
+        where TEntity : class
+        where TGetDto : class, IDto => app.MapGet(route + "/paged", async (int page, int pageSize, string direction, string sortBy, [FromServices] GetBase<TEntity, TGetDto> service) =>
+        {
+            service.Includes = includes;
+            service.Where = where;
+            return await service.Get<TKey>(page, pageSize, direction, sortBy);
+        }).WithTags(tags.ToArray());
+
     public static RouteHandlerBuilder MapGetRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
       => app.MapGet(route, handler).WithTags(tags.ToArray());
 
