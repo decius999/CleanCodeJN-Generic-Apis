@@ -6,7 +6,7 @@ public static class ResultEnumExtensions
 {
     public static bool Succeeded(this ResultEnum result) => (int)result < 300;
 
-    public static IResult ToHttp(this ResultEnum result, object data) => result switch
+    public static IResult ToIResult(this ResultEnum result, object data) => result switch
     {
         ResultEnum.SUCCESS => Results.Ok(data),
         ResultEnum.SUCCESS_CREATED => Results.Created(),
