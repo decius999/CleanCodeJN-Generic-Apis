@@ -111,7 +111,7 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 }
 ```
 
-__For using the /filtered api with a filter, just provide a serialized json as filter parameter, like this__
+__For using the /filtered api with a filter, just provide a serialized json as filter parameter, like this:__
 ```C#
 {
     "Filters": [
@@ -129,7 +129,7 @@ __For using the /filtered api with a filter, just provide a serialized json as f
 }
 ```
 
-__The Type can be specified with these valuess__
+__The Type can be specified with these values:__
 ```C#
 public enum FilterTypeEnum
 {
