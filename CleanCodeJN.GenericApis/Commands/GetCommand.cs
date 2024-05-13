@@ -11,7 +11,7 @@ public class GetCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : 
     {
         var query = repository.Query(request.Includes?.ToArray() ?? []);
 
-        var count = query.Count();
+        var count = query.Where(request.Where).Count();
 
         var entities = string.IsNullOrWhiteSpace(request.SortOrder) ?
             query.Where(request.Where).Skip(request.Skip).Take(request.Take).ToList() :
