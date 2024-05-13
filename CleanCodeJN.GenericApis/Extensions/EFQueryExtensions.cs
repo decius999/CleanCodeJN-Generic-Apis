@@ -56,7 +56,7 @@ public static class EFQueryExtensions
 
                 finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
             }
-            else if (innerFilter.Type is FilterTypeEnum.INTEGER or FilterTypeEnum.INTEGER_NULLABLE)
+            else
             {
                 property = type.GetProperty(innerFilter.Field);
                 if (property is null)
@@ -64,15 +64,12 @@ public static class EFQueryExtensions
                     continue;
                 }
 
-                if (property.PropertyType == typeof(int) || property.PropertyType == typeof(int?))
-                {
-                    var propertyAccess = Expression.Property(parameter, property);
-                    filterExpression = Expression.Constant(Convert.ToInt32(innerFilter.Value), property.PropertyType);
-                    var equalsExpression = Expression.Equal(propertyAccess, filterExpression);
-                    var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(equalsExpression, parameter);
+                var propertyAccess = Expression.Property(parameter, property);
+                filterExpression = Expression.Constant(FilterTypeEnumExtensions.ConvertTo(innerFilter), property.PropertyType);
+                var equalsExpression = Expression.Equal(propertyAccess, filterExpression);
+                var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(equalsExpression, parameter);
 
-                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
-                }
+                finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
             }
         }
 
