@@ -2,6 +2,7 @@
 using AutoMapper;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Contracts;
+using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,17 +25,22 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
 
     public virtual Expression<Func<TEntity, bool>> GetByIdWhere { get; set; } = x => true;
 
+    [HttpGet("filtered")]
+    public virtual async Task<IResult> Get(int page, int pageSize, string direction, string sortBy, string filter)
+       => await HandlePagination<TEntity, TGetDto>(new GetRequest<TEntity, TKey>
+       {
+           Skip = page,
+           Take = pageSize,
+           SortOrder = direction.GetSortOrder(),
+           SortField = sortBy,
+           Filter = filter.GetFilter(),
+           Includes = GetIncludes,
+           Where = GetWhere,
+       });
+
     [HttpGet("paged")]
     public virtual async Task<IResult> Get(int page, int pageSize, string direction, string sortBy)
-        => await HandlePagination<TEntity, TGetDto>(new GetRequest<TEntity, TKey>
-        {
-            Skip = page,
-            Take = pageSize,
-            SortOrder = direction?.ToLowerInvariant() == "descending" ? "-1" : "1",
-            SortField = sortBy,
-            Includes = GetIncludes,
-            Where = GetWhere,
-        });
+        => await Get(page, pageSize, direction, sortBy, null);
 
     [HttpGet()]
     public virtual async Task<IResult> Get() =>

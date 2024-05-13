@@ -28,6 +28,11 @@ public class MyDbContext : DbContext, IDataContext
         {
             Id = 3,
             Name = "aac",
+        },
+        new Customer
+        {
+            Id = 4,
+            Name = "string",
         });
 
         modelBuilder.Entity<Invoice>().HasData(new Invoice

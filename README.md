@@ -6,7 +6,7 @@ framework for CRUD operations and facilitating the implementation of complex bus
 
 ### Features
 
-- CRUD APIs (Minimal or Controller based) build in seconds
+- Paginated and filtered CRUD APIs (Minimal or Controller based) build in seconds
 - Uses Mediator to abstract build-in and custom complex business logic
 - Uses DataRepositories to abstract Entity Framework from business logic
 - Enforces IOSP (Integration/Operation Segregation Principle) for commands
@@ -59,6 +59,7 @@ public class CustomersV1Api : IApi
          app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags,
             where: x => x.Name.StartsWith("a"), includes: [x => x.Invoices]),
         app => app.MapGetPaged<Customer, CustomerGetDto, int>(Route, Tags),
+        app => app.MapGetFiltered<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
         app => app.MapPost<Customer, CustomerPostDto, CustomerGetDto>(Route, Tags),
@@ -107,6 +108,38 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
     public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
 
     public override List<Expression<Func<Customer, object>>> GetIncludes => [x => x.Invoices];
+}
+```
+
+__For using the /filtered api with a filter, just provide a serialized json as filter parameter, like this__
+```C#
+{
+    "Filters": [
+        {
+            "Field": "Name",
+            "Value": "aac",
+            "Type": 0
+        },
+        {
+            "Field": "Id",
+            "Value": "3",
+            "Type": 1
+        }
+    ]
+}
+```
+
+__The Type can be specified with these valuess__
+```C#
+public enum FilterTypeEnum
+{
+    STRING = 0,
+    INTEGER = 1,
+    DOUBLE = 2,
+    INTEGER_NULLABLE = 3,
+    DOUBLE_NULLABLE = 4,
+    DATETIME = 5,
+    DATETIME_NULLABLE = 6,
 }
 ```
 

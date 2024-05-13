@@ -1,4 +1,6 @@
-﻿namespace CleanCodeJN.GenericApis.Commands;
+﻿using CleanCodeJN.GenericApis.Models;
+
+namespace CleanCodeJN.GenericApis.Commands;
 
 public class BasePaginationRequest
 {
@@ -9,4 +11,6 @@ public class BasePaginationRequest
     public int Skip { get; set; }
 
     public int Take { get; set; } = 10_000;
+
+    public SearchFilter Filter { get; set; }
 }
