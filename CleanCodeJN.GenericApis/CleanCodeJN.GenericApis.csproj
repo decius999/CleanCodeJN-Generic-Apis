@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
-    <PackageTags>WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
+    <PackageTags>CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
     <PackageReleaseNotes>Improvements for Filtering different data types.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
