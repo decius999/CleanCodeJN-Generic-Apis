@@ -26,7 +26,7 @@ public static class EFQueryExtensions
 
     public static IOrderedQueryable<TEntity> OrderByString<TEntity>(this IQueryable<TEntity> source, string orderByProperty, string ascDesc) => source.OrderByString(orderByProperty, ascDesc == "-1");
 
-    public static IQueryable<TEntity> WhereColumnsContainFilter<TEntity, TKey>(this IQueryable<TEntity> source, SearchFilter filter, IRepository<TEntity, TKey> repository)
+    public static IQueryable<TEntity> WhereColumnsContainFilter<TEntity, TKey>(this IQueryable<TEntity> source, SearchFilter filter)
         where TEntity : class, IEntity<TKey>
     {
         if (filter == null || !filter.Filters.Any())
@@ -89,10 +89,9 @@ public static class EFQueryExtensions
      int pageSize,
      string sortBy,
      string direction,
-     SearchFilter filter,
-     IRepository<TEntity, TKey> repository)
+     SearchFilter filter)
          where TEntity : class, IEntity<TKey> => source
-               .WhereColumnsContainFilter(filter, repository)
+               .WhereColumnsContainFilter<TEntity, TKey>(filter)
                .OrderByString(sortBy, direction)
                .Skip(page * pageSize)
                .Take(pageSize);

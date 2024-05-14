@@ -15,13 +15,12 @@ public class GetCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : 
 
         var count = query.Count();
 
-        var entities = query.PagedResultList(
+        var entities = query.PagedResultList<TEntity, TKey>(
                      request.Skip,
                      request.Take,
                      request.SortField,
                      request.SortOrder,
-                     request.Filter,
-                     repository);
+                     request.Filter);
 
         return await BaseListResponse<TEntity>.Create(entities is not null, entities.ToList(), count: count);
     }
