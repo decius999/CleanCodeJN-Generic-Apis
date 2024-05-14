@@ -17,9 +17,9 @@ public static class ServiveCollectionExtensions
     /// </summary>
     /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
     /// <param name="services">Service Collection</param>
-    /// <param name="mapping">Automapper Mapping Action</param>
-    /// <param name="commandAssemblies">Additional Custom Assemblies to register custom Commands</param>
-    public static void RegisterRepositoriesCommandsWithAutomapper<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mapping, List<Assembly> commandAssemblies = null)
+    /// <param name="mapping">Optional: Automapper Mapping Action</param>
+    /// <param name="commandAssemblies">Optional: Additional Custom Assemblies to register custom Commands</param>
+    public static void RegisterRepositoriesCommandsWithAutomapper<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mapping = null, List<Assembly> commandAssemblies = null)
         where TDataContext : class, IDataContext
     {
         commandAssemblies ??= [];
@@ -42,13 +42,20 @@ public static class ServiveCollectionExtensions
 
         RegisterGenericCommands(services, assemblies);
 
-        var config = new MapperConfiguration(mapping);
-        var mapper = new Mapper(config);
-
-        services.AddSingleton<IMapper>(mapper);
+        if (mapping != null)
+        {
+            RegisterAutomapper(services, mapping);
+        }
 
         services.RegisterDbContextAndRepositories<TDataContext>();
     }
+
+    /// <summary>
+    /// Register Automapper in single step
+    /// </summary>
+    /// <param name="services">Service Collection</param>
+    /// <param name="mapping">Automapper Mapping Action</param>
+    public static void RegisterAutomapper(this IServiceCollection services, Action<IMapperConfigurationExpression> mapping) => services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(mapping)));
 
     private static void RegisterGenericCommands(IServiceCollection services, List<Assembly> assemblies)
     {
