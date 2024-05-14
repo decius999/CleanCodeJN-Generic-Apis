@@ -129,6 +129,9 @@ __For using the /filtered api with a filter, just provide a serialized json as f
 }
 ```
 
+Which means: Give me all Names which CONTAINS "aac" AND have Id EQUALS 3. So string Types use always CONTAINS and integer types use EQUALS. 
+All filters are combined with ANDs.
+
 __The Type can be specified with these values:__
 ```C#
 public enum FilterTypeEnum
