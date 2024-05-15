@@ -102,17 +102,6 @@ public static class ServiveCollectionExtensions
                 .Where(type => interfaces.All(i => i.IsAssignableFrom(type)))
                 .ToList();
 
-    private static (Type handler, Type command) MakeGenericType(Type type, Type requestType, Type commandType, Type responseType, Type handlerType)
-    {
-        var typeArgs = new List<Type> { type }.ToArray();
-        var requestGenericType = requestType.MakeGenericType(typeArgs);
-        var commandGenericType = commandType.MakeGenericType(typeArgs);
-        var responseGenericType = responseType.MakeGenericType(typeArgs);
-        var handlerGenericType = handlerType.MakeGenericType(requestGenericType, responseGenericType);
-
-        return (handlerGenericType, commandGenericType);
-    }
-
     private static (Type handler, Type command) MakeGenericTypeWith2Arguments(Type type, Type idType, Type requestType, Type commandType, Type responseType, Type handlerType)
     {
         var typeArgs = new List<Type> { type, idType }.ToArray();
