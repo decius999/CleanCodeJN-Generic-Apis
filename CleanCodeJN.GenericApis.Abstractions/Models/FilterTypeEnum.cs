@@ -1,4 +1,4 @@
-﻿namespace CleanCodeJN.GenericApis.Models;
+﻿namespace CleanCodeJN.GenericApis.Abstractions.Models;
 
 public enum FilterTypeEnum
 {

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Commands;
-using CleanCodeJN.GenericApis.Contracts;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;

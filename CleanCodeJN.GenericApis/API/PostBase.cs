@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Commands;
-using CleanCodeJN.GenericApis.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

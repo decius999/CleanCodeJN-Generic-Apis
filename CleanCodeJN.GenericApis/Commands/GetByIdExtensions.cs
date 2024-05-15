@@ -1,4 +1,4 @@
-﻿using CleanCodeJN.GenericApis.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 
 namespace CleanCodeJN.GenericApis.Commands;
 public static class GetByIdExtensions

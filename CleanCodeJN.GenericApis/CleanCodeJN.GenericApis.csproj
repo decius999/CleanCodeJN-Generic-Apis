@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>Register Package without Automapper for Unit testing purposes.</PackageReleaseNotes>
+    <PackageReleaseNotes>Introduced CleanCodeJN.GenericApis.Abstraction package.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>2.0.8</VersionPrefix>
+    <VersionPrefix>2.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,7 +38,14 @@
 
 
   <ItemGroup>
-    <None Include="CleanCodeJN-Icon-Green.png" Pack="true" PackagePath="\" />
+    <None Include="CleanCodeJN-Icon-Green.png" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\CleanCodeJN.GenericApis.Abstractions\CleanCodeJN.GenericApis.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

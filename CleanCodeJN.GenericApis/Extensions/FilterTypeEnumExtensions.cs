@@ -1,4 +1,4 @@
-﻿using CleanCodeJN.GenericApis.Models;
+﻿using CleanCodeJN.GenericApis.Abstractions.Models;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 

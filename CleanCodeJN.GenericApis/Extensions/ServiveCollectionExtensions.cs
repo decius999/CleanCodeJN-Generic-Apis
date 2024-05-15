@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Context;
-using CleanCodeJN.GenericApis.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using MediatR;

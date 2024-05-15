@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34601.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis", "CleanCodeJN.GenericApis\CleanCodeJN.GenericApis.csproj", "{DA4DF77F-6852-4705-A38E-F71BA198DBB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis", "CleanCodeJN.GenericApis\CleanCodeJN.GenericApis.csproj", "{DA4DF77F-6852-4705-A38E-F71BA198DBB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Sample", "CleanCodeJN.GenericApis.Sample\CleanCodeJN.GenericApis.Sample.csproj", "{0E222085-B39A-4EC6-9381-63B5A25834DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sample", "CleanCodeJN.GenericApis.Sample\CleanCodeJN.GenericApis.Sample.csproj", "{0E222085-B39A-4EC6-9381-63B5A25834DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Abstractions", "CleanCodeJN.GenericApis.Abstractions\CleanCodeJN.GenericApis.Abstractions.csproj", "{C46DB661-7316-420E-A0B3-0AFC04F597C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E222085-B39A-4EC6-9381-63B5A25834DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C46DB661-7316-420E-A0B3-0AFC04F597C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C46DB661-7316-420E-A0B3-0AFC04F597C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C46DB661-7316-420E-A0B3-0AFC04F597C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C46DB661-7316-420E-A0B3-0AFC04F597C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

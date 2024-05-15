@@ -1,5 +1,4 @@
-﻿namespace CleanCodeJN.GenericApis.Commands;
-
+﻿namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 public enum ResultEnum
 {
     SUCCESS = 200,

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CleanCodeJN.GenericApis.Commands;
+using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

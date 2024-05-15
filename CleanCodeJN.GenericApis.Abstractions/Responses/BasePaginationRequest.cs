@@ -1,6 +1,6 @@
-﻿using CleanCodeJN.GenericApis.Models;
+﻿using CleanCodeJN.GenericApis.Abstractions.Models;
 
-namespace CleanCodeJN.GenericApis.Commands;
+namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 
 public class BasePaginationRequest
 {

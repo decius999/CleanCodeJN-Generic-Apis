@@ -1,4 +1,4 @@
-﻿namespace CleanCodeJN.GenericApis.Commands;
+﻿namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 public class BaseListResponse<T> : Response
 {
     public BaseListResponse(ResultEnum resultState, List<T> data = default, string message = null, int? count = 0, string info = null, bool interrupt = false) : base(resultState, message, count: count, info: info, interrupt: interrupt) => Data = data;

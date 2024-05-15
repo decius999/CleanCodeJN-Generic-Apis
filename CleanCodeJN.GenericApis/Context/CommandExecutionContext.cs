@@ -1,5 +1,5 @@
-﻿using CleanCodeJN.GenericApis.Commands;
-using CleanCodeJN.GenericApis.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
 
@@ -171,4 +171,9 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
             return builder.checkAfterExecution != null && !(bool)builder.checkAfterExecution.DynamicInvoke(response) ? null : (dynamic)response;
         }
     }
+
+    ICommandExecutionContext ICommandExecutionContext.WithRequest<T>(Func<IRequest<BaseListResponse<T>>> requestBuilder, string blockName, Func<bool> checkBeforeExecution, Func<BaseListResponse<T>, bool> checkAfterExecution, bool? continueOnCheckError) => throw new NotImplementedException();
+    ICommandExecutionContext ICommandExecutionContext.WithRequest<T>(Func<IRequest<BaseResponse<T>>> requestBuilder, string blockName, Func<bool> checkBeforeExecution, Func<BaseResponse<T>, bool> checkAfterExecution, bool? continueOnCheckError) => throw new NotImplementedException();
+    ICommandExecutionContext ICommandExecutionContext.WithRequests(Func<List<IRequest<Response>>> requestBuilder, string blockName, bool? continueOnCheckError) => throw new NotImplementedException();
+    ICommandExecutionContext ICommandExecutionContext.WithRequest(Func<IRequest<Response>> requestBuilder, string blockName, Func<bool> checkBeforeExecution, Func<Response, bool> checkAfterExecution, bool? continueOnCheckError) => throw new NotImplementedException();
 }

@@ -1,4 +1,4 @@
-﻿namespace CleanCodeJN.GenericApis.Commands;
+﻿namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 public class Response
 {
     public Response(ResultEnum resultState, string message = null, TimeSpan? delay = null, string info = null, int? count = 0, bool? interrupt = false)

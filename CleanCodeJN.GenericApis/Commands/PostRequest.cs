@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using CleanCodeJN.GenericApis.Abstractions.Responses;
+using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
 

@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
 using Microsoft.AspNetCore.Mvc;

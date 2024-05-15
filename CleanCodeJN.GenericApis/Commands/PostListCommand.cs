@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using MediatR;
 

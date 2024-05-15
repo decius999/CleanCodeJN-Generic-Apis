@@ -1,4 +1,5 @@
-﻿using CleanCodeJN.Repository.EntityFramework.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Responses;
+using CleanCodeJN.Repository.EntityFramework.Contracts;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;

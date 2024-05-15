@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Abstractions.Extensions;
 using CleanCodeJN.GenericApis.Commands;
-using CleanCodeJN.GenericApis.Contracts;
-using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;

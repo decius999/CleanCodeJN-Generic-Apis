@@ -1,4 +1,4 @@
-﻿namespace CleanCodeJN.GenericApis.Commands;
+﻿namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 public class BaseResponse<T> : Response
     where T : class
 {

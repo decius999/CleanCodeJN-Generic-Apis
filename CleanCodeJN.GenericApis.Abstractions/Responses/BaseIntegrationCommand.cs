@@ -1,6 +1,6 @@
-﻿using CleanCodeJN.GenericApis.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 
-namespace CleanCodeJN.GenericApis.Commands;
+namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 
 public abstract class BaseIntegrationCommand(ICommandExecutionContext executionContext)
 {

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-using CleanCodeJN.GenericApis.Models;
+using CleanCodeJN.GenericApis.Abstractions.Models;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 
 namespace CleanCodeJN.GenericApis.Extensions;

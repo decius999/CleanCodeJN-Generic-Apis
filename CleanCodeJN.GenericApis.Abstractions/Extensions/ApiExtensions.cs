@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using CleanCodeJN.GenericApis.Models;
+using CleanCodeJN.GenericApis.Abstractions.Models;
 
-namespace CleanCodeJN.GenericApis.Extensions;
+namespace CleanCodeJN.GenericApis.Abstractions.Extensions;
 
 public static class ApiExtensions
 {

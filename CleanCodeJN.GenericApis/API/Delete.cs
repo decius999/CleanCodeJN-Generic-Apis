@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CleanCodeJN.GenericApis.Contracts;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;
