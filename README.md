@@ -1,5 +1,5 @@
 # Generic Web Apis
-### CRUD support for WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework
+### CRUD support for WebAPIs with the power of Mediator pattern, Automapper with automatic mapping, DataRepositories and Entity Framework
 
 > _This CleanCodeJN package streamlines the development of web APIs in .NET applications by providing a robust 
 framework for CRUD operations and facilitating the implementation of complex business logic in a clean and maintainable manner._
@@ -11,11 +11,12 @@ framework for CRUD operations and facilitating the implementation of complex bus
 - Uses DataRepositories to abstract Entity Framework from business logic
 - Enforces IOSP (Integration/Operation Segregation Principle) for commands
 - Easy to mock and test
+- Automatic Entity to DTO mapping (no mapping config needed)
 - On latest .NET 8.0
 
 ### How to use
 
-- Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs
+- Add RegisterRepositoriesCommandsWithAutomaticMapping<IDataContext>() to your Program.cs
 - Add app.RegisterApis() to your Program.cs or use AddControllers + MapControllers()
 - Start writing Apis by implementing IApi
 - Extend standard CRUD operations by specific Where() and Include() clauses
@@ -23,13 +24,23 @@ framework for CRUD operations and facilitating the implementation of complex bus
 
 # Step by step explanation
 
-__Add RegisterRepositoriesCommandsWithAutomapper<IDataContext>() to your Program.cs__
+__Add RegisterRepositoriesCommandsWithAutomaticMapping<IDataContext>() to your Program.cs__
 ```C#
-builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
+// All Entity <=> DTO Mappings will be done automatically if the naming Convention will be applied:
+// e.g.: Customer <=> CustomerGetDto 
+// DTO has to start with Entity-Name and must inherits from IDto
+// Entity must inherit from IEntity
+builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>();
+```
+
+__You can also override specific mappings in RegisterRepositoriesCommandsWithAutomaticMapping<IDataContext>() in your Program.cs__
+```C#
+// All other automatic mappings will be persisted
+builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>(cfg =>
 {
-    cfg.CreateMap<Customer, CustomerPutDto>().ReverseMap();
-    cfg.CreateMap<Customer, CustomerPostDto>().ReverseMap();
-    cfg.CreateMap<Customer, CustomerGetDto>().ReverseMap();
+    cfg.CreateMap<Customer, CustomerGetDto>()
+       .ForMember(x => x.Name, opt => opt.MapFrom(x => string.Join(", ", x.Invoices.Select(x => x.Id))))
+       .ReverseMap();
 });
 ```
 

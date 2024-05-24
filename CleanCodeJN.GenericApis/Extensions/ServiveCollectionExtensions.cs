@@ -14,13 +14,13 @@ namespace CleanCodeJN.GenericApis.Extensions;
 public static class ServiveCollectionExtensions
 {
     /// <summary>
-    /// Register Generic Apis DbContext, generic Repositories and automapper.
+    /// Register Generic Apis DbContext, generic Repositories with Automatic mapping.
     /// </summary>
     /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
     /// <param name="services">Service Collection</param>
-    /// <param name="mapping">Automapper Mapping Action</param>
+    /// <param name="mappingOverrides">Optional Automapper Mapping Action: Only for specific overrides. All standard ReverseMap() mappings will be created automatically</param>
     /// <param name="commandAssemblies">Optional: Additional Custom Assemblies to register custom Commands</param>
-    public static void RegisterRepositoriesCommandsWithAutomapper<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mapping, List<Assembly> commandAssemblies = null)
+    public static void RegisterRepositoriesCommandsWithAutomaticMapping<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mappingOverrides = null, List<Assembly> commandAssemblies = null)
         where TDataContext : class, IDataContext
     {
         commandAssemblies ??= [];
@@ -43,9 +43,39 @@ public static class ServiveCollectionExtensions
 
         RegisterGenericCommands(services, assemblies);
 
-        RegisterAutomapper(services, mapping);
+        RegisterAutomapper(services, Scan(mappingOverrides, assemblies));
 
         services.RegisterDbContextAndRepositories<TDataContext>();
+    }
+
+    private static Action<IMapperConfigurationExpression> Scan(Action<IMapperConfigurationExpression> mapping, List<Assembly> assemblies)
+    {
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToDictionary(k => k.Name, v => v);
+        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToDictionary(k => k.Name, v => v);
+        List<Action<IMapperConfigurationExpression>> mappingConfigs = [];
+
+        foreach (var entity in entities)
+        {
+            foreach (var dto in dtos)
+            {
+                if (dto.Key.StartsWith(entity.Key))
+                {
+                    mappingConfigs.Add(cfg => cfg.CreateMap(entity.Value, dto.Value).ReverseMap());
+                }
+            }
+        }
+
+        void combinedAction(IMapperConfigurationExpression cfg)
+        {
+            foreach (var action in mappingConfigs)
+            {
+                action(cfg);
+            }
+
+            mapping?.Invoke(cfg);
+        }
+
+        return combinedAction;
     }
 
     private static void RegisterAutomapper(this IServiceCollection services, Action<IMapperConfigurationExpression> mapping)

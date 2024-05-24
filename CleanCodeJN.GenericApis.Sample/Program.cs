@@ -17,15 +17,11 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
-builder.Services.RegisterRepositoriesCommandsWithAutomapper<MyDbContext>(cfg =>
+builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>(cfg =>
 {
-    cfg.CreateMap<Customer, CustomerPutDto>().ReverseMap();
-    cfg.CreateMap<Customer, CustomerPostDto>().ReverseMap();
-    cfg.CreateMap<Customer, CustomerGetDto>().ReverseMap();
-
-    cfg.CreateMap<Invoice, InvoicePutDto>().ReverseMap();
-    cfg.CreateMap<Invoice, InvoicePostDto>().ReverseMap();
-    cfg.CreateMap<Invoice, InvoiceGetDto>().ReverseMap();
+    cfg.CreateMap<Customer, CustomerGetDto>()
+       .ForMember(x => x.Name, opt => opt.MapFrom(x => string.Join(", ", x.Invoices.Select(x => x.Id))))
+       .ReverseMap();
 });
 
 var app = builder.Build();
