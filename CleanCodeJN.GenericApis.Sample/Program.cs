@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using CleanCodeJN.GenericApis.Extensions;
 using CleanCodeJN.GenericApis.Sample.Context;
-using CleanCodeJN.GenericApis.Sample.Dtos;
 using CleanCodeJN.GenericApis.Sample.Extensions;
-using CleanCodeJN.GenericApis.Sample.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,12 +15,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
-builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>(cfg =>
-{
-    cfg.CreateMap<Customer, CustomerGetDto>()
-       .ForMember(x => x.Name, opt => opt.MapFrom(x => string.Join(", ", x.Invoices.Select(x => x.Id))))
-       .ReverseMap();
-});
+builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>();
 
 var app = builder.Build();
 
