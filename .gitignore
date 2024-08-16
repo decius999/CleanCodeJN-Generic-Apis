@@ -12,6 +12,7 @@
 */.azuredatastudio
 .idea/
 .history/
+.DS_Store
 
 .sonar/
 .sonarqube/

@@ -76,6 +76,23 @@ public static class MinimalAPIExtensions
 
     public static WebApplication RegisterApis(this WebApplication app)
     {
+        using (var scope = app.Services.CreateScope())
+        {
+            var apis = scope.ServiceProvider.GetServices<IApi>();
+            foreach (var api in apis)
+            {
+                foreach (var method in api.HttpMethods)
+                {
+                    method(app);
+                }
+            }
+        }
+
+        return app;
+    }
+
+    public static IServiceCollection AddApiImplementations(this IServiceCollection services)
+    {
         var interfaceType = typeof(IApi);
         var assembly = Assembly.GetCallingAssembly();
 
@@ -83,13 +100,9 @@ public static class MinimalAPIExtensions
 
         foreach (var implementation in implementations)
         {
-            var api = (IApi)Activator.CreateInstance(implementation);
-            foreach (var method in api.HttpMethods)
-            {
-                method(app);
-            }
+            services.AddScoped(interfaceType, implementation);
         }
 
-        return app;
+        return services;
     }
 }

@@ -16,6 +16,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 });
 
 builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>();
+builder.Services.AddApiImplementations();
 
 var app = builder.Build();
 
