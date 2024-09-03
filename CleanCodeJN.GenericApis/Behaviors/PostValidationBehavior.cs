@@ -1,6 +1,7 @@
 ﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Commands;
+using CleanCodeJN.GenericApis.Extensions;
 using FluentValidation;
 using MediatR;
 
@@ -12,13 +13,11 @@ public class PostValidationBehavior<TPostEntity, TPostDto>(IValidator<TPostDto> 
 {
     public async Task<BaseResponse<TPostEntity>> Handle(PostRequest<TPostEntity, TPostDto> request, RequestHandlerDelegate<BaseResponse<TPostEntity>> next, CancellationToken cancellationToken)
     {
-        if (validator is not null)
+        var result = await BehaviorExtensions.Validate<TPostEntity, TPostDto>(validator, request.Dto);
+
+        if (!result.ResultState.Succeeded())
         {
-            var result = validator.Validate(request.Dto);
-            if (!result.IsValid)
-            {
-                return await BaseResponse<TPostEntity>.Create(false, message: result.ToString());
-            }
+            return result;
         }
 
         return await next();

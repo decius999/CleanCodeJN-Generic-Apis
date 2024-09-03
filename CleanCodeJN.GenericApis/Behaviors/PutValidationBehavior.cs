@@ -1,6 +1,7 @@
 ﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Commands;
+using CleanCodeJN.GenericApis.Extensions;
 using FluentValidation;
 using MediatR;
 
@@ -12,13 +13,11 @@ public class PutValidationBehavior<TPutEntity, TPutDto>(IValidator<TPutDto> vali
 {
     public async Task<BaseResponse<TPutEntity>> Handle(PutRequest<TPutEntity, TPutDto> request, RequestHandlerDelegate<BaseResponse<TPutEntity>> next, CancellationToken cancellationToken)
     {
-        if (validator is not null)
+        var result = await BehaviorExtensions.Validate<TPutEntity, TPutDto>(validator, request.Dto);
+
+        if (!result.ResultState.Succeeded())
         {
-            var result = validator.Validate(request.Dto);
-            if (!result.IsValid)
-            {
-                return await BaseResponse<TPutEntity>.Create(false, message: result.ToString());
-            }
+            return result;
         }
 
         return await next();
