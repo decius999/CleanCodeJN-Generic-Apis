@@ -3,10 +3,13 @@ using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
+using CleanCodeJN.GenericApis.Behaviors;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Context;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.Extensions;
@@ -38,8 +41,14 @@ public static class ServiveCollectionExtensions
         services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssemblies(assemblies.ToArray());
+            config.AddOpenBehavior(typeof(PostValidationBehavior<,>));
+            config.AddOpenBehavior(typeof(PutValidationBehavior<,>));
             config.Lifetime = ServiceLifetime.Scoped;
         });
+
+        services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+
+        services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly());
 
         RegisterGenericCommands(services, assemblies);
 

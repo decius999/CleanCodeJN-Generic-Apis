@@ -12,6 +12,7 @@ framework for CRUD operations and facilitating the implementation of complex bus
 - Enforces IOSP (Integration/Operation Segregation Principle) for commands
 - Easy to mock and test
 - Automatic Entity to DTO mapping (no mapping config needed)
+- Built-in support for Fluent Validation
 - On latest .NET 8.0
 
 ### How to use
@@ -157,6 +158,36 @@ public enum FilterTypeEnum
 ```
 
 # More Advanced Topics
+__Built-in Support for Fluent Validation:__
+Just write your AbstractValidators<T>. They will be automatically executed on generic POST and generic PUT actions:
+```C#
+public class CustomerPostDtoValidator : AbstractValidator<CustomerPostDto>
+{
+    public CustomerPostDtoValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .MaximumLength(10);
+    }
+```
+
+
+```C#
+public class CustomerPutDtoValidator : AbstractValidator<CustomerPutDto>
+{
+    public CustomerPutDtoValidator()
+    {
+        RuleFor(x => x.Id)
+            .GreaterThan(0);
+
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .MaximumLength(10)
+            .CreditCard();
+    }
+}
+```
+
 __Implement your own specific Request:__
 ```C#
 public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
