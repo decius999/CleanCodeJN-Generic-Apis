@@ -159,7 +159,9 @@ public enum FilterTypeEnum
 
 # More Advanced Topics
 __Built-in Support for Fluent Validation:__
+
 Just write your AbstractValidators<T>. They will be automatically executed on generic POST and generic PUT actions:
+
 ```C#
 public class CustomerPostDtoValidator : AbstractValidator<CustomerPostDto>
 {
