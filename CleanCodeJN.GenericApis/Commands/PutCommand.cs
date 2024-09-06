@@ -12,7 +12,7 @@ public class PutCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntity
 {
     public async Task<BaseResponse<TEntity>> Handle(PutRequest<TEntity, TDto> request, CancellationToken cancellationToken)
     {
-        var result = await ValidationExtensions.Validate<TEntity, TDto>(validators, request.Dto);
+        var result = await ValidationExtensions.Validate<TEntity, TDto>(validators, request.Dto, request.SkipValidation);
 
         if (!result.Succeeded)
         {

@@ -5,17 +5,26 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class ValidationExtensions
 {
-    public static async Task<BaseResponse<TEntity>> Validate<TEntity, TDto>(IEnumerable<IValidator<TDto>> validators, TDto dto)
+    public static async Task<BaseResponse<TEntity>> Validate<TEntity, TDto>(IEnumerable<IValidator<TDto>> validators, TDto dto, bool skipValidation)
         where TEntity : class
     {
-        var validator = validators.FirstOrDefault();
-        if (validator is not null)
+        List<string> errorMessages = [];
+
+        if (!skipValidation)
         {
-            var result = validator.Validate(dto);
-            if (!result.IsValid)
+            foreach (var validator in validators ?? [])
             {
-                return await BaseResponse<TEntity>.Create(false, message: result.ToString(" "));
+                var result = validator.Validate(dto);
+                if (!result.IsValid)
+                {
+                    errorMessages.Add(result.ToString(" "));
+                }
             }
+        }
+
+        if (errorMessages.Any())
+        {
+            return await BaseResponse<TEntity>.Create(false, message: string.Join(" ", errorMessages));
         }
 
         return await BaseResponse<TEntity>.Create(true);

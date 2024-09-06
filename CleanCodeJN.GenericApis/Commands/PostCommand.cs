@@ -12,7 +12,7 @@ public class PostCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntit
 {
     public async Task<BaseResponse<TEntity>> Handle(PostRequest<TEntity, TDto> request, CancellationToken cancellationToken)
     {
-        var result = await ValidationExtensions.Validate<TEntity, TDto>(validators, request.Dto);
+        var result = await ValidationExtensions.Validate<TEntity, TDto>(validators, request.Dto, request.SkipValidation);
 
         if (!result.Succeeded)
         {
