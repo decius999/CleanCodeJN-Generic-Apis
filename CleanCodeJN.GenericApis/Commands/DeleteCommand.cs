@@ -11,6 +11,9 @@ public class DeleteCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository)
     {
         var entity = await repository.Delete(request.Id, cancellationToken);
 
-        return await BaseResponse<TEntity>.Create(entity is not null, entity);
+        return await BaseResponse<TEntity>.Create(
+           entity is not null ? ResultEnum.SUCCESS : ResultEnum.FAILURE_NOT_FOUND,
+           entity,
+           message: entity is not null ? null : $"Id '{request.Id}' not found!");
     }
 }

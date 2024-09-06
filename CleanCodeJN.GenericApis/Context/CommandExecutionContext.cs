@@ -1,6 +1,5 @@
 ﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
-using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.Context;
@@ -50,7 +49,7 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
                 return await BaseResponse<T>.Create(ResultEnum.FAILURE_BAD_REQUEST, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
             }
 
-            if (response is Response baseResponse && !baseResponse.ResultState.Succeeded() && !builder.continueOnCheckError)
+            if (response is Response baseResponse && !baseResponse.Succeeded && !builder.continueOnCheckError)
             {
                 var request = builder.func.DynamicInvoke();
 
@@ -83,7 +82,7 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
                 return await BaseListResponse<T>.Create(ResultEnum.FAILURE_BAD_REQUEST, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
             }
 
-            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.ResultState.Succeeded())
+            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.Succeeded)
             {
                 return await BaseListResponse<T>.Create(baseResponse.ResultState, message: baseResponse.Message, info: builder.blockName);
             }
@@ -111,7 +110,7 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
                 return new Response(ResultEnum.FAILURE_BAD_REQUEST, message: $"Pre/Post condition fails in: {builder.blockName}", info: builder.blockName);
             }
 
-            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.ResultState.Succeeded() && !baseResponse.Interrupt)
+            if (!builder.continueOnCheckError && response is Response baseResponse && !baseResponse.Succeeded && !baseResponse.Interrupt)
             {
                 return new Response(baseResponse.ResultState, message: baseResponse.Message, interrupt: baseResponse.Interrupt, info: builder.blockName);
             }

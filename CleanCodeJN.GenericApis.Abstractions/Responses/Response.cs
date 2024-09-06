@@ -11,6 +11,8 @@ public class Response
         Interrupt = interrupt.Value;
     }
 
+    public bool Succeeded => (int)ResultState < 300;
+
     public ResultEnum ResultState { get; }
 
     public string Message { get; }

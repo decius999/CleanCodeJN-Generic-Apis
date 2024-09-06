@@ -14,6 +14,9 @@ public class GetByIdCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository
             .Where(request.Where)
             .FirstOrDefault(x => x.Id.Equals(request.Id));
 
-        return await BaseResponse<TEntity>.Create(entity is not null, entity);
+        return await BaseResponse<TEntity>.Create(
+            entity is not null ? ResultEnum.SUCCESS : ResultEnum.FAILURE_NOT_FOUND,
+            entity,
+            message: entity is not null ? null : $"Id '{request.Id}' not found!");
     }
 }
