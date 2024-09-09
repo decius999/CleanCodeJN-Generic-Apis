@@ -7,4 +7,6 @@ public class PostListRequest<TEntity, TDto> : IRequest<BaseListResponse<TEntity>
     where TEntity : class
 {
     public List<TDto> Dtos { get; init; }
+
+    public bool SkipValidation { get; init; }
 }
