@@ -2,7 +2,7 @@
 using CleanCodeJN.GenericApis.Sample.Models;
 using MediatR;
 
-namespace CleanCodeJN.GenericApis.Sample.Commands;
+namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 
 public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 {

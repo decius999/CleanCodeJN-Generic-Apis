@@ -9,14 +9,14 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
     private readonly List<(Delegate func, string blockName, Delegate checkBeforeExecution, Delegate checkAfterExecution, bool continueOnCheckError)> _requestBuilders = [];
     private readonly Dictionary<string, object> _responseCache = [];
 
-    public CommandExecutionContext WithRequest<T>(Func<IRequest<BaseListResponse<T>>> requestBuilder, string blockName = null,
+    public ICommandExecutionContext WithRequest<T>(Func<IRequest<BaseListResponse<T>>> requestBuilder, string blockName = null,
        Func<bool> checkBeforeExecution = null, Func<BaseListResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
     {
         _requestBuilders.Add((requestBuilder, blockName, checkBeforeExecution, checkAfterExecution, continueOnCheckError.Value));
         return this;
     }
 
-    public CommandExecutionContext WithRequest<T>(Func<IRequest<BaseResponse<T>>> requestBuilder, string blockName = null,
+    public ICommandExecutionContext WithRequest<T>(Func<IRequest<BaseResponse<T>>> requestBuilder, string blockName = null,
         Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
           where T : class
     {
@@ -24,13 +24,13 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         return this;
     }
 
-    public CommandExecutionContext WithRequest(Func<IRequest<Response>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<Response, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
+    public ICommandExecutionContext WithRequest(Func<IRequest<Response>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<Response, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
     {
         _requestBuilders.Add((requestBuilder, blockName, checkBeforeExecution, checkAfterExecution, continueOnCheckError.Value));
         return this;
     }
 
-    public CommandExecutionContext WithRequests(Func<List<IRequest<Response>>> requestBuilder, string blockName = null, bool? continueOnCheckError = false)
+    public ICommandExecutionContext WithRequests(Func<List<IRequest<Response>>> requestBuilder, string blockName = null, bool? continueOnCheckError = false)
     {
         _requestBuilders.Add((requestBuilder, blockName, null, null, continueOnCheckError.Value));
         return this;
@@ -170,9 +170,4 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
             return builder.checkAfterExecution != null && !(bool)builder.checkAfterExecution.DynamicInvoke(response) ? null : (dynamic)response;
         }
     }
-
-    ICommandExecutionContext ICommandExecutionContext.WithRequest<T>(Func<IRequest<BaseListResponse<T>>> requestBuilder, string blockName, Func<bool> checkBeforeExecution, Func<BaseListResponse<T>, bool> checkAfterExecution, bool? continueOnCheckError) => throw new NotImplementedException();
-    ICommandExecutionContext ICommandExecutionContext.WithRequest<T>(Func<IRequest<BaseResponse<T>>> requestBuilder, string blockName, Func<bool> checkBeforeExecution, Func<BaseResponse<T>, bool> checkAfterExecution, bool? continueOnCheckError) => throw new NotImplementedException();
-    ICommandExecutionContext ICommandExecutionContext.WithRequests(Func<List<IRequest<Response>>> requestBuilder, string blockName, bool? continueOnCheckError) => throw new NotImplementedException();
-    ICommandExecutionContext ICommandExecutionContext.WithRequest(Func<IRequest<Response>> requestBuilder, string blockName, Func<bool> checkBeforeExecution, Func<Response, bool> checkAfterExecution, bool? continueOnCheckError) => throw new NotImplementedException();
 }

@@ -1,7 +1,7 @@
 ﻿using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
 using CleanCodeJN.GenericApis.Extensions;
-using CleanCodeJN.GenericApis.Sample.Commands;
+using CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 using CleanCodeJN.GenericApis.Sample.Dtos;
 using CleanCodeJN.GenericApis.Sample.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +24,6 @@ public class CustomersV1Api : IApi
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
         app => app.MapPost<Customer, CustomerPostDto, CustomerGetDto>(Route, Tags),
         app => app.MapDeleteRequest(Route, Tags, async (int id, [FromServices] ApiBase api) =>
-                await api.Handle<Customer, CustomerGetDto>(new SpecificDeleteRequest { Id = id }))
+                await api.Handle<Customer, CustomerGetDto>(new DeleteCustomerIntegrationRequest { Id = id }))
     ];
 }
