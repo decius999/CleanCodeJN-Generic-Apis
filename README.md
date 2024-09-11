@@ -235,16 +235,16 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
 __See the how clean your code will look like in the end__
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
-    : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse>
+    : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse<Customer>>
 {
-    public async Task<BaseResponse> Handle(YourIntegrationRequest request, CancellationToken cancellationToken) =>
+    public async Task<BaseResponse<Customer>> Handle(YourIntegrationRequest request, CancellationToken cancellationToken) =>
         await ExecutionContext
             .CandidateGetByIdRequest(request.Dto.CandidateId)
             .CustomerGetByIdRequest(request.Dto.CustomerIds)
             .GetOtherStuffRequest(request.Dto.XYZType)
             .PostSomethingRequest(request.Dto)
             .SendMailRequest()
-            .Execute(cancellationToken);
+            .Execute<Customer>(cancellationToken);
 }
 ```
 
