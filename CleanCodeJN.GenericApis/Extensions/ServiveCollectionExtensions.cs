@@ -20,12 +20,13 @@ public static class ServiveCollectionExtensions
     /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
     /// <param name="services">Service Collection</param>
     /// <param name="mappingOverrides">Optional Automapper Mapping Action: Only for specific overrides. All standard ReverseMap() mappings will be created automatically</param>
-    /// <param name="commandAssemblies">Optional: Additional Custom Assemblies to register custom Commands</param>
-    public static void RegisterRepositoriesCommandsWithAutomaticMapping<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mappingOverrides = null, List<Assembly> commandAssemblies = null)
+    /// <param name="applicationAssemblies">Optional: To register Businees Commands, Domain and DTO objects automatically</param>
+    /// <param name="validatorAssembly">Optional: Assembly where the Fluent Validation are coming from</param>
+    public static void RegisterRepositoriesCommandsWithAutomaticMapping<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mappingOverrides = null, List<Assembly> applicationAssemblies = null, Assembly validatorAssembly = null)
         where TDataContext : class, IDataContext
     {
-        commandAssemblies ??= [];
-        List<Assembly> assemblies = [typeof(ApiBase).Assembly, Assembly.GetCallingAssembly(), .. commandAssemblies];
+        applicationAssemblies ??= [];
+        List<Assembly> assemblies = [typeof(ApiBase).Assembly, Assembly.GetCallingAssembly(), .. applicationAssemblies];
 
         services.AddScoped(typeof(GetBase<,>), typeof(Get<,>));
         services.AddScoped(typeof(GetByIdBase<,>), typeof(GetById<,>));
@@ -42,7 +43,7 @@ public static class ServiveCollectionExtensions
             config.Lifetime = ServiceLifetime.Scoped;
         });
 
-        services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly());
+        services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
 
         RegisterGenericCommands(services, assemblies);
 

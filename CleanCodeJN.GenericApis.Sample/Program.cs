@@ -15,7 +15,13 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
-builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>();
+builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>(applicationAssemblies:
+[
+    typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
+    typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly,
+    typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly
+],
+validatorAssembly: typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly);
 
 var app = builder.Build();
 

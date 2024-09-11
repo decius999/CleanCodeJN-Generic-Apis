@@ -1,4 +1,4 @@
-﻿namespace CleanCodeJN.GenericApis.Sample;
+﻿namespace CleanCodeJN.GenericApis.Sample.Core.Constants;
 
 public static class CommandConstants
 {

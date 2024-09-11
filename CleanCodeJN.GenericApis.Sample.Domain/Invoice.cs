@@ -1,6 +1,6 @@
 ﻿using CleanCodeJN.Repository.EntityFramework.Contracts;
 
-namespace CleanCodeJN.GenericApis.Sample.Models;
+namespace CleanCodeJN.GenericApis.Sample.Domain;
 
 public class Invoice : IEntity<Guid>
 {

@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
 using CleanCodeJN.GenericApis.API;
-using CleanCodeJN.GenericApis.Sample.Dtos;
-using CleanCodeJN.GenericApis.Sample.Models;
+using CleanCodeJN.GenericApis.Sample.Core.Dtos;
+using CleanCodeJN.GenericApis.Sample.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

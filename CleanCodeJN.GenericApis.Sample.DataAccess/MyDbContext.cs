@@ -1,4 +1,4 @@
-﻿using CleanCodeJN.GenericApis.Sample.Models;
+﻿using CleanCodeJN.GenericApis.Sample.Domain;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using Microsoft.EntityFrameworkCore;
 

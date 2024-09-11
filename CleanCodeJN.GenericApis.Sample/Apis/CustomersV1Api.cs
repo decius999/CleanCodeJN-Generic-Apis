@@ -1,9 +1,9 @@
 ﻿using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
 using CleanCodeJN.GenericApis.Extensions;
-using CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
-using CleanCodeJN.GenericApis.Sample.Dtos;
-using CleanCodeJN.GenericApis.Sample.Models;
+using CleanCodeJN.GenericApis.Sample.Core.Business.CustomerCommands;
+using CleanCodeJN.GenericApis.Sample.Core.Dtos;
+using CleanCodeJN.GenericApis.Sample.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.Sample.Apis;

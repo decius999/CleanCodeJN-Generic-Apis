@@ -1,6 +1,6 @@
 ﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 
-namespace CleanCodeJN.GenericApis.Sample.Dtos;
+namespace CleanCodeJN.GenericApis.Sample.Core.Dtos;
 
 public class InvoicePostDto : IDto
 {
