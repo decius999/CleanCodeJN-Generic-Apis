@@ -14,7 +14,7 @@ namespace CleanCodeJN.GenericApis.Sample.Controllers;
 public class CustomersController(IMediator commandBus, IMapper mapper)
     : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
-    public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
+    public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith('a');
 
     public override List<Expression<Func<Customer, object>>> GetIncludes => [x => x.Invoices];
 }
