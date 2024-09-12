@@ -3,7 +3,7 @@ using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Sample.Core.Constants;
 using CleanCodeJN.GenericApis.Sample.Domain;
 
-namespace CleanCodeJN.GenericApis.Sample.Core.Business.CustomerCommands;
+namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 
 public static class DeleteCustomerIntegrationExtensions
 {

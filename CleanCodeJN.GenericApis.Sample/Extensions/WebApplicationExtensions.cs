@@ -1,4 +1,4 @@
-﻿using CleanCodeJN.GenericApis.Sample.Context;
+﻿using CleanCodeJN.GenericApis.Sample.DataAccess;
 
 namespace CleanCodeJN.GenericApis.Sample.Extensions;
 

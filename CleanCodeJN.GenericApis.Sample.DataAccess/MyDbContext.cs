@@ -2,7 +2,7 @@
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace CleanCodeJN.GenericApis.Sample.Context;
+namespace CleanCodeJN.GenericApis.Sample.DataAccess;
 
 public class MyDbContext : DbContext, IDataContext
 {

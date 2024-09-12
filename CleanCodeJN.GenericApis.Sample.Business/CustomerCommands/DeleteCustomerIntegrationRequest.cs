@@ -2,7 +2,7 @@
 using CleanCodeJN.GenericApis.Sample.Domain;
 using MediatR;
 
-namespace CleanCodeJN.GenericApis.Sample.Core.Business.CustomerCommands;
+namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 
 public class DeleteCustomerIntegrationRequest : IRequest<BaseResponse<Customer>>
 {

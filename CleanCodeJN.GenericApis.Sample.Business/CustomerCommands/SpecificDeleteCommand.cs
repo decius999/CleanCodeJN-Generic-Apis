@@ -3,7 +3,7 @@ using CleanCodeJN.GenericApis.Sample.Domain;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using MediatR;
 
-namespace CleanCodeJN.GenericApis.Sample.Core.Business.CustomerCommands;
+namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 
 public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
 {

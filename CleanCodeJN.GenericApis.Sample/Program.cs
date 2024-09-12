@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using CleanCodeJN.GenericApis.Extensions;
-using CleanCodeJN.GenericApis.Sample.Context;
+using CleanCodeJN.GenericApis.Sample.DataAccess;
 using CleanCodeJN.GenericApis.Sample.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

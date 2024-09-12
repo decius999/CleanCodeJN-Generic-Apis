@@ -1,7 +1,7 @@
 ﻿using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
 using CleanCodeJN.GenericApis.Extensions;
-using CleanCodeJN.GenericApis.Sample.Core.Business.CustomerCommands;
+using CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 using CleanCodeJN.GenericApis.Sample.Core.Dtos;
 using CleanCodeJN.GenericApis.Sample.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,7 @@ public class CustomersV1Api : IApi
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
         app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags,
-            where: x => x.Name.StartsWith("a"), includes: [x => x.Invoices]),
+            where: x => x.Name.StartsWith('a'), includes: [x => x.Invoices]),
         app => app.MapGetPaged<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetFiltered<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
