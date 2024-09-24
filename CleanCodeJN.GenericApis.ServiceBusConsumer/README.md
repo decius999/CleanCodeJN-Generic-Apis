@@ -1,15 +1,14 @@
 # Generic Web Apis for Service Bus - Extension Package
 ### Service Bus Consumer with IOSP and Command Pattern
 
-> _This CleanCodeJN package for Service Bus simplifies the development of asynchronous microservices by providing a framework that leverages the
-   power of MediatR and IOSP to consume service bus events from topics and execute commands to process these events._
+> _This CleanCodeJN package for Service Bus simplifies the development of asynchronous microservices by providing a framework that leverages the power of MediatR and IOSP to consume service bus events from topics and execute commands to process these events._
 
 ### Features
 
 - Built in Service Bus Consumer for multiple configurable Topics and Subscriptions
 - Uses Mediator and IOSP to execute Commands for processing Events
 - Built in Retry concept
-- Custom implementation required for event logging and configuration management
+- Custom Configuration implementation required for event logging and configuration management
 - On latest .NET 8.0
 
 ### How to use
@@ -70,7 +69,9 @@ public class ServiceBusConsumerConfigurationService(
 
 __Add RegisterServiceBusConsumer<YourServiceBusConsumerConfigurationService>() to your Program.cs__
 ```C#
-builder.Services.RegisterServiceBusConsumer<ServiceBusConsumerConfigurationService>("serviceBusConnectionString", [Assembly.GetExecutingAssembly()]);
+builder.Services.RegisterServiceBusConsumer<SampleServiceBusConsumerConfigurationService>(
+   "serviceBusConnectionString", 
+   [Assembly.GetExecutingAssembly()]);
 ```
 
 __Add Service Bus Configuration to your appsettings.json and your Configuration classes__
@@ -119,4 +120,4 @@ __Consume Events by just posting events to the Service Bus__
 ```
 
 # Link to Sample Code
-[ServiceBusConsumerConfigurationService](https://www.nuget.org/packages/CleanCodeJN.GenericApis/)
+[SampleServiceBusConsumerConfigurationService](https://github.com/decius999/CleanCodeJN-Generic-Apis/blob/dev/CleanCodeJN.GenericApis.ServiceBusConsumer/Services/SampleServiceBusConsumerConfigurationService.cs)

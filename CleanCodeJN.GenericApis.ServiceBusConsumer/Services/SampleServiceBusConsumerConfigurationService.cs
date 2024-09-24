@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Services;
-public class ServiceBusConsumerConfigurationService(
+public class SampleServiceBusConsumerConfigurationService(
     IOptionsMonitor<SampleConfiguration> configuration,
-    ILogger<ServiceBusConsumerConfigurationService> logger) : IServiceBusConsumerConfigurationService
+    ILogger<SampleServiceBusConsumerConfigurationService> logger) : IServiceBusConsumerConfigurationService
 {
     public virtual bool IsLocalEnvironment() => Debugger.IsAttached;
 
