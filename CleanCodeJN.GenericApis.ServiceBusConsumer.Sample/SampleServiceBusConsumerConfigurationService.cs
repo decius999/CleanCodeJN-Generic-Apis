@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
@@ -14,7 +15,7 @@ public class SampleServiceBusConsumerConfigurationService(
     IOptionsMonitor<SampleConfiguration> configuration,
     ILogger<SampleServiceBusConsumerConfigurationService> logger) : IServiceBusConsumerConfigurationService
 {
-    public virtual bool IsLocalEnvironment() => false;
+    public virtual bool IsLocalEnvironment() => Debugger.IsAttached;
 
     public virtual void PrintLogoForDebugging() => StringExtensions.PrintLogo();
 
