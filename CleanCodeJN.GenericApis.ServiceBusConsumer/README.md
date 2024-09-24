@@ -120,4 +120,4 @@ __Consume Events by just posting events to the Service Bus__
 ```
 
 # Link to Sample Code
-[SampleServiceBusConsumerConfigurationService](https://github.com/decius999/CleanCodeJN-Generic-Apis/blob/dev/CleanCodeJN.GenericApis.ServiceBusConsumer/Services/SampleServiceBusConsumerConfigurationService.cs)
+[Sample Project](https://github.com/decius999/CleanCodeJN-Generic-Apis/tree/dev/CleanCodeJN.GenericApis.ServiceBusConsumer.Sample)
