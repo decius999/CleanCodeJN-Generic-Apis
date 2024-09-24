@@ -1,21 +1,20 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
-using CleanCodeJN.GenericApis.ServiceBusConsumer.Commands;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Configurations;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Contracts;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Extensions;
+using CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.Commands;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Services;
+namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Sample;
 public class SampleServiceBusConsumerConfigurationService(
     IOptionsMonitor<SampleConfiguration> configuration,
     ILogger<SampleServiceBusConsumerConfigurationService> logger) : IServiceBusConsumerConfigurationService
 {
-    public virtual bool IsLocalEnvironment() => Debugger.IsAttached;
+    public virtual bool IsLocalEnvironment() => false;
 
     public virtual void PrintLogoForDebugging() => StringExtensions.PrintLogo();
 
@@ -31,7 +30,7 @@ public class SampleServiceBusConsumerConfigurationService(
 
     public virtual void LogMaxRetryReached(ProcessMessageEventArgs args) => logger.LogCritical(message: "Max Retry reached");
 
-    public List<Assembly> GetCommandAssemblies() => [typeof(SendEventRequest).Assembly];
+    public List<Assembly> GetCommandAssemblies() => [typeof(UpdateInvoiceEventRequest).Assembly];
 
     public virtual Task LogAndHandleException(Exception exception, string message)
     {

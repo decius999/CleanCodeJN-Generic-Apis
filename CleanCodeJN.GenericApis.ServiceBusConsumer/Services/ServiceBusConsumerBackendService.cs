@@ -105,7 +105,6 @@ public class ServiceBusConsumerBackendService(
         var topic = jsonElement.GetProperty("Topic").GetString();
         var name = jsonElement.GetProperty("Name").GetString();
         var instanceId = jsonElement.GetProperty("InstanceId").GetString();
-        var blobStorageCache = jsonElement.GetProperty("BlobStorageCache").GetBoolean();
 
         try
         {

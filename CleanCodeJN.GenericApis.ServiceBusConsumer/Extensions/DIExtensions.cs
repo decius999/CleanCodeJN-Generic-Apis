@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Context;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Behaviors;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Contracts;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Services;
@@ -18,6 +20,8 @@ public static class DIExtensions
     public static void RegisterServiceBusConsumer<TServiceBusConsumerConfigurationService>(this IServiceCollection services, string serviceBusConnectionString, List<Assembly> commandAssemblies)
         where TServiceBusConsumerConfigurationService : IServiceBusConsumerConfigurationService
     {
+        services.AddTransient<ICommandExecutionContext, CommandExecutionContext>();
+
         services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssemblies(commandAssemblies.ToArray());
