@@ -9,13 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Abstractions", "CleanCodeJN.GenericApis.Abstractions\CleanCodeJN.GenericApis.Abstractions.csproj", "{C46DB661-7316-420E-A0B3-0AFC04F597C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Sample.Business", "CleanCodeJN.GenericApis.Sample.Business\CleanCodeJN.GenericApis.Sample.Business.csproj", "{E2BF90E8-DA4A-47B4-93DC-34E64E499AA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sample.Business", "CleanCodeJN.GenericApis.Sample.Business\CleanCodeJN.GenericApis.Sample.Business.csproj", "{E2BF90E8-DA4A-47B4-93DC-34E64E499AA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Sample.Core", "CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj", "{F0539D9D-D9BD-45E4-A2EF-AA6C817D9CC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sample.Core", "CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj", "{F0539D9D-D9BD-45E4-A2EF-AA6C817D9CC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Sample.Domain", "CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj", "{880B75CD-EAA1-4F7A-AE69-351F35FE7699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sample.Domain", "CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj", "{880B75CD-EAA1-4F7A-AE69-351F35FE7699}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.Sample.DataAccess", "CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj", "{1C61EC50-A88E-4665-BB34-77212572AE05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sample.DataAccess", "CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj", "{1C61EC50-A88E-4665-BB34-77212572AE05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.ServiceBusConsumer", "CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj", "{10B08557-5C8A-425A-A876-979C12206253}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{1C61EC50-A88E-4665-BB34-77212572AE05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C61EC50-A88E-4665-BB34-77212572AE05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C61EC50-A88E-4665-BB34-77212572AE05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10B08557-5C8A-425A-A876-979C12206253}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10B08557-5C8A-425A-A876-979C12206253}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10B08557-5C8A-425A-A876-979C12206253}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10B08557-5C8A-425A-A876-979C12206253}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
