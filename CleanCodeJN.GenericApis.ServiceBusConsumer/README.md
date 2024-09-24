@@ -70,8 +70,8 @@ public class ServiceBusConsumerConfigurationService(
 __Add RegisterServiceBusConsumer<YourServiceBusConsumerConfigurationService>() to your Program.cs__
 ```C#
 builder.Services.RegisterServiceBusConsumer<SampleServiceBusConsumerConfigurationService>(
-   "serviceBusConnectionString", 
-   [Assembly.GetExecutingAssembly()]);
+   builder.Configuration["ServiceBus:ConnectionString"],
+   [typeof(UpdateInvoiceEventRequest).Assembly]);
 ```
 
 __Add Service Bus Configuration to your appsettings.json and your Configuration classes__
