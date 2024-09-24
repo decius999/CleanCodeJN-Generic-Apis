@@ -105,7 +105,7 @@ __Consume Events by just posting events to the Service Bus__
 {
     "InstanceId": "<Guid>",
     "Name": "Event Name",
-    "Type": "Api.Business.EventCommands.XYZIntegrationEventRequest",
+    "Type": "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.Commands.UpdateInvoiceEventRequest",
     "Environment": "Production",
     "CreatedAt": "2024-03-25 16:05:50",
     "CreatedFrom": "Event Producer",
