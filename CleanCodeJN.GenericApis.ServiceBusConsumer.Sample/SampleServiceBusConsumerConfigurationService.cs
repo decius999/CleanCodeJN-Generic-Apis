@@ -21,7 +21,7 @@ public class SampleServiceBusConsumerConfigurationService(
 
     public virtual string PrintStartTextForDebugging() => "Please add the event as JSON and press ENTER twice.";
 
-    public virtual string GetServiceBusConnectionString() => configuration.CurrentValue.ServiceBusConnectionString;
+    public virtual string GetServiceBusConnectionString() => configuration.CurrentValue.ServiceBus.ConnectionString;
 
     public virtual ServiceBusConfiguration GetServiceBusTopicConfiguration() => configuration.CurrentValue.ServiceBus;
 
