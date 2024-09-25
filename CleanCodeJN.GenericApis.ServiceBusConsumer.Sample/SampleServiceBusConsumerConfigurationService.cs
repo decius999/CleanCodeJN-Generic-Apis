@@ -25,7 +25,7 @@ public class SampleServiceBusConsumerConfigurationService(
 
     public virtual ServiceBusConfiguration GetServiceBusTopicConfiguration() => configuration.CurrentValue.ServiceBus;
 
-    public virtual void LogIncomingEvent(string name, string body) => logger.LogDebug(EventRequest(name), body);
+    public virtual void LogIncomingEvent(string name, string body) => logger.LogDebug($"EventRequest_{name.Replace(" ", string.Empty)}", body);
 
     public virtual string MaxRetryMessage(ProcessMessageEventArgs args) => "Max Retry reached";
 
@@ -40,7 +40,7 @@ public class SampleServiceBusConsumerConfigurationService(
     }
 
     public virtual void LogExecutionResponse(string body, Response response, Exception exception = null) =>
-        logger.LogDebug(EventResponse(body, response), new Dictionary<string, string>
+        logger.LogDebug($"EventResponse_{JsonSerializer.Deserialize<JsonElement>(body).GetProperty("Name").GetString().Replace(" ", string.Empty)}_{(response.Succeeded ? "Success" : "Failure")}", new Dictionary<string, string>
     {
         { nameof(response.Succeeded), response.Succeeded.ToString() },
         { nameof(response.Message), response.Message ?? exception?.Message },
@@ -48,8 +48,4 @@ public class SampleServiceBusConsumerConfigurationService(
         { nameof(exception), exception?.StackTrace },
         { "data", body }
     });
-
-    private static string EventResponse(string body, Response response) => $"EventResponse_{JsonSerializer.Deserialize<JsonElement>(body).GetProperty("Name").GetString().Replace(" ", string.Empty)}_{(response.Succeeded ? "Success" : "Failure")}";
-
-    private static string EventRequest(string name) => $"EventRequest_{name.Replace(" ", string.Empty)}";
 }
