@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="1.1.5" />
+    <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +27,6 @@
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj" />
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj" />
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj" />
   </ItemGroup>
 
 </Project>
