@@ -8,7 +8,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Extensions;
-public static class DIExtensions
+public static class ServiveCollectionExtensions
 {
     /// <summary>
     /// Register Service Bus Consumer Services
@@ -17,7 +17,7 @@ public static class DIExtensions
     /// <param name="services">Builder.Services</param>
     /// <param name="serviceBusConnectionString">Azure Service Bus Connectionstring</param>
     /// <param name="commandAssemblies">Assemblies where Commands are implemented which should be called during event processing</param>
-    public static void RegisterServiceBusConsumer<TServiceBusConsumerConfigurationService>(this IServiceCollection services, string serviceBusConnectionString, List<Assembly> commandAssemblies)
+    public static IServiceCollection RegisterServiceBusConsumer<TServiceBusConsumerConfigurationService>(this IServiceCollection services, string serviceBusConnectionString, List<Assembly> commandAssemblies)
         where TServiceBusConsumerConfigurationService : IServiceBusConsumerConfigurationService
     {
         services.AddTransient<ICommandExecutionContext, CommandExecutionContext>();
@@ -38,5 +38,7 @@ public static class DIExtensions
         services.AddSingleton<IServiceBusSenderCreator, ServiceBusSenderCreator>();
         services.AddSingleton(typeof(IServiceBusConsumerConfigurationService), typeof(TServiceBusConsumerConfigurationService));
         services.AddHostedService<ServiceBusConsumerBackendService>();
+
+        return services;
     }
 }

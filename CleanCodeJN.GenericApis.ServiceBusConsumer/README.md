@@ -119,5 +119,28 @@ __Consume Events by just posting events to the Service Bus__
 }
 ```
 
+__If you want to use the Generic Apis Commands and Repositories together with the Service Bus Consumer, than register everything as below__
+```C#
+var builder = Host.CreateApplicationBuilder(args);
+
+List<Assembly> assemblies = [
+    typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
+    typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly,
+    typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly,
+    Assembly.GetExecutingAssembly(),
+];
+
+builder.Services.Configure<SampleConfiguration>(builder.Configuration);
+
+builder.Services
+            .RegisterValidatorsFromAssembly(typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly)
+            .RegisterGenericCommands(assemblies)
+            .RegisterAutomapper(assemblies)
+            .RegisterServiceBusConsumer<SampleServiceBusConsumerConfigurationService>(builder.Configuration["ServiceBus:ConnectionString"], assemblies)
+            .RegisterDbContextAndRepositories<MyDbContext>();
+
+await builder.Build().RunAsync();
+```
+
 # Link to Sample Code
 [Sample Project](https://github.com/decius999/CleanCodeJN-Generic-Apis/tree/dev/CleanCodeJN.GenericApis.ServiceBusConsumer.Sample)

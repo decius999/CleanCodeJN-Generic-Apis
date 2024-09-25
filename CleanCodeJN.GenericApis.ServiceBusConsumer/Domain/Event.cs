@@ -20,7 +20,6 @@ public class Event<T>
     public string Name { get; set; }
     public string Type { get; set; }
     public string Environment { get; set; }
-    public string Domain { get; set; }
     public string CreatedAt { get; set; }
     public string CreatedFrom { get; set; }
     public string RequestId { get; set; }

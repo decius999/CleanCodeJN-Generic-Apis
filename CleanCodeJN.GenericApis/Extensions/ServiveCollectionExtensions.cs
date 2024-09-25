@@ -28,6 +28,28 @@ public static class ServiveCollectionExtensions
         applicationAssemblies ??= [];
         List<Assembly> assemblies = [typeof(ApiBase).Assembly, Assembly.GetCallingAssembly(), .. applicationAssemblies];
 
+        services
+            .RegisterMinimalApiBaseClasses()
+            .RegisterCommandExecutionContext()
+            .RegisterMediatr(assemblies)
+            .RegisterValidatorsFromAssembly(validatorAssembly)
+            .RegisterGenericCommands(assemblies)
+            .RegisterAutomapper(assemblies, Scan(mappingOverrides, assemblies))
+            .RegisterDbContextAndRepositories<TDataContext>();
+    }
+
+    public static IServiceCollection RegisterValidatorsFromAssembly(this IServiceCollection services, Assembly validatorAssembly) => services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
+
+    public static IServiceCollection RegisterMediatr(this IServiceCollection services, List<Assembly> assemblies) => services.AddMediatR(config =>
+    {
+        config.RegisterServicesFromAssemblies(assemblies.ToArray());
+        config.Lifetime = ServiceLifetime.Scoped;
+    });
+
+    public static IServiceCollection RegisterCommandExecutionContext(this IServiceCollection services) => services.AddTransient<ICommandExecutionContext, CommandExecutionContext>();
+
+    public static IServiceCollection RegisterMinimalApiBaseClasses(this IServiceCollection services)
+    {
         services.AddScoped(typeof(GetBase<,>), typeof(Get<,>));
         services.AddScoped(typeof(GetByIdBase<,>), typeof(GetById<,>));
         services.AddScoped(typeof(PutBase<,,>), typeof(Put<,,>));
@@ -35,21 +57,42 @@ public static class ServiveCollectionExtensions
         services.AddScoped(typeof(DeleteBase<,>), typeof(Delete<,>));
         services.AddScoped(typeof(ApiBase));
 
-        services.AddTransient<ICommandExecutionContext, CommandExecutionContext>();
+        return services;
+    }
 
-        services.AddMediatR(config =>
+    public static IServiceCollection RegisterAutomapper(this IServiceCollection services, List<Assembly> assemblies, Action<IMapperConfigurationExpression> mapping = null)
+        => services.AddSingleton<IMapper>(
+            mapping != null ?
+            new Mapper(new MapperConfiguration(mapping)) :
+            new Mapper(new MapperConfiguration(Scan(mapping, assemblies))));
+
+    public static IServiceCollection RegisterGenericCommands(this IServiceCollection services, List<Assembly> assemblies)
+    {
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity));
+        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto));
+
+        foreach (var entityType in entities)
         {
-            config.RegisterServicesFromAssemblies(assemblies.ToArray());
-            config.Lifetime = ServiceLifetime.Scoped;
-        });
+            var dtoPostType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Post" + "Dto");
+            var dtoPutType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Put" + "Dto");
+            var idType = entityType.GetProperties().First(x => x.Name == "Id").PropertyType;
 
-        services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
+            Register(services, entityType, idType);
 
-        RegisterGenericCommands(services, assemblies);
+            if (dtoPostType is not null)
+            {
+                var (handler, command) = PostTypes(entityType, dtoPostType, idType);
+                services.AddScoped(handler, command);
+            }
 
-        RegisterAutomapper(services, Scan(mappingOverrides, assemblies));
+            if (dtoPutType is not null)
+            {
+                var (handler, command) = PutTypes(entityType, dtoPutType, idType);
+                services.AddScoped(handler, command);
+            }
+        }
 
-        services.RegisterDbContextAndRepositories<TDataContext>();
+        return services;
     }
 
     private static Action<IMapperConfigurationExpression> Scan(Action<IMapperConfigurationExpression> mapping, List<Assembly> assemblies)
@@ -80,36 +123,6 @@ public static class ServiveCollectionExtensions
         }
 
         return combinedAction;
-    }
-
-    private static void RegisterAutomapper(this IServiceCollection services, Action<IMapperConfigurationExpression> mapping)
-        => services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(mapping)));
-
-    private static void RegisterGenericCommands(IServiceCollection services, List<Assembly> assemblies)
-    {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity));
-        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto));
-
-        foreach (var entityType in entities)
-        {
-            var dtoPostType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Post" + "Dto");
-            var dtoPutType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Put" + "Dto");
-            var idType = entityType.GetProperties().First(x => x.Name == "Id").PropertyType;
-
-            Register(services, entityType, idType);
-
-            if (dtoPostType is not null)
-            {
-                var (handler, command) = PostTypes(entityType, dtoPostType, idType);
-                services.AddScoped(handler, command);
-            }
-
-            if (dtoPutType is not null)
-            {
-                var (handler, command) = PutTypes(entityType, dtoPutType, idType);
-                services.AddScoped(handler, command);
-            }
-        }
     }
 
     private static void Register(IServiceCollection services, Type entityType, Type idType)
