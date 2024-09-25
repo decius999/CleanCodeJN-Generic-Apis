@@ -80,6 +80,7 @@ __Add Service Bus Configuration to your appsettings.json and your Configuration 
     "ServiceBus": {
             "MaxRetryCount": 30,
             "RetryDelayInMinutes": 10,
+            "ConnectionString": "",
             "TopicConfigurations": [
                 {
                     "Name": "topicA",
