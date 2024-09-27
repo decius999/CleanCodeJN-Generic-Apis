@@ -30,7 +30,7 @@ public class SampleServiceBusConsumerConfigurationService(
 
     public virtual void LogMaxRetryReached(ProcessMessageEventArgs args) => logger.LogCritical(message: MaxRetryMessage(args));
 
-    public List<Assembly> GetCommandAssemblies() => [typeof(UpdateInvoiceEventRequest).Assembly];
+    public virtual List<Assembly> GetCommandAssemblies() => [typeof(UpdateInvoiceEventRequest).Assembly];
 
     public virtual Task LogAndHandleException(Exception exception, string message)
     {
