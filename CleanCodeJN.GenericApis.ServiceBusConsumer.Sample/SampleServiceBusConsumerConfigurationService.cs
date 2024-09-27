@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Configurations;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.Commands;
+using CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.Configurations;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

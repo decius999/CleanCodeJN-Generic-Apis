@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>Service Bus Consumer with Commands</Title>
     <PackageTags>IntegrationOperationSegregationPrinciple;MicroServices;ServiceBus;CommandPattern</PackageTags>
-    <PackageReleaseNotes>Simplified Configuration with ServiceBusConsumerConfigurationServiceBase.</PackageReleaseNotes>
+    <PackageReleaseNotes>Moved Sample Configuration to Sample project.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

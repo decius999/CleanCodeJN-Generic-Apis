@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using CleanCodeJN.GenericApis.Extensions;
 using CleanCodeJN.GenericApis.Sample.DataAccess;
-using CleanCodeJN.GenericApis.ServiceBusConsumer.Configurations;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Extensions;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Sample;
+using CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.Configurations;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.Extensions;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using Microsoft.Extensions.DependencyInjection;

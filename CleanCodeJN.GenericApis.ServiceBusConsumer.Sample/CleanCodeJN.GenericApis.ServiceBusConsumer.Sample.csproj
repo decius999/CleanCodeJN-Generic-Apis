@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.2" />
+    <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
