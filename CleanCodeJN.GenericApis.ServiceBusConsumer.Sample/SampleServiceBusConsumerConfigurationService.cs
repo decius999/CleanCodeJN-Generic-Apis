@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
@@ -15,7 +14,7 @@ public class SampleServiceBusConsumerConfigurationService(
     IOptionsMonitor<SampleConfiguration> configuration,
     ILogger<SampleServiceBusConsumerConfigurationService> logger) : IServiceBusConsumerConfigurationService
 {
-    public virtual bool IsLocalEnvironment() => Debugger.IsAttached;
+    public virtual bool IsLocalEnvironment() => Environment.GetEnvironmentVariable("IS_LOCAL")?.Equals("true") ?? false;
 
     public virtual void PrintLogoForDebugging() => StringExtensions.PrintLogo();
 
@@ -29,7 +28,7 @@ public class SampleServiceBusConsumerConfigurationService(
 
     public virtual string MaxRetryMessage(ProcessMessageEventArgs args) => "Max Retry reached";
 
-    public virtual void LogMaxRetryReached(ProcessMessageEventArgs args) => logger.LogCritical(message: "Max Retry reached");
+    public virtual void LogMaxRetryReached(ProcessMessageEventArgs args) => logger.LogCritical(message: MaxRetryMessage(args));
 
     public List<Assembly> GetCommandAssemblies() => [typeof(UpdateInvoiceEventRequest).Assembly];
 

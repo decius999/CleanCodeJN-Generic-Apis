@@ -1,0 +1,20 @@
+{
+    "profiles": {
+        "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "DOTNET_ENVIRONMENT": "Development",
+                "IS_LOCAL": "false"
+            }
+        },
+        "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample Local": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "DOTNET_ENVIRONMENT": "Development",
+                "IS_LOCAL": "true"
+            }
+        }
+    }
+}
