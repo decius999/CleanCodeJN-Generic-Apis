@@ -20,7 +20,7 @@
 
 # Step by step explanation
 
-__Implement IServiceBusConsumerConfigurationService__
+__Implement the full IServiceBusConsumerConfigurationService__
 ```C#
 public class ServiceBusConsumerConfigurationService(
     IOptionsMonitor<SampleConfiguration> configuration,
@@ -31,8 +31,6 @@ public class ServiceBusConsumerConfigurationService(
     public virtual void PrintLogoForDebugging() => StringExtensions.PrintLogo();
 
     public virtual string PrintStartTextForDebugging() => "Please add the event as JSON and press ENTER twice.";
-
-    public virtual string GetServiceBusConnectionString() => configuration.CurrentValue.ServiceBusConnectionString;
 
     public virtual ServiceBusConfiguration GetServiceBusTopicConfiguration() => configuration.CurrentValue.ServiceBus;
 
@@ -64,7 +62,18 @@ public class ServiceBusConsumerConfigurationService(
 
     private static string EventRequest(string name) => $"EventRequest_{name.Replace(" ", string.Empty)}";
 }
+```
 
+__Or derive from ServiceBusConsumerConfigurationServiceBase for using reasonable defaults and only override the following methods__
+```C#
+public class SampleServiceBusConsumerConfigurationService(
+    IOptionsMonitor<SampleConfiguration> configuration,
+    ILogger<SampleServiceBusConsumerConfigurationService> logger) : ServiceBusConsumerConfigurationServiceBase(logger)
+{
+    public override ServiceBusConfiguration GetServiceBusTopicConfiguration() => configuration.CurrentValue.ServiceBus;
+
+    public override List<Assembly> GetCommandAssemblies() => [typeof(UpdateInvoiceEventRequest).Assembly];
+}
 ```
 
 __Add RegisterServiceBusConsumer<YourServiceBusConsumerConfigurationService>() to your Program.cs__

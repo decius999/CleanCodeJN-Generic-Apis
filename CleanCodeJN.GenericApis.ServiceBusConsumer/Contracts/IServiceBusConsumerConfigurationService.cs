@@ -12,8 +12,6 @@ public interface IServiceBusConsumerConfigurationService
 
     string PrintStartTextForDebugging();
 
-    string GetServiceBusConnectionString();
-
     ServiceBusConfiguration GetServiceBusTopicConfiguration();
 
     void LogIncomingEvent(string name, string body);
