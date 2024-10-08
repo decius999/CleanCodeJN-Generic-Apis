@@ -12,7 +12,7 @@ public static class DeleteCustomerIntegrationExtensions
            () => new GetByIdRequest<Customer, int>
            {
                Id = customerId,
-               Includes = [x => x.Invoices]
+               Includes = [x => x.Invoices],
            },
            CommandConstants.CustomerGetById);
 

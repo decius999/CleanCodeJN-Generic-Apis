@@ -18,11 +18,14 @@ public abstract class GetByIdBase<TEntity, TGetDto> : ApiBase
 
     public Expression<Func<TEntity, bool>> Where { get; set; }
 
-    public virtual async Task<IResult> Get<TKey>(TKey id) =>
+    public virtual async Task<IResult> Get<TKey>(TKey id, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false) =>
         await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity, TKey>
         {
             Id = id,
             Includes = Includes ?? [],
             Where = Where ?? (x => true),
+            AsNoTracking = asNoTracking,
+            IgnoreQueryFilters = ignoreQueryFilters,
+            AsSplitQuery = asSplitQuery,
         });
 }

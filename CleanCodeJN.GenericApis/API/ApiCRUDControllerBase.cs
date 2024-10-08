@@ -25,6 +25,12 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
 
     public virtual Expression<Func<TEntity, bool>> GetByIdWhere { get; set; } = x => true;
 
+    public virtual bool AsNoTracking { get; set; } = true;
+
+    public virtual bool AsSplitQuery { get; set; } = true;
+
+    public virtual bool IgnoreQueryFilters { get; set; } = false;
+
     [HttpGet("filtered")]
     public virtual async Task<IResult> Get(int page, int pageSize, string direction, string sortBy, string filter)
        => await HandlePagination<TEntity, TGetDto>(new GetRequest<TEntity, TKey>
@@ -36,6 +42,9 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
            Filter = filter.GetFilter(),
            Includes = GetIncludes,
            Where = GetWhere,
+           AsNoTracking = AsNoTracking,
+           IgnoreQueryFilters = IgnoreQueryFilters,
+           AsSplitQuery = AsSplitQuery,
        });
 
     [HttpGet("paged")]
@@ -44,11 +53,26 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
 
     [HttpGet()]
     public virtual async Task<IResult> Get() =>
-        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey> { Includes = GetIncludes, Where = GetWhere });
+        await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey>
+        {
+            Includes = GetIncludes,
+            Where = GetWhere,
+            AsNoTracking = AsNoTracking,
+            IgnoreQueryFilters = IgnoreQueryFilters,
+            AsSplitQuery = AsSplitQuery,
+        });
 
     [HttpGet("{id}")]
     public virtual async Task<IResult> Get(TKey id) =>
-        await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity, TKey> { Id = id, Includes = GetByIdIncludes, Where = GetByIdWhere });
+        await Handle<TEntity, TGetDto>(new GetByIdRequest<TEntity, TKey>
+        {
+            Id = id,
+            Includes = GetByIdIncludes,
+            Where = GetByIdWhere,
+            AsNoTracking = AsNoTracking,
+            IgnoreQueryFilters = IgnoreQueryFilters,
+            AsSplitQuery = AsSplitQuery,
+        });
 
     [HttpPost]
     public virtual async Task<IResult> Post([FromBody] TPostDto dto) =>

@@ -19,17 +19,20 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
 
     public Expression<Func<TEntity, bool>> Where { get; set; }
 
-    public virtual async Task<IResult> Get<TKey>() =>
+    public virtual async Task<IResult> Get<TKey>(bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false) =>
         await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey>
         {
             Includes = Includes ?? [],
             Where = Where ?? (x => true),
+            AsNoTracking = asNoTracking,
+            IgnoreQueryFilters = ignoreQueryFilters,
+            AsSplitQuery = asSplitQuery,
         });
 
-    public virtual async Task<IResult> Get<TKey>(int page, int pageSize, string direction, string sortBy)
-       => await Get<TKey>(page, pageSize, direction, sortBy, null);
+    public virtual async Task<IResult> Get<TKey>(int page, int pageSize, string direction, string sortBy, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false)
+       => await Get<TKey>(page, pageSize, direction, sortBy, null, asNoTracking, ignoreQueryFilters, asSplitQuery);
 
-    public virtual async Task<IResult> Get<TKey>(int page, int pageSize, string direction, string sortBy, string filter)
+    public virtual async Task<IResult> Get<TKey>(int page, int pageSize, string direction, string sortBy, string filter, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false)
       => await HandlePagination<TEntity, TGetDto>(new GetRequest<TEntity, TKey>
       {
           Skip = page,
@@ -39,5 +42,6 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
           Filter = filter.GetFilter(),
           Includes = Includes ?? [],
           Where = Where ?? (x => true),
+
       });
 }

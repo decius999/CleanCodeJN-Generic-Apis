@@ -9,4 +9,10 @@ public class GetRequest<TEntity, TKey> : BasePaginationRequest, IRequest<BaseLis
     public List<Expression<Func<TEntity, object>>> Includes { get; set; } = [];
 
     public Expression<Func<TEntity, bool>> Where { get; set; } = x => true;
+
+    public bool AsNoTracking { get; init; }
+
+    public bool IgnoreQueryFilters { get; init; }
+
+    public bool AsSplitQuery { get; init; }
 }

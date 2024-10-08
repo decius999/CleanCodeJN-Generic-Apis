@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
 
-public class GetByIdsRequest<TEntity, TKey> : IRequest<BaseListResponse<TEntity>>
+public class GetByIdsRequest<TEntity, TKey> : GetBaseRequest, IRequest<BaseListResponse<TEntity>>
       where TEntity : class
 {
     public List<TKey> Ids { get; init; }
