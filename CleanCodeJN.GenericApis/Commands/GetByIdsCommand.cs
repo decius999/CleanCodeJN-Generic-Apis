@@ -9,7 +9,11 @@ public class GetByIdsCommand<TEntity, TKey>(IRepository<TEntity, TKey> repositor
     public async Task<BaseListResponse<TEntity>> Handle(GetByIdsRequest<TEntity, TKey> request, CancellationToken cancellationToken)
     {
         var entities = repository
-            .Query(request.Includes?.ToArray() ?? [])
+             .Query(
+                asNoTracking: request.AsNoTracking,
+                ignoreQueryFilters: request.IgnoreQueryFilters,
+                asSplitQuery: request.AsSplitQuery,
+                includes: request.Includes?.ToArray() ?? [])
             .Where(x => request.Ids.Contains(x.Id))
             .ToList();
 
