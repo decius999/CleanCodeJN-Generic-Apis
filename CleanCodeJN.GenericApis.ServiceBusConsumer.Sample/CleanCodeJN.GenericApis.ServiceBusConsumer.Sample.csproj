@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
