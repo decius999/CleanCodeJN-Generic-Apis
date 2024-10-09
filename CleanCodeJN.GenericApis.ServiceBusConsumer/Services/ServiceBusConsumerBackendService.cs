@@ -127,10 +127,7 @@ public class ServiceBusConsumerBackendService(
         await args.CompleteMessageAsync(args.Message);
     }
 
-    public async Task ErrorHandler(ProcessErrorEventArgs args)
-    {
-        await service.LogAndHandleException(args.Exception, args.Exception.ToString());
-    }
+    public async Task ErrorHandler(ProcessErrorEventArgs args) => await service.LogAndHandleException(args.Exception, args.Exception.ToString());
 
     private async Task Retry(ProcessMessageEventArgs args, IMediator commandBus, string body, string topic, Response response, Exception exception = null, TimeSpan? customDelay = null)
     {

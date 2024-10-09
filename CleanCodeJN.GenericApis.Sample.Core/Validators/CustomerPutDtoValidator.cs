@@ -1,7 +1,7 @@
 ﻿using CleanCodeJN.GenericApis.Sample.Core.Dtos;
 using FluentValidation;
 
-namespace CleanCodeJN.GenericApis.Sample.Validators.Core;
+namespace CleanCodeJN.GenericApis.Sample.Core.Validators;
 
 public class CustomerPutDtoValidator : AbstractValidator<CustomerPutDto>
 {

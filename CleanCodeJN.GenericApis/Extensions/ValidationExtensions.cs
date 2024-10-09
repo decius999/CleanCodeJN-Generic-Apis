@@ -22,11 +22,8 @@ public static class ValidationExtensions
             }
         }
 
-        if (errorMessages.Any())
-        {
-            return await BaseResponse<TEntity>.Create(false, message: string.Join(" ", errorMessages));
-        }
-
-        return await BaseResponse<TEntity>.Create(true);
+        return errorMessages.Any()
+            ? await BaseResponse<TEntity>.Create(false, message: string.Join(" ", errorMessages))
+            : await BaseResponse<TEntity>.Create(true);
     }
 }
