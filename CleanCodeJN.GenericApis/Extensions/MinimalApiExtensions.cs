@@ -9,7 +9,7 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class MinimalAPIExtensions
 {
-    public static RouteHandlerBuilder MapGet<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false)
+    public static RouteHandlerBuilder MapGet<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = true)
         where TEntity : class
         where TGetDto : class, IDto => app.MapGet(route, async ([FromServices] GetBase<TEntity, TGetDto> service) =>
         {
@@ -18,7 +18,7 @@ public static class MinimalAPIExtensions
             return await service.Get<TKey>(asNoTracking, ignoreQueryFilters, asSplitQuery);
         }).WithTags(tags.ToArray());
 
-    public static RouteHandlerBuilder MapGetPaged<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false)
+    public static RouteHandlerBuilder MapGetPaged<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = true)
         where TEntity : class
         where TGetDto : class, IDto => app.MapGet(route + "/paged", async (int page, int pageSize, string direction, string sortBy, [FromServices] GetBase<TEntity, TGetDto> service) =>
         {
@@ -27,7 +27,7 @@ public static class MinimalAPIExtensions
             return await service.Get<TKey>(page, pageSize, direction, sortBy, asNoTracking, ignoreQueryFilters, asSplitQuery);
         }).WithTags(tags.ToArray());
 
-    public static RouteHandlerBuilder MapGetFiltered<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false)
+    public static RouteHandlerBuilder MapGetFiltered<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = true)
        where TEntity : class
        where TGetDto : class, IDto => app.MapGet(route + "/filtered", async (int page, int pageSize, string direction, string sortBy, string filter, [FromServices] GetBase<TEntity, TGetDto> service) =>
        {
@@ -39,7 +39,7 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapGetRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
       => app.MapGet(route, handler).WithTags(tags.ToArray());
 
-    public static RouteHandlerBuilder MapGetById<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false)
+    public static RouteHandlerBuilder MapGetById<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = true)
         where TEntity : class
         where TGetDto : class, IDto => app.MapGet(route + "/{id}", async (TKey id, [FromServices] GetByIdBase<TEntity, TGetDto> service) =>
         {
