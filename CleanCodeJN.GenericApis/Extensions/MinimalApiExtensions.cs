@@ -79,7 +79,10 @@ public static class MinimalAPIExtensions
         var interfaceType = typeof(IApi);
         var assembly = Assembly.GetCallingAssembly();
 
-        var implementations = assembly.GetTypes().Where(t => interfaceType.IsAssignableFrom(t) && t != interfaceType);
+        var implementations = assembly.GetTypes().Where(
+            t => interfaceType.IsAssignableFrom(t) &&
+            t != interfaceType &&
+            !t.IsGenericType);
 
         foreach (var implementation in implementations)
         {
