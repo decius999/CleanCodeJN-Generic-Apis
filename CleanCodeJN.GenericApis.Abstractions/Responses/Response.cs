@@ -1,6 +1,10 @@
 ﻿namespace CleanCodeJN.GenericApis.Abstractions.Responses;
 public class Response
 {
+    public Response()
+    {
+    }
+
     public Response(ResultEnum resultState, string message = null, TimeSpan? delay = null, string info = null, int? count = 0, bool? interrupt = false)
     {
         ResultState = resultState;
@@ -13,13 +17,13 @@ public class Response
 
     public bool Succeeded => (int)ResultState < 300;
 
-    public ResultEnum ResultState { get; }
+    public ResultEnum ResultState { get; set; }
 
-    public string Message { get; }
+    public string Message { get; set; }
 
-    public TimeSpan? Delay { get; }
+    public TimeSpan? Delay { get; set; }
 
-    public string Info { get; }
+    public string Info { get; set; }
 
     public int Count { get; set; }
 

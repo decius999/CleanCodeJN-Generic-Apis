@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.Sample.DataAccess", "CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj", "{1C61EC50-A88E-4665-BB34-77212572AE05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.ServiceBusConsumer", "CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj", "{10B08557-5C8A-425A-A876-979C12206253}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.ServiceBusConsumer", "CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj", "{10B08557-5C8A-425A-A876-979C12206253}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample", "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample\CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.csproj", "{B1094875-3B14-4857-845F-455C4486762C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample", "CleanCodeJN.GenericApis.ServiceBusConsumer.Sample\CleanCodeJN.GenericApis.ServiceBusConsumer.Sample.csproj", "{B1094875-3B14-4857-845F-455C4486762C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
