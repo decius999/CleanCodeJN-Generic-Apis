@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>Service Bus Consumer with Commands</Title>
     <PackageTags>IntegrationOperationSegregationPrinciple;MicroServices;ServiceBus;CommandPattern</PackageTags>
-    <PackageReleaseNotes>Package Updates for Generic APIs and Hosting.Abstractions.</PackageReleaseNotes>
+    <PackageReleaseNotes>Package Updates for Generic APIs.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>1.0.7</VersionPrefix>
+    <VersionPrefix>1.0.8</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.2" />
-    <PackageReference Include="CleanCodeJN.GenericApis" Version="3.2.2" />
+    <PackageReference Include="CleanCodeJN.GenericApis" Version="3.3.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
   </ItemGroup>
