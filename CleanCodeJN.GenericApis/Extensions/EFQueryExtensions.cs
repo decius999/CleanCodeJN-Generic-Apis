@@ -15,9 +15,16 @@ public static class EFQueryExtensions
         orderByProperty = orderByProperty == "null" || string.IsNullOrWhiteSpace(orderByProperty) ? "Id" : orderByProperty;
         orderByProperty = orderByProperty[0].ToString().ToUpper(System.Globalization.CultureInfo.CurrentCulture) + orderByProperty[1..];
 
-        var property = type.GetProperty(orderByProperty);
+        var properties = orderByProperty.Split('_');
         var parameter = Expression.Parameter(type, "p");
-        var propertyAccess = Expression.MakeMemberAccess(parameter, property);
+        Expression propertyAccess = parameter;
+        PropertyInfo property = null;
+        foreach (var innerProperty in properties)
+        {
+            property = propertyAccess.Type.GetProperty(innerProperty);
+            propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
+        }
+
         var orderByExpression = Expression.Lambda(propertyAccess, parameter);
         var resultExpression = Expression.Call(typeof(Queryable), command, [type, property.PropertyType], source.Expression, Expression.Quote(orderByExpression));
 
@@ -49,8 +56,14 @@ public static class EFQueryExtensions
                 containsMethod = typeof(string).GetMethod("Contains", [typeof(string)]);
                 filterExpression = Expression.Constant(innerFilter.Value, typeof(string));
 
-                property = type.GetProperty(innerFilter.Field);
-                var propertyAccess = Expression.Property(parameter, property);
+                var properties = innerFilter.Field.Split('_');
+                Expression propertyAccess = parameter;
+                foreach (var innerProperty in properties)
+                {
+                    property = propertyAccess.Type.GetProperty(innerProperty);
+                    propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
+                }
+
                 var containsExpression = Expression.Call(propertyAccess, containsMethod, filterExpression);
                 var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
 
@@ -58,13 +71,14 @@ public static class EFQueryExtensions
             }
             else
             {
-                property = type.GetProperty(innerFilter.Field);
-                if (property is null)
+                var properties = innerFilter.Field.Split('_');
+                Expression propertyAccess = parameter;
+                foreach (var innerProperty in properties)
                 {
-                    continue;
+                    property = propertyAccess.Type.GetProperty(innerProperty);
+                    propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
                 }
 
-                var propertyAccess = Expression.Property(parameter, property);
                 filterExpression = Expression.Constant(FilterTypeEnumExtensions.ConvertTo(innerFilter), property.PropertyType);
                 var equalsExpression = Expression.Equal(propertyAccess, filterExpression);
                 var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(equalsExpression, parameter);

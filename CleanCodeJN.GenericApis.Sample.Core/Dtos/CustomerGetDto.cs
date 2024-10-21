@@ -8,5 +8,7 @@ public class CustomerGetDto : IDto
 
     public string Name { get; set; }
 
+    public AddressInfoGetDto AddressInfo { get; set; }
+
     public List<InvoiceGetDto> Invoices { get; set; }
 }

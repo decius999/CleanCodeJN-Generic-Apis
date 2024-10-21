@@ -17,7 +17,7 @@ public class CustomersV1Api : IApi
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
         app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags,
-            where: x => x.Name.StartsWith('a'), includes: [x => x.Invoices], ignoreQueryFilters: true),
+            where: x => x.Name.StartsWith("Customer"), includes: [x => x.Invoices], ignoreQueryFilters: true),
         app => app.MapGetPaged<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetFiltered<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),

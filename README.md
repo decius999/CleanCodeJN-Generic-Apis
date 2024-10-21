@@ -154,6 +154,8 @@ public enum FilterTypeEnum
     DOUBLE_NULLABLE = 4,
     DATETIME = 5,
     DATETIME_NULLABLE = 6,
+    GUID = 7,
+    GUID_NULLABLE = 8,
 }
 ```
 
