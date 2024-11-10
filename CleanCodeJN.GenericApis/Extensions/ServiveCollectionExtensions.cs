@@ -9,6 +9,7 @@ using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
@@ -27,6 +28,18 @@ public static class ServiveCollectionExtensions
     {
         applicationAssemblies ??= [];
         List<Assembly> assemblies = [typeof(ApiBase).Assembly, Assembly.GetCallingAssembly(), .. applicationAssemblies];
+
+        services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+
+                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+            };
+        });
 
         services
             .RegisterMinimalApiBaseClasses()

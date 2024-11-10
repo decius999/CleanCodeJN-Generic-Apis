@@ -5,23 +5,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
-public class ApiBase : ControllerBase
+public class ApiBase(IMediator commandBus, IMapper mapper) : ControllerBase
 {
-    public IMediator CommandBus { get; }
-
-    public IMapper Mapper { get; }
-
-    public ApiBase(IMediator commandBus, IMapper mapper)
-    {
-        CommandBus = commandBus;
-        Mapper = mapper;
-    }
-
     public async Task<IResult> HandlePagination<TEntity, TDto>(IRequest<BaseListResponse<TEntity>> request)
     {
-        var domainResult = await CommandBus.Send(request);
+        var domainResult = await commandBus.Send(request);
 
-        var dtos = Mapper.Map<List<TDto>>(domainResult.Data);
+        var dtos = mapper.Map<List<TDto>>(domainResult.Data);
         var response = await BaseListResponse<TDto>.Create(domainResult.ResultState, dtos, domainResult.Message, domainResult.Count);
 
         return domainResult.AsHttpResult(response);
@@ -29,20 +19,20 @@ public class ApiBase : ControllerBase
 
     public async Task<IResult> Handle<TEntity, TDto>(IRequest<BaseListResponse<TEntity>> request, Func<BaseListResponse<TEntity>, TDto> map = null)
     {
-        var domainResult = await CommandBus.Send(request);
+        var domainResult = await commandBus.Send(request);
 
-        return domainResult.AsHttpResult(map == null ? Mapper.Map<TDto>(domainResult.Data) : map(domainResult));
+        return domainResult.AsHttpResult(map == null ? mapper.Map<TDto>(domainResult.Data) : map(domainResult));
     }
 
     public async Task<IResult> Handle<TEntity, TDto>(IRequest<BaseResponse<TEntity>> request, Func<BaseResponse<TEntity>, TDto> map = null)
         where TEntity : class
     {
-        var domainResult = await CommandBus.Send(request);
+        var domainResult = await commandBus.Send(request);
 
-        return domainResult.AsHttpResult(map == null ? Mapper.Map<TDto>(domainResult.Data) : map(domainResult));
+        return domainResult.AsHttpResult(map == null ? mapper.Map<TDto>(domainResult.Data) : map(domainResult));
     }
 
     public async Task<IResult> Handle<TEntity>(IRequest<Response> request)
-        where TEntity : class => (await CommandBus.Send(request)).AsHttpResult();
+        where TEntity : class => (await commandBus.Send(request)).AsHttpResult();
 }
 
