@@ -67,7 +67,14 @@ public static class EFQueryExtensions
                 var containsExpression = Expression.Call(propertyAccess, containsMethod, filterExpression);
                 var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
 
-                finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
+                if (filter.Condition == FilterTypeConditionEnum.AND)
+                {
+                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
+                }
+                else if (filter.Condition == FilterTypeConditionEnum.OR)
+                {
+                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.OrElse(finalExpression, lambdaExpression.Body);
+                }
             }
             else
             {
@@ -83,7 +90,14 @@ public static class EFQueryExtensions
                 var equalsExpression = Expression.Equal(propertyAccess, filterExpression);
                 var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(equalsExpression, parameter);
 
-                finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
+                if (filter.Condition == FilterTypeConditionEnum.AND)
+                {
+                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
+                }
+                else if (filter.Condition == FilterTypeConditionEnum.OR)
+                {
+                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.OrElse(finalExpression, lambdaExpression.Body);
+                }
             }
         }
 

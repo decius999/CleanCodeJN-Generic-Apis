@@ -19,11 +19,14 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
 
     public Expression<Func<TEntity, bool>> Where { get; set; }
 
+    public Expression<Func<TEntity, TEntity>> Select { get; set; }
+
     public virtual async Task<IResult> Get<TKey>(bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = false) =>
         await Handle<TEntity, List<TGetDto>>(new GetRequest<TEntity, TKey>
         {
             Includes = Includes ?? [],
             Where = Where ?? (x => true),
+            Select = Select,
             AsNoTracking = asNoTracking,
             IgnoreQueryFilters = ignoreQueryFilters,
             AsSplitQuery = asSplitQuery,
@@ -39,9 +42,12 @@ public abstract class GetBase<TEntity, TGetDto> : ApiBase
           Take = pageSize,
           SortOrder = direction.GetSortOrder(),
           SortField = sortBy,
-          Filter = filter.GetFilter(),
+          Filter = filter.ToFilter(),
           Includes = Includes ?? [],
           Where = Where ?? (x => true),
-
+          Select = Select,
+          AsNoTracking = asNoTracking,
+          IgnoreQueryFilters = ignoreQueryFilters,
+          AsSplitQuery = asSplitQuery,
       });
 }

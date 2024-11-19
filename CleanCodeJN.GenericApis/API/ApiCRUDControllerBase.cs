@@ -21,6 +21,8 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
 
     public virtual List<Expression<Func<TEntity, object>>> GetByIdIncludes { get; set; } = [];
 
+    public virtual Expression<Func<TEntity, TEntity>> GetSelect { get; set; }
+
     public virtual Expression<Func<TEntity, bool>> GetWhere { get; set; } = x => true;
 
     public virtual Expression<Func<TEntity, bool>> GetByIdWhere { get; set; } = x => true;
@@ -39,9 +41,10 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
            Take = pageSize,
            SortOrder = direction.GetSortOrder(),
            SortField = sortBy,
-           Filter = filter.GetFilter(),
+           Filter = filter.ToFilter(),
            Includes = GetIncludes,
            Where = GetWhere,
+           Select = GetSelect,
            AsNoTracking = AsNoTracking,
            IgnoreQueryFilters = IgnoreQueryFilters,
            AsSplitQuery = AsSplitQuery,
@@ -57,6 +60,7 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
         {
             Includes = GetIncludes,
             Where = GetWhere,
+            Select = GetSelect,
             AsNoTracking = AsNoTracking,
             IgnoreQueryFilters = IgnoreQueryFilters,
             AsSplitQuery = AsSplitQuery,

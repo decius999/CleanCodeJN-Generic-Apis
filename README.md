@@ -68,8 +68,13 @@ public class CustomersV1Api : IApi
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
-         app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags,
-            where: x => x.Name.StartsWith("a"), includes: [x => x.Invoices], asNoTracking: false),
+        app => app.MapGet<Customer, CustomerGetDto, int>(
+            Route,
+            Tags,
+            where: x => x.Name.StartsWith("Customer"),
+            includes: [x => x.Invoices],
+            select: x => new Customer { Name = x.Name },
+            ignoreQueryFilters: true),
         app => app.MapGetPaged<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetFiltered<Customer, CustomerGetDto, int>(Route, Tags),
         app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
@@ -83,7 +88,7 @@ public class CustomersV1Api : IApi
 }
 ```
 
-__Extend standard CRUD operations by specific Where() and Include() clauses__
+__Extend standard CRUD operations by specific Where(), Include() or Select() clauses__
 ```C#
 public class CustomersV1Api : IApi
 {
@@ -93,7 +98,7 @@ public class CustomersV1Api : IApi
 
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
-         app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags, where: x => x.Name.StartsWith("a")),
+         app => app.MapGet<Customer, CustomerGetDto, int>(Route, Tags, where: x => x.Name.StartsWith("a"), select: x => new Customer { Name = x.Name }),
     ];
 }
 ```
@@ -109,7 +114,7 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 }
 ```
 
-__You can also override your Where and Include clauses__
+__You can also override your Where, Include or Select clauses__
 ```C#
 [Tags("Customers Controller based")]
 [Route($"api/v2/[controller]")]
@@ -120,12 +125,15 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
     public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
 
     public override List<Expression<Func<Customer, object>>> GetIncludes => [x => x.Invoices];
+
+    public override Expression<Func<Customer, Customer>> GetSelect => x => new Customer { Name = x.Name };
 }
 ```
 
 __For using the /filtered api with a filter, just provide a serialized json as filter parameter, like this:__
 ```C#
 {
+    "Condition" : 0, // 0 = AND; 1 = OR
     "Filters": [
         {
             "Field": "Name",

@@ -22,6 +22,8 @@
   <ItemGroup>
     <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="6.0.10" />
   </ItemGroup>
 
   <ItemGroup>

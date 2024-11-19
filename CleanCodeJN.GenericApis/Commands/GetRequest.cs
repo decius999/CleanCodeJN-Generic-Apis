@@ -10,6 +10,8 @@ public class GetRequest<TEntity, TKey> : BasePaginationRequest, IRequest<BaseLis
 
     public Expression<Func<TEntity, bool>> Where { get; set; } = x => true;
 
+    public Expression<Func<TEntity, TEntity>> Select { get; set; }
+
     public bool AsNoTracking { get; init; }
 
     public bool IgnoreQueryFilters { get; init; }

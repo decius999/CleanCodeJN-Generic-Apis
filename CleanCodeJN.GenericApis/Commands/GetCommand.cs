@@ -18,6 +18,11 @@ public class GetCommand<TEntity, TKey>(IRepository<TEntity, TKey> repository) : 
                 includes: request.Includes?.ToArray() ?? [])
             .Where(request.Where);
 
+        if (request.Select is not null)
+        {
+            query = query.Select(request.Select);
+        }
+
         var count = query.WhereColumnsContainFilter<TEntity, TKey>(request.Filter).Count();
 
         var entities = query.PagedResultList<TEntity, TKey>(

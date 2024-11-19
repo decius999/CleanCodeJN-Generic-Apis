@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>Bug Fix for ProblemDetails.</PackageReleaseNotes>
+    <PackageReleaseNotes>Filter with AND/OR combination + SELECT in Get-API to increase performance with specific SELECT statements.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>3.4.1</VersionPrefix>
+    <VersionPrefix>3.5.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,11 +31,14 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="2.2.3" />
+    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="2.3.0" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="1.1.6" />
-    <PackageReference Include="FluentValidation" Version="11.10.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="6.0.10" />
   </ItemGroup>
 
 
