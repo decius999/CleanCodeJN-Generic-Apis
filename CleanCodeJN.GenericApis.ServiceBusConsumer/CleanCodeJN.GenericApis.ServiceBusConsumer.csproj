@@ -37,12 +37,13 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.2" />
-    <PackageReference Include="CleanCodeJN.GenericApis" Version="3.4.1" />
+    <PackageReference Include="CleanCodeJN.GenericApis" Version="3.5.0" />
+    <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="1.1.7" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
-    <PackageReference Include="System.Text.Json" Version="6.0.10" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
 </Project>
