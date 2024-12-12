@@ -208,6 +208,20 @@ public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 }
 ```
 
+__Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response:__
+```C#
+public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>, ICachableRequest
+{
+    public required int Id { get; init; }
+
+    public bool BypassCache { get; }
+
+    public string CacheKey => "Your Key";
+
+    public TimeSpan? CacheDuration => TimeSpan.FromHours(168);
+}
+```
+
 __With your own specific Command using CleanCodeJN.Repository__
 ```C#
 public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>

@@ -3,6 +3,7 @@ using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
+using CleanCodeJN.GenericApis.Behaviors;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Context;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
@@ -23,7 +24,8 @@ public static class ServiveCollectionExtensions
     /// <param name="mappingOverrides">Optional Automapper Mapping Action: Only for specific overrides. All standard ReverseMap() mappings will be created automatically</param>
     /// <param name="applicationAssemblies">Optional: To register Businees Commands, Domain and DTO objects automatically</param>
     /// <param name="validatorAssembly">Optional: Assembly where the Fluent Validation are coming from</param>
-    public static void RegisterRepositoriesCommandsWithAutomaticMapping<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mappingOverrides = null, List<Assembly> applicationAssemblies = null, Assembly validatorAssembly = null)
+    /// <param name="useDistributedMemoryCache">Optional: Enable distributed memory caching by default</param>
+    public static void RegisterRepositoriesCommandsWithAutomaticMapping<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mappingOverrides = null, List<Assembly> applicationAssemblies = null, Assembly validatorAssembly = null, bool useDistributedMemoryCache = true)
         where TDataContext : class, IDataContext
     {
         applicationAssemblies ??= [];
@@ -41,6 +43,11 @@ public static class ServiveCollectionExtensions
             };
         });
 
+        if (useDistributedMemoryCache)
+        {
+            services.AddDistributedMemoryCache();
+        }
+
         services
             .RegisterMinimalApiBaseClasses()
             .RegisterCommandExecutionContext()
@@ -56,6 +63,7 @@ public static class ServiveCollectionExtensions
     public static IServiceCollection RegisterMediatr(this IServiceCollection services, List<Assembly> assemblies) => services.AddMediatR(config =>
     {
         config.RegisterServicesFromAssemblies(assemblies.ToArray());
+        config.AddOpenBehavior(typeof(CachingBehavior<,>));
         config.Lifetime = ServiceLifetime.Scoped;
     });
 
