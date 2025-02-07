@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="2.3.1" />
     <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.8" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="1.1.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />

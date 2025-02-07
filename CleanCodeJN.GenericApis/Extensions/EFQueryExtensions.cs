@@ -111,8 +111,8 @@ public static class EFQueryExtensions
             propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
         }
 
-        var containsExpression = Expression.Call(propertyAccess, filterMethod, filterExpression);
-        var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
+        var expression = Expression.Call(propertyAccess, filterMethod, filterExpression);
+        var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(expression, parameter);
 
         if (filter.Condition == FilterTypeConditionEnum.AND)
         {

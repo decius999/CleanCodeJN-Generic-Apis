@@ -13,12 +13,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CleanCodeJN.GenericAPIs.Abstractions</Title>
     <PackageTags>Abstractions;CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>New Filter Condition + Renaming of filter Extension: ToFilter().</PackageReleaseNotes>
+    <PackageReleaseNotes>New Filter Data Types: ENUM and ENUM_NULLABLES.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>2.3.0</VersionPrefix>
+    <VersionPrefix>2.3.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
