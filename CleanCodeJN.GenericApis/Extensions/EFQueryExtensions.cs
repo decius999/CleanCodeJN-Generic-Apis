@@ -47,57 +47,34 @@ public static class EFQueryExtensions
 
         foreach (var innerFilter in filter.Filters)
         {
-            MethodInfo containsMethod = null;
+            MethodInfo filterMethod = null;
             ConstantExpression filterExpression = null;
             PropertyInfo property = null;
 
             if (innerFilter.Type == FilterTypeEnum.STRING)
             {
-                containsMethod = typeof(string).GetMethod("Contains", [typeof(string)]);
+                filterMethod = typeof(string).GetMethod("Contains", [typeof(string)]);
                 filterExpression = Expression.Constant(innerFilter.Value, typeof(string));
 
-                var properties = innerFilter.Field.Split('_');
-                Expression propertyAccess = parameter;
-                foreach (var innerProperty in properties)
-                {
-                    property = propertyAccess.Type.GetProperty(innerProperty);
-                    propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
-                }
+                ExecuteFilter<TEntity, TKey>(filter, parameter, ref finalExpression, innerFilter, filterMethod, filterExpression, ref property);
+            }
+            else if (innerFilter.Type is FilterTypeEnum.INTEGER or FilterTypeEnum.INTEGER_NULLABLE)
+            {
+                filterMethod = typeof(int).GetMethod("Equals", new[] { typeof(int) });
+                filterExpression = Expression.Constant(Convert.ToInt32(innerFilter.Value), typeof(int));
 
-                var containsExpression = Expression.Call(propertyAccess, containsMethod, filterExpression);
-                var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
+                ExecuteFilter<TEntity, TKey>(filter, parameter, ref finalExpression, innerFilter, filterMethod, filterExpression, ref property);
+            }
+            else if (innerFilter.Type is FilterTypeEnum.DATETIME or FilterTypeEnum.DATETIME_NULLABLE)
+            {
+                filterMethod = typeof(DateTime).GetMethod("Equals", new[] { typeof(DateTime) });
+                filterExpression = Expression.Constant(DateTime.Parse(innerFilter.Value), typeof(DateTime));
 
-                if (filter.Condition == FilterTypeConditionEnum.AND)
-                {
-                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
-                }
-                else if (filter.Condition == FilterTypeConditionEnum.OR)
-                {
-                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.OrElse(finalExpression, lambdaExpression.Body);
-                }
+                ExecuteFilter<TEntity, TKey>(filter, parameter, ref finalExpression, innerFilter, filterMethod, filterExpression, ref property);
             }
             else
             {
-                var properties = innerFilter.Field.Split('_');
-                Expression propertyAccess = parameter;
-                foreach (var innerProperty in properties)
-                {
-                    property = propertyAccess.Type.GetProperty(innerProperty);
-                    propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
-                }
-
-                filterExpression = Expression.Constant(FilterTypeEnumExtensions.ConvertTo(innerFilter), property.PropertyType);
-                var equalsExpression = Expression.Equal(propertyAccess, filterExpression);
-                var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(equalsExpression, parameter);
-
-                if (filter.Condition == FilterTypeConditionEnum.AND)
-                {
-                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
-                }
-                else if (filter.Condition == FilterTypeConditionEnum.OR)
-                {
-                    finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.OrElse(finalExpression, lambdaExpression.Body);
-                }
+                ExecuteFilter<TEntity, TKey>(filter, parameter, ref finalExpression, innerFilter, filterMethod, filterExpression, ref property);
             }
         }
 
@@ -123,4 +100,27 @@ public static class EFQueryExtensions
                .OrderByString(sortBy, direction)
                .Skip(page * pageSize)
                .Take(pageSize);
+
+    private static void ExecuteFilter<TEntity, TKey>(SearchFilter filter, ParameterExpression parameter, ref Expression finalExpression, FilterValue innerFilter, MethodInfo filterMethod, ConstantExpression filterExpression, ref PropertyInfo property) where TEntity : class, IEntity<TKey>
+    {
+        var properties = innerFilter.Field.Split('_');
+        Expression propertyAccess = parameter;
+        foreach (var innerProperty in properties)
+        {
+            property = propertyAccess.Type.GetProperty(innerProperty);
+            propertyAccess = Expression.MakeMemberAccess(propertyAccess, property);
+        }
+
+        var containsExpression = Expression.Call(propertyAccess, filterMethod, filterExpression);
+        var lambdaExpression = Expression.Lambda<Func<TEntity, bool>>(containsExpression, parameter);
+
+        if (filter.Condition == FilterTypeConditionEnum.AND)
+        {
+            finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.AndAlso(finalExpression, lambdaExpression.Body);
+        }
+        else if (filter.Condition == FilterTypeConditionEnum.OR)
+        {
+            finalExpression = finalExpression == null ? lambdaExpression.Body : Expression.OrElse(finalExpression, lambdaExpression.Body);
+        }
+    }
 }
