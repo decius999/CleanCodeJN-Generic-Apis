@@ -11,6 +11,4 @@ public enum FilterTypeEnum
     DATETIME_NULLABLE = 6,
     GUID = 7,
     GUID_NULLABLE = 8,
-    ENUM = 9,
-    ENUM_NULLABLE = 10,
 }
