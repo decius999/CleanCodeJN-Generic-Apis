@@ -104,7 +104,20 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapDeleteRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
         => app.MapDelete(route + "/{id}", handler).WithTags(tags.ToArray());
 
-    public static WebApplication RegisterApis(this WebApplication app)
+    /// <summary>
+    /// Use CleanCodeJN Generic Apis and Register all IApi Instances
+    /// </summary>
+    /// <param name="app">The Web Application</param>
+    /// <returns>Web Application</returns>
+    [Obsolete("This method will be removed in version 4.1. Use 'UseCleanCodeJN()' instead.")]
+    public static WebApplication RegisterApis(this WebApplication app) => UseCleanCodeJNWithMinimalApis(app);
+
+    /// <summary>
+    /// Use CleanCodeJN Generic Apis and Register all IApi Minimal API Instances
+    /// </summary>
+    /// <param name="app">The Web Application</param>
+    /// <returns>Web Application</returns>
+    public static WebApplication UseCleanCodeJNWithMinimalApis(this WebApplication app)
     {
         var interfaceType = typeof(IApi);
         var assembly = Assembly.GetCallingAssembly();

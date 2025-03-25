@@ -17,6 +17,47 @@ namespace CleanCodeJN.GenericApis.Extensions;
 public static class ServiveCollectionExtensions
 {
     /// <summary>
+    /// Add Clean Code JN package with options
+    /// </summary>
+    /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
+    /// <param name="services">Service Collection</param>
+    /// <param name="optionAction">The option Action to configure the package</param>
+    public static void AddCleanCodeJN<TDataContext>(this IServiceCollection services, Action<CleanCodeOptions> optionAction)
+        where TDataContext : class, IDataContext
+    {
+        var options = new CleanCodeOptions();
+        optionAction.Invoke(options);
+
+        List<Assembly> assemblies = [typeof(ApiBase).Assembly, Assembly.GetCallingAssembly(), .. options.ApplicationAssemblies];
+
+        services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+
+                var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+                context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+            };
+        });
+
+        if (options.UseDistributedMemoryCache)
+        {
+            services.AddDistributedMemoryCache();
+        }
+
+        services
+            .RegisterMinimalApiBaseClasses()
+            .RegisterCommandExecutionContext()
+            .RegisterMediatr(assemblies)
+            .RegisterValidatorsFromAssembly(options.ValidatorAssembly)
+            .RegisterGenericCommands(assemblies)
+            .RegisterAutomapper(assemblies, Scan(options.MappingOverrides, assemblies))
+            .RegisterDbContextAndRepositories<TDataContext>();
+    }
+
+    /// <summary>
     /// Register Generic Apis DbContext, generic Repositories with Automatic mapping.
     /// </summary>
     /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
@@ -25,6 +66,7 @@ public static class ServiveCollectionExtensions
     /// <param name="applicationAssemblies">Optional: To register Businees Commands, Domain and DTO objects automatically</param>
     /// <param name="validatorAssembly">Optional: Assembly where the Fluent Validation are coming from</param>
     /// <param name="useDistributedMemoryCache">Optional: Enable distributed memory caching by default</param>
+    [Obsolete("This method will be removed in version 4.1. Use 'AddCleanCodeJN(Action<CleanCodeOptions> optionAction)' instead.")]
     public static void RegisterRepositoriesCommandsWithAutomaticMapping<TDataContext>(this IServiceCollection services, Action<IMapperConfigurationExpression> mappingOverrides = null, List<Assembly> applicationAssemblies = null, Assembly validatorAssembly = null, bool useDistributedMemoryCache = true)
         where TDataContext : class, IDataContext
     {

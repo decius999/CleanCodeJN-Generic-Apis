@@ -17,37 +17,52 @@ framework for CRUD operations and facilitating the implementation of complex bus
 
 ### How to use
 
-- Add RegisterRepositoriesCommandsWithAutomaticMapping<IDataContext>() to your Program.cs
-- Add app.RegisterApis() to your Program.cs or use AddControllers + MapControllers()
+- Add AddCleanCodeJN<IDataContext>() to your Program.cs
+- Add app.UseCleanCodeJNWithMinimalApis() to your Program.cs for minimal APIs or use AddControllers + MapControllers()
 - Start writing Apis by implementing IApi
 - Extend standard CRUD operations by specific Where() and Include() clauses
 - Use IOSP for complex business logic
 
 # Step by step explanation
 
-__Add RegisterRepositoriesCommandsWithAutomaticMapping<IDataContext>() to your Program.cs__
+__Add AddCleanCodeJN<IDataContext>() to your Program.cs__
 ```C#
 // All Entity <=> DTO Mappings will be done automatically if the naming Convention will be applied:
 // e.g.: Customer <=> CustomerGetDto 
 // DTO has to start with Entity-Name and must inherits from IDto
 // Entity must inherit from IEntity
-builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>();
+builder.Services.AddCleanCodeJN<MyDbContext>(options => {});
 ```
 
-__You can also override specific mappings in RegisterRepositoriesCommandsWithAutomaticMapping<IDataContext>() in your Program.cs__
+__These are the CleanCodeJN Options__
 ```C#
-// All other automatic mappings will be persisted
-builder.Services.RegisterRepositoriesCommandsWithAutomaticMapping<MyDbContext>(cfg =>
+public class CleanCodeOptions
 {
-    cfg.CreateMap<Customer, CustomerGetDto>()
-       .ForMember(x => x.Name, opt => opt.MapFrom(x => string.Join(", ", x.Invoices.Select(x => x.Id))))
-       .ReverseMap();
-});
+    /// <summary>
+    /// The assemblies that contain the command types.
+    /// </summary>
+    public List<Assembly> ApplicationAssemblies { get; set; } = [];
+
+    /// <summary>
+    /// The assembly that contains the validators types.
+    /// </summary>
+    public Assembly ValidatorAssembly { get; set; }
+
+    /// <summary>
+    /// The assembly that contains the mapping profiles.
+    /// </summary>
+    public Action<IMapperConfigurationExpression> MappingOverrides { get; set; }
+
+    /// <summary>
+    /// If true: Use distributed memory cache.
+    /// </summary>
+    public bool UseDistributedMemoryCache { get; set; } = true;
+}
 ```
 
-__Add app.RegisterApis() when using Minimal APIs to your Program.cs__
+__Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs__
 ```C#
-app.RegisterApis();
+app.UseCleanCodeJNWithMinimalApis();
 ```
 
 __When using Controllers add this to your Program.cs__

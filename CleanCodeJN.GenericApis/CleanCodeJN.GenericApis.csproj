@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>.NET 9.0 Upgrade + Package Upgrades.</PackageReleaseNotes>
+    <PackageReleaseNotes>Introduced AddCleanCodeJN() + UseCleanCodeJNWithMinimalApis().</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>4.0.0</VersionPrefix>
+    <VersionPrefix>4.0.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
