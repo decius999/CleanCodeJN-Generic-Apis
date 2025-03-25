@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>Service Bus Consumer with Commands</Title>
     <PackageTags>IntegrationOperationSegregationPrinciple;MicroServices;ServiceBus;CommandPattern</PackageTags>
-    <PackageReleaseNotes>Update to .NET 9.0.</PackageReleaseNotes>
+    <PackageReleaseNotes>Use AddCleanCodeJNServiceBusConsumer() to register package instead of RegisterServiceBusConsumer().</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>2.0.0</VersionPrefix>
+    <VersionPrefix>2.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.4" />
-    <PackageReference Include="CleanCodeJN.GenericApis" Version="4.0.0" />
+    <PackageReference Include="CleanCodeJN.GenericApis" Version="4.0.1" />
     <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="3.0.0" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.10.0" />

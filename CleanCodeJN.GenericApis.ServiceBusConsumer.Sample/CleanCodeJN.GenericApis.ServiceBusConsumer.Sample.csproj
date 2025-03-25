@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="3.0.0" />
-    <PackageReference Include="CleanCodeJN.GenericApis.ServiceBusConsumer" Version="1.0.8" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.2" />
     <PackageReference Include="System.Formats.Asn1" Version="9.0.2" />
@@ -33,6 +32,7 @@
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj" />
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj" />
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj" />
+    <ProjectReference Include="..\CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj" />
   </ItemGroup>
 
 </Project>

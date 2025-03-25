@@ -14,7 +14,7 @@
 ### How to use
 
 - Implement IServiceBusConsumerConfigurationService
-- Add RegisterServiceBusConsumer<YourServiceBusConsumerConfigurationService>() to your Program.cs
+- Add AddCleanCodeJNServiceBusConsumer<TServiceBusConsumerConfigurationService, TDataContext> to your Program.cs
 - Add Service Bus Configuration to your appsettings.json and your Configuration classes
 - Consume Events by just posting events to the Service Bus
 
@@ -74,11 +74,20 @@ public class SampleServiceBusConsumerConfigurationService(
 }
 ```
 
-__Add RegisterServiceBusConsumer<YourServiceBusConsumerConfigurationService>() to your Program.cs__
+__Add AddCleanCodeJNServiceBusConsumer<TServiceBusConsumerConfigurationService, TDataContext> to your Program.cs__
 ```C#
 builder.Services.RegisterServiceBusConsumer<SampleServiceBusConsumerConfigurationService>(
    builder.Configuration["ServiceBus:ConnectionString"],
    [typeof(UpdateInvoiceEventRequest).Assembly]);
+
+builder.Services.AddCleanCodeJNServiceBusConsumer<SampleServiceBusConsumerConfigurationService, MyDbContext>(options =>
+{
+    options.ApplicationAssemblies =
+    [
+        Assembly.GetExecutingAssembly(),
+    ];
+    options.ServiceBusConnectionString = builder.Configuration["ServiceBus:ConnectionString"];
+});
 ```
 
 __Add Service Bus Configuration to your appsettings.json and your Configuration classes__
@@ -131,21 +140,19 @@ __If you want to use the Generic Apis Commands and Repositories together with th
 ```C#
 var builder = Host.CreateApplicationBuilder(args);
 
-List<Assembly> assemblies = [
-    typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
-    typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly,
-    typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly,
-    Assembly.GetExecutingAssembly(),
-];
-
 builder.Services.Configure<SampleConfiguration>(builder.Configuration);
 
-builder.Services
-            .RegisterValidatorsFromAssembly(typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly)
-            .RegisterGenericCommands(assemblies)
-            .RegisterAutomapper(assemblies)
-            .RegisterServiceBusConsumer<SampleServiceBusConsumerConfigurationService>(builder.Configuration["ServiceBus:ConnectionString"], assemblies)
-            .RegisterDbContextAndRepositories<MyDbContext>();
+builder.Services.AddCleanCodeJNServiceBusConsumer<SampleServiceBusConsumerConfigurationService, MyDbContext>(options =>
+{
+    options.ApplicationAssemblies =
+    [
+        typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
+        typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly,
+        typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly,
+        Assembly.GetExecutingAssembly(),
+    ];
+    options.ServiceBusConnectionString = builder.Configuration["ServiceBus:ConnectionString"];
+});
 
 await builder.Build().RunAsync();
 ```
