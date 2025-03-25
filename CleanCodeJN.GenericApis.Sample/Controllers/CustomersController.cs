@@ -18,7 +18,7 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 
     public override List<Expression<Func<Customer, object>>> GetIncludes => [x => x.Invoices];
 
-    public override Expression<Func<Customer, Customer>> GetSelect => x => new Customer { Name = x.Name };
+    public override Expression<Func<Customer, Customer>> GetSelect => x => new Customer { Id = x.Id, Name = x.Name };
 
     public override bool AsNoTracking => true;
 }
