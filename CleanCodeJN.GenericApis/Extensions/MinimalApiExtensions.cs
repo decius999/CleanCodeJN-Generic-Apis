@@ -109,7 +109,7 @@ public static class MinimalAPIExtensions
     /// </summary>
     /// <param name="app">The Web Application</param>
     /// <returns>Web Application</returns>
-    [Obsolete("This method will be removed in version 4.1. Use 'UseCleanCodeJN()' instead.")]
+    [Obsolete("This method will be removed in version 4.1. Use 'UseCleanCodeJNWithMinimalApis()' instead.")]
     public static WebApplication RegisterApis(this WebApplication app) => UseCleanCodeJNWithMinimalApis(app);
 
     /// <summary>
