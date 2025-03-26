@@ -6,17 +6,17 @@ namespace CleanCodeJN.GenericApis.Extensions;
 public class CleanCodeOptions
 {
     /// <summary>
-    /// The assemblies that contain the command types.
+    /// The assemblies that contain the command types for automatic registration of commands, DTOs and entities.
     /// </summary>
     public List<Assembly> ApplicationAssemblies { get; set; } = [];
 
     /// <summary>
-    /// The assembly that contains the validators types.
+    /// The assembly that contains the validators types for using Fluent Validation.
     /// </summary>
     public Assembly ValidatorAssembly { get; set; }
 
     /// <summary>
-    /// The assembly that contains the mapping profiles.
+    /// The assembly that contains the automapper mapping profiles.
     /// </summary>
     public Action<IMapperConfigurationExpression> MappingOverrides { get; set; }
 
