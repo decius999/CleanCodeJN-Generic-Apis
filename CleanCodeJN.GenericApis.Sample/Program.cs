@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(); // this is needed for "http patch" only. If you do not need to use patch, you can remove this line
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {

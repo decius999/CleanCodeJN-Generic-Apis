@@ -4,12 +4,9 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;
 
-public class Put<TEntity, TPutDto, TGetDto> : PutBase<TEntity, TPutDto, TGetDto>
+public class Put<TEntity, TPutDto, TGetDto>(IMediator commandBus, IMapper mapper) : PutBase<TEntity, TPutDto, TGetDto>(commandBus, mapper)
     where TEntity : class
     where TPutDto : class, IDto
     where TGetDto : class, IDto
 {
-    public Put(IMediator commandBus, IMapper mapper) : base(commandBus, mapper)
-    {
-    }
 }

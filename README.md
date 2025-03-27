@@ -67,7 +67,8 @@ app.UseCleanCodeJNWithMinimalApis();
 
 __When using Controllers add this to your Program.cs__
 ```C#
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(); // this is needed for "http patch" only. If you do not need to use patch, you can remove this line
 
 // After Build()
 app.MapControllers();

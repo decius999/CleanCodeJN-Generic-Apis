@@ -4,6 +4,7 @@ using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Extensions;
 using CleanCodeJN.GenericApis.Commands;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
@@ -85,6 +86,10 @@ public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
     [HttpPut]
     public virtual async Task<IResult> Put([FromBody] TPutDto dto) =>
         await Handle<TEntity, TGetDto>(new PutRequest<TEntity, TPutDto> { Dto = dto });
+
+    [HttpPatch("{id}")]
+    public virtual async Task<IResult> Patch(TKey id, [FromBody] JsonPatchDocument<TEntity> patchDocument) =>
+       await Handle<TEntity, TGetDto>(new PatchRequest<TEntity, TKey> { Id = id, PatchDocument = patchDocument });
 
     [HttpDelete("{id}")]
     public virtual async Task<IResult> Delete(TKey id) =>

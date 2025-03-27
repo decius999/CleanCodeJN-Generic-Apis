@@ -116,6 +116,7 @@ public static class ServiveCollectionExtensions
         services.AddScoped(typeof(GetBase<,>), typeof(Get<,>));
         services.AddScoped(typeof(GetByIdBase<,>), typeof(GetById<,>));
         services.AddScoped(typeof(PutBase<,,>), typeof(Put<,,>));
+        services.AddScoped(typeof(PatchBase<,,>), typeof(Patch<,,>));
         services.AddScoped(typeof(PostBase<,,>), typeof(Post<,,>));
         services.AddScoped(typeof(DeleteBase<,>), typeof(Delete<,>));
         services.AddScoped(typeof(ApiBase));
@@ -194,10 +195,12 @@ public static class ServiveCollectionExtensions
         var (handlerById, commandById) = GetByIdTypes(entityType, idType);
         var getByIdsTypes = GetByIdsTypes(entityType, idType);
         var deleteTypes = DeleteTypes(entityType, idType);
+        var patchTypes = PatchTypes(entityType, idType);
 
         services.AddScoped(deleteTypes.handler, deleteTypes.command);
         services.AddScoped(handlerById, commandById);
         services.AddScoped(getByIdsTypes.handler, getByIdsTypes.command);
+        services.AddScoped(patchTypes.handler, patchTypes.command);
         services.AddScoped(handler, command);
     }
 
@@ -294,5 +297,17 @@ public static class ServiveCollectionExtensions
         var handlerGenericType = handlerType.MakeGenericType(requestGenericType, responseGenericType);
 
         return (handlerGenericType, commandGenericType);
+    }
+
+    private static (Type handler, Type command) PatchTypes(Type type, Type idType)
+    {
+        var requestType = typeof(PatchRequest<,>);
+        var commandType = typeof(PatchCommand<,>);
+        var responseType = typeof(BaseResponse<>);
+        var handlerType = typeof(IRequestHandler<,>);
+
+        var (handler, command) = MakeGenericTypeWith2Arguments(type, idType, requestType, commandType, responseType, handlerType);
+
+        return (handler, command);
     }
 }

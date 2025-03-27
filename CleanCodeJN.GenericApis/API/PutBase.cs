@@ -6,15 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.API;
 
-public abstract class PutBase<TEntity, TPutDto, TGetDto> : ApiBase
+public abstract class PutBase<TEntity, TPutDto, TGetDto>(IMediator commandBus, IMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
     where TPutDto : class, IDto
 {
-    protected PutBase(IMediator commandBus, IMapper mapper) : base(commandBus, mapper)
-    {
-    }
-
     public virtual async Task<IResult> Put([FromBody] TPutDto dto) =>
         await Handle<TEntity, TGetDto>(new PutRequest<TEntity, TPutDto> { Dto = dto });
 }

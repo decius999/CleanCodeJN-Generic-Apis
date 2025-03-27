@@ -3,6 +3,7 @@ using System.Reflection;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.Extensions;
@@ -84,10 +85,21 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapPut<TEntity, TPutDto, TGetDto>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
         where TGetDto : class, IDto
-        where TPutDto : class, IDto => app.MapPut(route, async (TPutDto dto, [FromServices] PutBase<TEntity, TPutDto, TGetDto> service) => await service.Put(dto)).WithTags(tags.ToArray());
+        where TPutDto : class, IDto => app.MapPut(route, async (TPutDto dto, [FromServices] PutBase<TEntity, TPutDto, TGetDto> service) =>
+        await service.Put(dto)).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapPutRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
-        => app.MapPut(route, handler).WithTags(tags.ToArray());
+       => app.MapPut(route, handler).WithTags(tags.ToArray());
+
+    public static RouteHandlerBuilder MapPatch<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags)
+       where TEntity : class
+       where TGetDto : class, IDto => app.MapPatch(route + "/{id}", async (TKey id, HttpContext httpContext, [FromServices] PatchBase<TEntity, TGetDto, TKey> service) =>
+       await service.Patch(id, httpContext))
+        .WithTags(tags.ToArray())
+        .Accepts<JsonPatchDocument<TEntity>>("application/json-patch+json");
+
+    public static RouteHandlerBuilder MapPatchRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
+       => app.MapPatch(route + "/{id}", handler).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapPost<TEntity, TPostDto, TGetDto>(this WebApplication app, string route, List<string> tags)
         where TEntity : class

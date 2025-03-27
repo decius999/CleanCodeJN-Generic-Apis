@@ -5,14 +5,10 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;
 
-public abstract class DeleteBase<TEntity, TGetDto> : ApiBase
+public abstract class DeleteBase<TEntity, TGetDto>(IMediator commandBus, IMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
 {
-    protected DeleteBase(IMediator commandBus, IMapper mapper) : base(commandBus, mapper)
-    {
-    }
-
     public virtual async Task<IResult> Delete<TKey>(TKey id) =>
         await Handle<TEntity, TGetDto>(new DeleteRequest<TEntity, TKey> { Id = id });
 }

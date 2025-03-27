@@ -7,14 +7,10 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;
 
-public abstract class GetBase<TEntity, TGetDto> : ApiBase
+public abstract class GetBase<TEntity, TGetDto>(IMediator commandBus, IMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
 {
-    protected GetBase(IMediator commandBus, IMapper mapper) : base(commandBus, mapper)
-    {
-    }
-
     public List<Expression<Func<TEntity, object>>> Includes { get; set; }
 
     public Expression<Func<TEntity, bool>> Where { get; set; }
