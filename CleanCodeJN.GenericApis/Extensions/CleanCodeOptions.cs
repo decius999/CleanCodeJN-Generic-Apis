@@ -21,7 +21,17 @@ public class CleanCodeOptions
     public Action<IMapperConfigurationExpression> MappingOverrides { get; set; }
 
     /// <summary>
-    /// If true: Use distributed memory cache.
+    /// If true: Use distributed memory cache. If false: you can add another Distributed Cache implementation.
     /// </summary>
     public bool UseDistributedMemoryCache { get; set; } = true;
+
+    /// <summary>
+    /// Mediatr Types of Open Behaviors to register
+    /// </summary>
+    public List<Type> OpenBehaviors { get; set; } = [];
+
+    /// <summary>
+    /// Mediatr Types of Closed Behaviors to register
+    /// </summary>
+    public List<Type> ClosedBehaviors { get; set; } = [];
 }

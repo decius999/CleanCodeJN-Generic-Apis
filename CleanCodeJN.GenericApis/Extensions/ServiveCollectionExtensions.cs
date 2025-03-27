@@ -50,7 +50,7 @@ public static class ServiveCollectionExtensions
         services
             .RegisterMinimalApiBaseClasses()
             .RegisterCommandExecutionContext()
-            .RegisterMediatr(assemblies)
+            .RegisterMediatr(assemblies, options)
             .RegisterValidatorsFromAssembly(options.ValidatorAssembly)
             .RegisterGenericCommands(assemblies)
             .RegisterAutomapper(assemblies, Scan(options.MappingOverrides, assemblies))
@@ -93,19 +93,34 @@ public static class ServiveCollectionExtensions
         services
             .RegisterMinimalApiBaseClasses()
             .RegisterCommandExecutionContext()
-            .RegisterMediatr(assemblies)
+            .RegisterMediatr(assemblies, new())
             .RegisterValidatorsFromAssembly(validatorAssembly)
             .RegisterGenericCommands(assemblies)
             .RegisterAutomapper(assemblies, Scan(mappingOverrides, assemblies))
             .RegisterDbContextAndRepositories<TDataContext>();
     }
 
-    public static IServiceCollection RegisterValidatorsFromAssembly(this IServiceCollection services, Assembly validatorAssembly) => services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
+    public static IServiceCollection RegisterValidatorsFromAssembly(this IServiceCollection services, Assembly validatorAssembly) =>
+        services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
 
-    public static IServiceCollection RegisterMediatr(this IServiceCollection services, List<Assembly> assemblies) => services.AddMediatR(config =>
+    public static IServiceCollection RegisterMediatr(
+        this IServiceCollection services,
+        List<Assembly> assemblies,
+        CleanCodeOptions options) => services.AddMediatR(config =>
     {
         config.RegisterServicesFromAssemblies(assemblies.ToArray());
         config.AddOpenBehavior(typeof(CachingBehavior<,>));
+
+        foreach (var type in options.OpenBehaviors)
+        {
+            config.AddOpenBehavior(type);
+        }
+
+        foreach (var type in options.ClosedBehaviors)
+        {
+            config.AddBehavior(type);
+        }
+
         config.Lifetime = ServiceLifetime.Scoped;
     });
 

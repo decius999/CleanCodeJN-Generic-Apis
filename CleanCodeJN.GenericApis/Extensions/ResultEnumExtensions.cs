@@ -30,14 +30,29 @@ public static class ResultEnumExtensions
 
         foreach (var error in errors)
         {
-            var key = error.Split("'")[1]?.Trim();
-            if (!result.ContainsKey(key))
+            if (error.Contains("'"))
             {
-                result.Add(key, [error?.Trim()]);
+                var key = error.Split("'")[1]?.Trim();
+                if (!result.ContainsKey(key))
+                {
+                    result.Add(key, [error?.Trim()]);
+                }
+                else
+                {
+                    result[key].Add(error?.Trim());
+                }
             }
             else
             {
-                result[key].Add(error?.Trim());
+                var key = "Execution Context";
+                if (!result.ContainsKey(key))
+                {
+                    result.Add(key, [error?.Trim()]);
+                }
+                else
+                {
+                    result[key].Add(error?.Trim());
+                }
             }
         }
 
