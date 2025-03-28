@@ -68,6 +68,11 @@ public static class ServiveCollectionExtensions
         config.RegisterServicesFromAssemblies(assemblies.ToArray());
         config.AddOpenBehavior(typeof(CachingBehavior<,>));
 
+        if (options.AddDefaultLoggingBehavior)
+        {
+            config.AddOpenBehavior(typeof(LoggingBehavior<,>));
+        }
+
         foreach (var type in options.OpenBehaviors)
         {
             config.AddOpenBehavior(type);
