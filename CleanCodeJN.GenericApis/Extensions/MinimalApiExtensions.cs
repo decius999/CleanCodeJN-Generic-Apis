@@ -1,8 +1,11 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
+using CleanCodeJN.Repository.EntityFramework.Contracts;
+using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -70,6 +73,9 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapGetRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
       => app.MapGet(route, handler).WithTags(tags.ToArray());
 
+    public static RouteHandlerBuilder MapGetRequest<TEntity, TDto>(this WebApplication app, string route, List<string> tags, Func<IRequest<BaseListResponse<TEntity>>> request) where TEntity : class, IEntity
+        => app.MapGet(route, async ([FromServices] ApiBase api) => await api.Handle<TEntity, TDto>(request())).WithTags(tags.ToArray());
+
     public static RouteHandlerBuilder MapGetById<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags, List<Expression<Func<TEntity, object>>> includes = null, Expression<Func<TEntity, bool>> where = null, bool asNoTracking = true, bool ignoreQueryFilters = false, bool asSplitQuery = true)
         where TEntity : class
         where TGetDto : class, IDto => app.MapGet(route + "/{id}", async (TKey id, [FromServices] GetByIdBase<TEntity, TGetDto> service) =>
@@ -82,6 +88,9 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapGetByIdRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
         => app.MapGet(route + "/{id}", handler).WithTags(tags.ToArray());
 
+    public static RouteHandlerBuilder MapGetByIdRequest<TEntity, TDto, TKey>(this WebApplication app, string route, List<string> tags, Func<TKey, IRequest<BaseResponse<TEntity>>> request) where TEntity : class, IEntity
+      => app.MapGet(route + "/{id}", async (TKey id, [FromServices] ApiBase api) => await api.Handle<TEntity, TDto>(request(id))).WithTags(tags.ToArray());
+
     public static RouteHandlerBuilder MapPut<TEntity, TPutDto, TGetDto>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
         where TGetDto : class, IDto
@@ -90,6 +99,10 @@ public static class MinimalAPIExtensions
 
     public static RouteHandlerBuilder MapPutRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
        => app.MapPut(route, handler).WithTags(tags.ToArray());
+
+    public static RouteHandlerBuilder MapPutRequest<TEntity, TPutDto, TGetDto>(this WebApplication app, string route, List<string> tags, Func<TPutDto, IRequest<BaseResponse<TEntity>>> request) where TEntity : class, IEntity
+      => app.MapPut(route, async (TPutDto dto, [FromServices] ApiBase api) =>
+              await api.Handle<TEntity, TGetDto>(request(dto))).WithTags(tags.ToArray());
 
     public static RouteHandlerBuilder MapPatch<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags)
        where TEntity : class
@@ -101,6 +114,15 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapPatchRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
        => app.MapPatch(route + "/{id}", handler).WithTags(tags.ToArray());
 
+    public static RouteHandlerBuilder MapPatchRequest<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags,
+        Func<TKey, HttpContext, IRequest<BaseResponse<TEntity>>> request)
+       where TEntity : class
+       where TGetDto : class, IDto
+    => app.MapPatch(route + "/{id}", async (TKey id, HttpContext httpContext, [FromServices] ApiBase api) =>
+            await api.Handle<TEntity, TGetDto>(request(id, httpContext)))
+                .WithTags(tags.ToArray())
+                .Accepts<JsonPatchDocument<TEntity>>("application/json-patch+json");
+
     public static RouteHandlerBuilder MapPost<TEntity, TPostDto, TGetDto>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
         where TGetDto : class, IDto
@@ -109,6 +131,10 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapPostRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
        => app.MapPost(route, handler).WithTags(tags.ToArray());
 
+    public static RouteHandlerBuilder MapPostRequest<TEntity, TPostDto, TGetDto>(this WebApplication app, string route, List<string> tags, Func<TPostDto, IRequest<BaseResponse<TEntity>>> request) where TEntity : class, IEntity
+      => app.MapPost(route, async (TPostDto dto, [FromServices] ApiBase api) =>
+              await api.Handle<TEntity, TGetDto>(request(dto))).WithTags(tags.ToArray());
+
     public static RouteHandlerBuilder MapDelete<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
         where TGetDto : class, IDto => app.MapDelete(route, async (TKey id, [FromServices] DeleteBase<TEntity, TGetDto> service) => await service.Delete(id)).WithTags(tags.ToArray());
@@ -116,13 +142,9 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapDeleteRequest(this WebApplication app, string route, List<string> tags, Delegate handler)
         => app.MapDelete(route + "/{id}", handler).WithTags(tags.ToArray());
 
-    /// <summary>
-    /// Use CleanCodeJN Generic Apis and Register all IApi Instances
-    /// </summary>
-    /// <param name="app">The Web Application</param>
-    /// <returns>Web Application</returns>
-    [Obsolete("This method will be removed in version 4.1. Use 'UseCleanCodeJNWithMinimalApis()' instead.")]
-    public static WebApplication RegisterApis(this WebApplication app) => UseCleanCodeJNWithMinimalApis(app);
+    public static RouteHandlerBuilder MapDeleteRequest<TEntity, TDto, TKey>(this WebApplication app, string route, List<string> tags, Func<TKey, IRequest<BaseResponse<TEntity>>> request) where TEntity : class, IEntity<TKey>
+        => app.MapDelete(route + "/{id}", async (TKey id, [FromServices] ApiBase api) =>
+                await api.Handle<TEntity, TDto>(request(id))).WithTags(tags.ToArray());
 
     /// <summary>
     /// Use CleanCodeJN Generic Apis and Register all IApi Minimal API Instances
