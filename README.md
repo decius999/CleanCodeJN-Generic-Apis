@@ -59,6 +59,11 @@ public class CleanCodeOptions
     public bool UseDistributedMemoryCache { get; set; } = true;
 
     /// <summary>
+    /// If true: Add default logging behavior. If false: you can add another logging behavior.
+    /// </summary>
+    public bool AddDefaultLoggingBehavior { get; set; }
+
+    /// <summary>
     /// Mediatr Types of Open Behaviors to register
     /// </summary>
     public List<Type> OpenBehaviors { get; set; } = [];
