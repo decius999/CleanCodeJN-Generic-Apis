@@ -101,16 +101,21 @@ public class CustomersV1Api : IApi
             includes: [x => x.Invoices],
             select: x => new Customer { Name = x.Name },
             ignoreQueryFilters: true),
+
         app => app.MapGetPaged<Customer, CustomerGetDto, int>(Route, Tags),
+
         app => app.MapGetFiltered<Customer, CustomerGetDto, int>(Route, Tags),
+
         app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
+
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
+
         app => app.MapPost<Customer, CustomerPostDto, CustomerGetDto>(Route, Tags),
+
         app => app.MapPatch<Customer, CustomerGetDto, int>(Route, Tags),
 
-        // Or use a custom Command with MapRequest
-        app => app.MapDeleteRequest(Route, Tags, async (int id, [FromServices] ApiBase api) =>
-                await api.Handle<Customer, CustomerGetDto>(new SpecificDeleteRequest { Id = id }))
+        // Or use a custom Command with MapDeleteRequest()
+        app => app.MapDeleteRequest<Customer, CustomerGetDto, int>(Route, Tags, id => new DeleteCustomerIntegrationRequest { Id = id })
     ];
 }
 ```
