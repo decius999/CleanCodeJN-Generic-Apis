@@ -50,8 +50,8 @@ public class CustomersV1Api : IApi
 
         app => app.MapPatch<Customer, CustomerGetDto, int>(Route, Tags),
 
-        app => app.MapPatchRequest<Customer, CustomerGetDto, int>(Route + "/by-request", Tags, (id, httpContext) =>
-                    new PatchRequest<Customer, int>{ Id = id, HttpContext = httpContext }),
+        app => app.MapPatchRequest<Customer, CustomerGetDto, int>(Route + "/by-request", Tags,
+            (id, httpContext) => new PatchRequest<Customer, int>{ Id = id, HttpContext = httpContext }),
 
         app => app.MapDeleteRequest<Customer, CustomerGetDto, int>(Route, Tags, id => new DeleteCustomerIntegrationRequest { Id = id })
     ];
