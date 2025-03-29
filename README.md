@@ -277,7 +277,7 @@ __Use IOSP for complex business logic__
 Derive from BaseIntegrationCommand:
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
-    : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse>
+    : IntegrationCommand<YourIntegrationRequest, YourDomainObject>(executionContext)
 ```
 
 Write Extensions on ICommandExecutionContext with Built in Requests or with your own
@@ -296,9 +296,9 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
 __See the how clean your code will look like in the end__
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
-    : BaseIntegrationCommand(executionContext), IRequestHandler<YourIntegrationRequest, BaseResponse<Customer>>
+    : IntegrationCommand<YourIntegrationRequest, Customer>(executionContext)
 {
-    public async Task<BaseResponse<Customer>> Handle(YourIntegrationRequest request, CancellationToken cancellationToken) =>
+    public override async Task<BaseResponse<Customer>> Handle(YourIntegrationRequest request, CancellationToken cancellationToken) =>
         await ExecutionContext
             .CandidateGetByIdRequest(request.Dto.CandidateId)
             .CustomerGetByIdRequest(request.Dto.CustomerIds)
