@@ -156,17 +156,35 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 
 __You can also override your Where, Include or Select clauses__
 ```C#
+/// <summary>
+/// Customers Controller based
+/// </summary>
+/// <param name="commandBus">IMediatr instance.</param>
+/// <param name="mapper">Automapper instance.</param>
 [Tags("Customers Controller based")]
 [Route($"api/v2/[controller]")]
-
 public class CustomersController(IMediator commandBus, IMapper mapper)
     : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
-    public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("a");
+    /// <summary>
+    /// Where clause for the Get method.
+    /// </summary>
+    public override Expression<Func<Customer, bool>> GetWhere => x => x.Name.StartsWith("Customer");
 
+    /// <summary>
+    /// Includes for the Get method.
+    /// </summary>
     public override List<Expression<Func<Customer, object>>> GetIncludes => [x => x.Invoices];
 
-    public override Expression<Func<Customer, Customer>> GetSelect => x => new Customer { Name = x.Name };
+    /// <summary>
+    /// Select for the Get method.
+    /// </summary>
+    public override Expression<Func<Customer, Customer>> GetSelect => x => new Customer { Id = x.Id, Name = x.Name };
+
+    /// <summary>
+    /// AsNoTracking for the Get method.
+    /// </summary>
+    public override bool AsNoTracking => true;
 }
 ```
 
@@ -207,7 +225,7 @@ public enum FilterTypeEnum
 }
 ```
 
-# More Advanced Topics
+# Advanced Topics
 __Built-in Support for Fluent Validation:__
 
 Just write your AbstractValidators<T>. They will be automatically executed on generic POST and generic PUT actions:
