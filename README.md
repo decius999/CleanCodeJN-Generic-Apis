@@ -1,19 +1,35 @@
-# Generic Web Apis
-### CRUD support for WebAPIs with the power of Mediator pattern, Automapper with automatic mapping, DataRepositories and Entity Framework
+## 🚀 Generic Web APIs – Fast, Clean, Powerful
 
-> _This CleanCodeJN package streamlines the development of web APIs in .NET applications by providing a robust 
-framework for CRUD operations and facilitating the implementation of complex business logic in a clean and maintainable manner._
+> _Create clean and testable web APIs in seconds – from **simple CRUD** to fully structured **IOSP-based** architectures – 
+> powered by the **Mediator pattern**, **AutoMapper**, **FluentValidation** and **Entity Framework**, 
+> all wired together with Clean Code principles._
 
-### Features
+## This package gives you:  
+✅ blazing-fast setup  
+✅ CRUD APIs in seconds without writing a single line of code
+✅ complex business logic with **IOSP**
+✅ testable architecture  
+✅ maintainable and modular code
 
-- Paginated and filtered CRUD APIs (Minimal or Controller based) build in seconds
-- Uses Mediator to abstract build-in and custom complex business logic
-- Uses DataRepositories to abstract Entity Framework from business logic
-- Enforces IOSP (Integration/Operation Segregation Principle) for commands
-- Easy to mock and test
-- Automatic Entity to DTO mapping (no mapping config needed)
-- Built-in support for Fluent Validation
-- On latest .NET 8.0
+## 🧪 What is IOSP?
+
+> **Integration Operation Segregation Principle**  
+> Split your request handlers into:
+> 🟢 **Operations** → contain real logic (DB, API, etc.)  
+> 🔵 **Integrations** → just orchestrate other request handlers  
+
+### ✨ Features at a Glance
+- ⚡ **Plug & Play CRUD APIs** (Minimal API or Controller-based)
+- 📦 **Built-in paging, filtering & projections**
+- 🧠 **Clean separation of logic** using the **Mediator pattern**
+- 🧱 **Entity Framework abstraction** via `DataRepositories`
+- 🔀 **Auto-mapping** of Entities ⇄ DTOs (no config needed)
+- 🧪 **Fluent validation** out of the box
+- 🧼 **CleanCode-first architecture** using the **IOSP Principle**  
+      → Split commands into **Operations** (do stuff) and **Integrations** (compose stuff)
+- 🧪 **Easily mockable and testable**  
+      → Only test Operations, skip the glue!
+- 🚀 Runs on **.NET 9**
 
 ### How to use
 
@@ -27,12 +43,11 @@ framework for CRUD operations and facilitating the implementation of complex bus
 
 __Add AddCleanCodeJN<IDataContext>() to your Program.cs__
 ```C#
-// All Entity <=> DTO Mappings will be done automatically if the naming Convention will be applied:
-// e.g.: Customer <=> CustomerGetDto 
-// DTO has to start with Entity-Name and must inherits from IDto
-// Entity must inherit from IEntity
 builder.Services.AddCleanCodeJN<MyDbContext>(options => {});
 ```
+- All Entity <=> DTO Mappings will be done automatically if the naming Convention will be applied: e.g.: Customer <=> CustomerGetDto.
+- DTO has to start with Entity-Name and must inherits from IDto
+- Entity must inherit from IEntity
 
 __These are the CleanCodeJN Options__
 ```C#
