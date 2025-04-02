@@ -7,11 +7,25 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace CleanCodeJN.GenericApis.Behaviors;
 
+/// <summary>
+/// The Caching Behavior for Mediatr
+/// </summary>
+/// <typeparam name="TRequest">The request type.</typeparam>
+/// <typeparam name="TResponse">The response type.</typeparam>
+/// <param name="cache">The IDistributed cache object.</param>
+/// <param name="logger">The logger.</param>
 public class CachingBehavior<TRequest, TResponse>(
     IDistributedCache cache,
     ILogger<CachingBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : ICacheableRequest
 {
+    /// <summary>
+    /// The Caching Behavior for Mediatr
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="next">The next delegate.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>TResponse</returns>
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         TResponse response;
