@@ -4,11 +4,25 @@ using MediatR;
 
 namespace CleanCodeJN.GenericApis.Context;
 
+/// <summary>
+/// The Integration Operation Segregation Principle (IOSP) Execution Context. Used to seperate the execution of integration and operation request handler.
+/// </summary>
+/// <param name="commandBus">The mediatr service.</param>
 public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionContext
 {
     private readonly List<(Delegate func, string blockName, Delegate checkBeforeExecution, Delegate checkAfterExecution, bool continueOnCheckError)> _requestBuilders = [];
     private readonly Dictionary<string, object> _responseCache = [];
 
+    /// <summary>
+    /// Add a request to the execution context with BaseListResponse.
+    /// </summary>
+    /// <typeparam name="T">The IRequest of T type.</typeparam>
+    /// <param name="requestBuilder">Lamda for constructing the IRequest of T type.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <param name="checkBeforeExecution">Lamda to check if this block should be executed.</param>
+    /// <param name="checkAfterExecution">Lamda to check if after the execution the next block should be executed.</param>
+    /// <param name="continueOnCheckError">True: Continue executing. False: Stop executing of blocks on errors.</param>
+    /// <returns>ICommandExecutionContext for pipelining more blocks.</returns>
     public ICommandExecutionContext WithRequest<T>(Func<IRequest<BaseListResponse<T>>> requestBuilder, string blockName = null,
        Func<bool> checkBeforeExecution = null, Func<BaseListResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
     {
@@ -16,6 +30,16 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         return this;
     }
 
+    /// <summary>
+    /// Add a request to the execution context with BaseResponse.
+    /// </summary>
+    /// <typeparam name="T">The IRequest of T type.</typeparam>
+    /// <param name="requestBuilder">Lamda for constructing the IRequest of T type.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <param name="checkBeforeExecution">Lamda to check if this block should be executed.</param>
+    /// <param name="checkAfterExecution">Lamda to check if after the execution the next block should be executed.</param>
+    /// <param name="continueOnCheckError">True: Continue executing. False: Stop executing of blocks on errors.</param>
+    /// <returns>ICommandExecutionContext for pipelining more blocks.</returns>
     public ICommandExecutionContext WithRequest<T>(Func<IRequest<BaseResponse<T>>> requestBuilder, string blockName = null,
         Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
           where T : class
@@ -24,18 +48,40 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         return this;
     }
 
+    /// <summary>
+    /// Add a request to the execution context with Response.
+    /// </summary>
+    /// <param name="requestBuilder">Lamda for constructing the IRequest of T type.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <param name="checkBeforeExecution">Lamda to check if this block should be executed.</param>
+    /// <param name="checkAfterExecution">Lamda to check if after the execution the next block should be executed.</param>
+    /// <param name="continueOnCheckError">True: Continue executing. False: Stop executing of blocks on errors.</param>
+    /// <returns>ICommandExecutionContext for pipelining more blocks.</returns>
     public ICommandExecutionContext WithRequest(Func<IRequest<Response>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<Response, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
     {
         _requestBuilders.Add((requestBuilder, blockName, checkBeforeExecution, checkAfterExecution, continueOnCheckError.Value));
         return this;
     }
 
+    /// <summary>
+    /// Add a request to the execution context with List of IRequest of Response.
+    /// </summary>
+    /// <param name="requestBuilder">Lamda for constructing the IRequest of T type.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <param name="continueOnCheckError">True: Continue executing. False: Stop executing of blocks on errors.</param>
+    /// <returns>ICommandExecutionContext for pipelining more blocks.</returns>
     public ICommandExecutionContext WithRequests(Func<List<IRequest<Response>>> requestBuilder, string blockName = null, bool? continueOnCheckError = false)
     {
         _requestBuilders.Add((requestBuilder, blockName, null, null, continueOnCheckError.Value));
         return this;
     }
 
+    /// <summary>
+    /// Execute the commands in the context with BaseResponse.
+    /// </summary>
+    /// <typeparam name="T">The IRequest of T type.</typeparam>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>BaseResponse of T.</returns>
     public async Task<BaseResponse<T>> Execute<T>(CancellationToken cancellationToken)
           where T : class
     {
@@ -70,6 +116,12 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         return await BaseResponse<T>.Create(ResultEnum.SUCCESS, data: responseData, info: responseInfo);
     }
 
+    /// <summary>
+    /// Execute the commands in the context with BaseListResponse.
+    /// </summary>
+    /// <typeparam name="T">The IRequest of T type.</typeparam>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>BaseListResponse of T.</returns>
     public async Task<BaseListResponse<T>> ExecuteList<T>(CancellationToken cancellationToken)
     {
         dynamic response = null;
@@ -98,6 +150,11 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         return await BaseListResponse<T>.Create(ResultEnum.SUCCESS, data: response?.Data, message: response?.Message, count: response?.Count);
     }
 
+    /// <summary>
+    /// Execute the commands in the context with Response.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Response type for executing asynchronous events without returning data.</returns>
     public async Task<Response> Execute(CancellationToken cancellationToken)
     {
         dynamic response = null;
@@ -126,9 +183,21 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
         return new Response(ResultEnum.SUCCESS, message: response?.Message, count: response?.Count);
     }
 
+    /// <summary>
+    /// Get the response from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of the object in the cache.</typeparam>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <returns>Type T.</returns>
     public T Get<T>(string blockName)
         where T : class => _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseResponse<T>)?.Data) : default;
 
+    /// <summary>
+    /// Get the list from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of the object in the cache.</typeparam>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <returns>List of type T.</returns>
     public List<T> GetList<T>(string blockName) => _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseListResponse<T>)?.Data) : default;
 
     private void AddToCache(dynamic response, (Delegate func, string blockName, Delegate checkBeforeExecution, Delegate checkAfterExecution, bool continueOnCheckError) builder)

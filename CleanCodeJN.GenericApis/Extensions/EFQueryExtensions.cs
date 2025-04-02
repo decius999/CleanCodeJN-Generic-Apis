@@ -7,6 +7,14 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class EFQueryExtensions
 {
+    /// <summary>
+    /// Order by a property name as string
+    /// </summary>
+    /// <typeparam name="TEntity">The TEntity inherits from IEntity</typeparam>
+    /// <param name="source">The source IQueryable</param>
+    /// <param name="orderByProperty">The property name as string</param>
+    /// <param name="desc">true: decesnding, false: ascending</param>
+    /// <returns>The IOrderedQueryable</returns>
     public static IOrderedQueryable<TEntity> OrderByString<TEntity>(this IQueryable<TEntity> source, string orderByProperty, bool desc)
     {
         var type = typeof(TEntity);
@@ -31,8 +39,24 @@ public static class EFQueryExtensions
         return (IOrderedQueryable<TEntity>)source.Provider.CreateQuery<TEntity>(resultExpression);
     }
 
+    /// <summary>
+    /// Order by a property name as string
+    /// </summary>
+    /// <typeparam name="TEntity">The TEntity inherits from IEntity</typeparam>
+    /// <param name="source">The source IQueryable</param>
+    /// <param name="orderByProperty">The property name as string</param>
+    /// <param name="ascDesc">-1: descending, else: ascending</param>
+    /// <returns>The IOrderedQueryable</returns>
     public static IOrderedQueryable<TEntity> OrderByString<TEntity>(this IQueryable<TEntity> source, string orderByProperty, string ascDesc) => source.OrderByString(orderByProperty, ascDesc == "-1");
 
+    /// <summary>
+    /// Where clause for filtering columns
+    /// </summary>
+    /// <typeparam name="TEntity">The Entity type</typeparam>
+    /// <typeparam name="TKey">The Id column Type</typeparam>
+    /// <param name="source">The source IQueryable</param>
+    /// <param name="filter">The filter</param>
+    /// <returns>The filtered IQueryable</returns>
     public static IQueryable<TEntity> WhereColumnsContainFilter<TEntity, TKey>(this IQueryable<TEntity> source, SearchFilter filter)
         where TEntity : class, IEntity<TKey>
     {
@@ -88,6 +112,18 @@ public static class EFQueryExtensions
         return source;
     }
 
+    /// <summary>
+    /// Get a paged result list
+    /// </summary>
+    /// <typeparam name="TEntity">The Entity type</typeparam>
+    /// <typeparam name="TKey">The Id column Type</typeparam>
+    /// <param name="source">The source IQueryable</param>
+    /// <param name="page">The page index</param>
+    /// <param name="pageSize">The page size</param>
+    /// <param name="sortBy">The column to sort by as string</param>
+    /// <param name="direction">descending or ascending</param>
+    /// <param name="filter">The filter</param>
+    /// <returns>The paged IQueryable</returns>
     public static IQueryable<TEntity> PagedResultList<TEntity, TKey>(
      this IQueryable<TEntity> source,
      int page,

@@ -3,10 +3,13 @@ using AutoMapper;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// The options for the CleanCodeJN.GenericApis
+/// </summary>
 public class CleanCodeOptions
 {
     /// <summary>
-    /// The assemblies that contain the command types for automatic registration of commands, DTOs and entities.
+    /// The assemblies that contain the command types, Entity types and DTO types for automatic registration of commands, DTOs and entities.
     /// </summary>
     public List<Assembly> ApplicationAssemblies { get; set; } = [];
 

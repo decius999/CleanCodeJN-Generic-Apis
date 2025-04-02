@@ -14,14 +14,17 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Service Collection Extensions.
+/// </summary>
 public static class ServiveCollectionExtensions
 {
     /// <summary>
-    /// Add Clean Code JN package with options
+    /// Add Clean Code JN package with options.
     /// </summary>
-    /// <typeparam name="TDataContext">DbContext with inherits IDataContext</typeparam>
-    /// <param name="services">Service Collection</param>
-    /// <param name="optionAction">The option Action to configure the package</param>
+    /// <typeparam name="TDataContext">DbContext with inherits IDataContext.</typeparam>
+    /// <param name="services">Service Collection.</param>
+    /// <param name="optionAction">The option Action to configure the package.</param>
     public static void AddCleanCodeJN<TDataContext>(this IServiceCollection services, Action<CleanCodeOptions> optionAction)
         where TDataContext : class, IDataContext
     {
@@ -57,6 +60,12 @@ public static class ServiveCollectionExtensions
             .RegisterDbContextAndRepositories<TDataContext>();
     }
 
+    /// <summary>
+    /// Register validators from assembly for Fluent Validation.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="validatorAssembly">The Assembly where your Abstract Validators are located.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterValidatorsFromAssembly(this IServiceCollection services, Assembly validatorAssembly) =>
         services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
 
@@ -86,8 +95,18 @@ public static class ServiveCollectionExtensions
         config.Lifetime = ServiceLifetime.Scoped;
     });
 
+    /// <summary>
+    /// Register Command Execution Context.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterCommandExecutionContext(this IServiceCollection services) => services.AddTransient<ICommandExecutionContext, CommandExecutionContext>();
 
+    /// <summary>
+    /// Register Minimal API Base Classes.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterMinimalApiBaseClasses(this IServiceCollection services)
     {
         services.AddScoped(typeof(GetBase<,>), typeof(Get<,>));
@@ -101,12 +120,25 @@ public static class ServiveCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Register Automapper.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="assemblies">The Assemblies where your Entities, DTOs and Commands are located.</param>
+    /// <param name="mapping">Optional: The Automapper Mapping Profile.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterAutomapper(this IServiceCollection services, List<Assembly> assemblies, Action<IMapperConfigurationExpression> mapping = null)
         => services.AddSingleton<IMapper>(
             mapping != null ?
             new Mapper(new MapperConfiguration(mapping)) :
             new Mapper(new MapperConfiguration(Scan(mapping, assemblies))));
 
+    /// <summary>
+    /// Register Generic Commands.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="assemblies">The Assemblies where your Entities, DTOs and Commands are located.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterGenericCommands(this IServiceCollection services, List<Assembly> assemblies)
     {
         var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity));

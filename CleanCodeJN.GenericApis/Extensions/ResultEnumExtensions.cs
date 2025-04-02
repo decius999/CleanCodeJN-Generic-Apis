@@ -5,8 +5,20 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class ResultEnumExtensions
 {
+    /// <summary>
+    /// Checks if the result is a success
+    /// </summary>
+    /// <param name="result">The Result Enum</param>
+    /// <returns>true: Succeded, else: false</returns>
     public static bool Succeeded(this ResultEnum result) => (int)result < 300;
 
+    /// <summary>
+    /// Maps the external HTTP result from an internal ResultEnum
+    /// </summary>
+    /// <param name="result">Result Enum</param>
+    /// <param name="response">CleanCode Response</param>
+    /// <param name="data">the data of the response</param>
+    /// <returns>HTTP Result</returns>
     public static IResult ToIResult(this ResultEnum result, Response response, object data = null) => result switch
     {
         ResultEnum.SUCCESS => Results.Ok(data),

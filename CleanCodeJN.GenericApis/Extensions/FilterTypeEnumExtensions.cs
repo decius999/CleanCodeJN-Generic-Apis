@@ -4,6 +4,11 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class FilterTypeEnumExtensions
 {
+    /// <summary>
+    /// Convert the FilterValue to the correct type
+    /// </summary>
+    /// <param name="value">The Filter Value</param>
+    /// <returns>The correct object type</returns>
     public static object ConvertTo(FilterValue value) => value.Type switch
     {
         FilterTypeEnum.STRING => value.Value?.ToString(),
