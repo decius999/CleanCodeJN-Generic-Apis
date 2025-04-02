@@ -1,24 +1,24 @@
-## 🚀 Generic Web APIs – Fast, Clean, Powerful
+# 🚀 Generic Web APIs – Fast, Clean, Powerful
 
 > _Create clean and testable web APIs in seconds – from **simple CRUD** to fully structured **IOSP-based** architectures – 
 > powered by the **Mediator pattern**, **AutoMapper**, **FluentValidation** and **Entity Framework**, 
 > all wired together with Clean Code principles._
 
 ## This package gives you:  
-✅ blazing-fast setup  
-✅ CRUD APIs in seconds without writing a single line of code
-✅ complex business logic with **IOSP**
-✅ testable architecture  
-✅ maintainable and modular code
+- ✅ blazing-fast setup
+- ✅ CRUD APIs in seconds without writing a single line of code
+- ✅ complex business logic with **IOSP**
+- ✅ testable architecture  
+- ✅ maintainable and modular code
 
 ## 🧪 What is IOSP?
 
 > **Integration Operation Segregation Principle**  
 > Split your request handlers into:
-> 🟢 **Operations** → contain real logic (DB, API, etc.)  
-> 🔵 **Integrations** → just orchestrate other request handlers  
+> **Operations** → contain real logic (DB, API, etc.)  
+> **Integrations** → just orchestrate other request handlers  
 
-### ✨ Features at a Glance
+## ✨ Features at a Glance
 - ⚡ **Plug & Play CRUD APIs** (Minimal API or Controller-based)
 - 📦 **Built-in paging, filtering & projections**
 - 🧠 **Clean separation of logic** using the **Mediator pattern**
@@ -31,7 +31,7 @@
       → Only test Operations, skip the glue!
 - 🚀 Runs on **.NET 9**
 
-### How to use
+## How to use
 
 - Add AddCleanCodeJN<IDataContext>() to your Program.cs
 - Add app.UseCleanCodeJNWithMinimalApis() to your Program.cs for minimal APIs or use AddControllers + MapControllers()
