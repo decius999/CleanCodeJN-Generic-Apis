@@ -26,9 +26,7 @@
 - 🔀 **Auto-mapping** of Entities ⇄ DTOs (no config needed)
 - 🧪 **Fluent validation** out of the box
 - 🧼 **CleanCode-first architecture** using the **IOSP Principle**  
-      → Split commands into **Operations** (do stuff) and **Integrations** (compose stuff)
 - 🧪 **Easily mockable and testable**  
-      → Only test Operations, skip the glue!
 - 🚀 Runs on **.NET 9**
 
 ## How to use
