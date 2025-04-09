@@ -2,6 +2,7 @@
 using CleanCodeJN.GenericApis.Extensions;
 using CleanCodeJN.GenericApis.Sample.DataAccess;
 using CleanCodeJN.GenericApis.Sample.Extensions;
+using CleanCodeJN.GenericApis.SmartMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
     ];
     options.ValidatorAssembly = typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly;
 });
+
+builder.Services.AddMappingConfigurations();
 
 var app = builder.Build();
 
