@@ -131,8 +131,8 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
                     .ToList());
 
                 response = results.All(response => response is Response parallelResponse && parallelResponse.Succeeded)
-                    ? await BaseResponse<T>.Create(true, info: builder.blockName)
-                    : (dynamic)await BaseResponse<T>.Create(
+                    ? await BaseListResponse<dynamic>.Create(true, data: results.ToList(), info: builder.blockName)
+                    : (dynamic)await BaseListResponse<dynamic>.Create(
                         ResultEnum.FAILURE_BAD_REQUEST,
                         message: $"'Pre/Post condition' fails in: {builder.blockName}: {errors}",
                         info: builder.blockName);
@@ -321,8 +321,8 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
     /// <typeparam name="T">The type of the object in the cache.</typeparam>
     /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>Type T.</returns>
-    public T Get<T>(string blockName)
-        where T : class => _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseResponse<T>)?.Data) : default;
+    public T Get<T>(string blockName) where T : class =>
+        _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseResponse<T>)?.Data) : default;
 
     /// <summary>
     /// Get the list from the cache.
@@ -330,7 +330,8 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
     /// <typeparam name="T">The type of the object in the cache.</typeparam>
     /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>List of type T.</returns>
-    public List<T> GetList<T>(string blockName) => _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseListResponse<T>)?.Data) : default;
+    public List<T> GetList<T>(string blockName) =>
+        _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseListResponse<T>)?.Data) : default;
 
     private void AddToCache(dynamic response, (Delegate func, string blockName, Delegate checkBeforeExecution, Delegate checkAfterExecution, bool continueOnCheckError, Guid parallelId) builder)
     {
