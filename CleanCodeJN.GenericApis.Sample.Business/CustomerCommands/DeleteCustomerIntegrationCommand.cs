@@ -10,6 +10,17 @@ public class DeleteCustomerIntegrationCommand(ICommandExecutionContext execution
 {
     public override async Task<BaseResponse<Customer>> Handle(DeleteCustomerIntegrationRequest request, CancellationToken cancellationToken) =>
         await ExecutionContext
+            .WithParallelWhenAllRequests(
+                [
+                    () => new GetByIdRequest<Customer, int>
+                          {
+                              Id = request.Id,
+                          },
+                    () => new GetByIdRequest<Customer, int>
+                          {
+                              Id = request.Id,
+                          },
+                ], blockName: "Parallel Block")
             .CustomerGetByIdRequest(request.Id)
             .InvoiceGetFirstByIdRequest()
             .DeleteCustomerByIdRequest()
