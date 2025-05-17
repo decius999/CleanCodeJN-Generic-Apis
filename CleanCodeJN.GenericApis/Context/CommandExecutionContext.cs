@@ -89,7 +89,6 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
     public ICommandExecutionContext WithParallelWhenAllRequests<T>(List<Func<IRequest<BaseResponse<T>>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false) where T : class
     {
         var guid = Guid.CreateVersion7();
-        blockName ??= $"ParallelBlock-{requestBuilder?.Count}";
 
         foreach (var request in requestBuilder)
         {
