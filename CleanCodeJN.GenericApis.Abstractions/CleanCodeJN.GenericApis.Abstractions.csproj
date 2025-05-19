@@ -13,12 +13,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CleanCodeJN.GenericAPIs.Abstractions</Title>
     <PackageTags>Abstractions;CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>Changed ICommandExecutionContext interface.</PackageReleaseNotes>
+    <PackageReleaseNotes>Changed ICommandExecutionContext interface with additional WithParallelWhenAllRequests.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>3.0.1</VersionPrefix>
+    <VersionPrefix>3.0.2</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

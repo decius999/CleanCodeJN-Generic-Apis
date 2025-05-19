@@ -327,6 +327,21 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
             CommandConstants.CustomerGetById);
 ```
 
+Use WithParallelWhenAllRequests to execute multiple requests in parallel and execute when all tasks are finished:
+```C#
+   .WithParallelWhenAllRequests(
+                [
+                    () => new GetByIdRequest<Customer, int>
+                          {
+                              Id = request.Id,
+                          },
+                    () => new GetByIdRequest<Customer, int>
+                          {
+                              Id = request.Id,
+                          },
+                ])
+```
+
 __See the how clean your code will look like in the end__
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)

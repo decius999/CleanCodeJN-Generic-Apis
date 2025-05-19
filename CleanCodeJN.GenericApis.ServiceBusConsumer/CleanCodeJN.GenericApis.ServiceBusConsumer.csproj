@@ -41,10 +41,10 @@
     <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="3.0.1" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.4" />
-    <PackageReference Include="System.Formats.Asn1" Version="9.0.4" />
-    <PackageReference Include="System.Text.Json" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
+    <PackageReference Include="System.Formats.Asn1" Version="9.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.5" />
   </ItemGroup>
 
 </Project>
