@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>
       Abstractions package for CleanCodeJN.GenericApis.
     </Description>
@@ -13,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CleanCodeJN.GenericAPIs.Abstractions</Title>
     <PackageTags>Abstractions;CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>Changed ICommandExecutionContext interface with additional WithParallelWhenAllRequests.</PackageReleaseNotes>
+    <PackageReleaseNotes>Changed XML Docs for ICommandExecutionContext interface.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>3.0.2</VersionPrefix>
+    <VersionPrefix>3.0.3</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
