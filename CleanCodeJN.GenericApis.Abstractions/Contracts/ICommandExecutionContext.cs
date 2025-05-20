@@ -6,7 +6,6 @@ namespace CleanCodeJN.GenericApis.Abstractions.Contracts;
 /// <summary>
 /// The Integration Operation Segregation Principle (IOSP) Execution Context. Used to seperate the execution of integration and operation request handler.
 /// </summary>
-/// <param name="commandBus">The mediatr service.</param>
 public interface ICommandExecutionContext
 {
     /// <summary>
