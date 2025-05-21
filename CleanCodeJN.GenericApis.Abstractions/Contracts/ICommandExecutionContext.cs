@@ -118,12 +118,14 @@ public interface ICommandExecutionContext
     /// request is always executed.</param>
     /// <param name="ifAfterPredicate">An optional predicate that determines whether the result of the request satisfies a condition.  If <see
     /// langword="null"/>, the result is not checked after execution.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>The <see cref="ICommandExecutionContext"/> representing the execution context of the request.</returns>
     ICommandExecutionContext IfRequest<T>(
        Func<IRequest<BaseResponse<T>>> requestBuilder,
        Func<bool> ifBeforePredicate = null,
-       Func<BaseResponse<T>, bool> ifAfterPredicate = null) where T : class =>
-           WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, continueOnCheckError: true);
+       Func<BaseResponse<T>, bool> ifAfterPredicate = null,
+       string blockName = null) where T : class =>
+           WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, blockName: blockName, continueOnCheckError: true);
 
     /// <summary>
     /// Executes a request conditionally based on specified predicates before and after execution. If false, break the whole execution.
@@ -134,12 +136,14 @@ public interface ICommandExecutionContext
     /// langword="false"/>, the request will not be executed.</param>
     /// <param name="ifAfterPredicate">An optional predicate to evaluate after executing the request.  If the predicate returns <see
     /// langword="false"/>, the execution context will not proceed further.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>An <see cref="ICommandExecutionContext"/> representing the execution context of the request.</returns>
     ICommandExecutionContext IfBreakRequest<T>(
       Func<IRequest<BaseResponse<T>>> requestBuilder,
       Func<bool> ifBeforePredicate = null,
-      Func<BaseResponse<T>, bool> ifAfterPredicate = null) where T : class =>
-          WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, continueOnCheckError: false);
+      Func<BaseResponse<T>, bool> ifAfterPredicate = null,
+      string blockName = null) where T : class =>
+          WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, blockName: blockName, continueOnCheckError: false);
 
     /// <summary>
     /// Executes a request conditionally based on the provided predicates.
@@ -157,13 +161,15 @@ public interface ICommandExecutionContext
     /// <param name="ifAfterPredicate">An optional predicate that evaluates the response after the request is executed. If the predicate returns <see
     /// langword="false"/>, subsequent operations may be affected based on the implementation. Defaults to <see
     /// langword="null"/>, which means no post-execution check is performed.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>An <see cref="ICommandExecutionContext"/> that represents the execution context of the command, allowing further
     /// chaining or inspection of the operation.</returns>
     ICommandExecutionContext IfRequest<T>(
         Func<IRequest<BaseListResponse<T>>> requestBuilder,
         Func<bool> ifBeforePredicate = null,
-        Func<BaseListResponse<T>, bool> ifAfterPredicate = null) where T : class =>
-            WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, continueOnCheckError: true);
+        Func<BaseListResponse<T>, bool> ifAfterPredicate = null,
+        string blockName = null) where T : class =>
+            WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, blockName: blockName, continueOnCheckError: true);
 
     /// <summary>
     /// Executes a request conditionally based on specified predicates. If false, break the whole execution.
@@ -178,12 +184,14 @@ public interface ICommandExecutionContext
     /// langword="false"/>, the request will not be executed.</param>
     /// <param name="ifAfterPredicate">An optional predicate to evaluate after executing the request. If the predicate returns <see langword="false"/>,
     /// the execution context will indicate a break condition.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>An <see cref="ICommandExecutionContext"/> representing the execution context of the request.</returns>
     ICommandExecutionContext IfBreakRequest<T>(
        Func<IRequest<BaseListResponse<T>>> requestBuilder,
        Func<bool> ifBeforePredicate = null,
-       Func<BaseListResponse<T>, bool> ifAfterPredicate = null) where T : class =>
-           WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, continueOnCheckError: false);
+       Func<BaseListResponse<T>, bool> ifAfterPredicate = null,
+       string blockName = null) where T : class =>
+           WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, blockName: blockName, continueOnCheckError: false);
 
     /// <summary>
     /// Executes a request conditionally based on the specified predicates.
@@ -199,13 +207,15 @@ public interface ICommandExecutionContext
     /// provided, the request will always be executed.</param>
     /// <param name="ifAfterPredicate">An optional predicate that determines whether the request should be considered successful after execution, 
     /// based on the <see cref="Response"/> returned. If not provided, the request will always be considered successful.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>An <see cref="ICommandExecutionContext"/> that represents the context of the executed command,  allowing further
     /// chaining or inspection of the execution.</returns>
     ICommandExecutionContext IfRequest<T>(
       Func<IRequest<Response>> requestBuilder,
       Func<bool> ifBeforePredicate = null,
-      Func<Response, bool> ifAfterPredicate = null) where T : class =>
-          WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, continueOnCheckError: true);
+      Func<Response, bool> ifAfterPredicate = null,
+      string blockName = null) where T : class =>
+          WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, blockName: blockName, continueOnCheckError: true);
 
     /// <summary>
     /// Executes a request conditionally based on specified predicates. If false, break the whole execution.
@@ -220,10 +230,12 @@ public interface ICommandExecutionContext
     /// langword="false"/>, the request will not be executed. Defaults to <see langword="null"/>.</param>
     /// <param name="ifAfterPredicate">An optional predicate that is evaluated after the request is executed. If the predicate returns <see
     /// langword="false"/>, the execution context will indicate a failure. Defaults to <see langword="null"/>.</param>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <returns>An <see cref="ICommandExecutionContext"/> representing the result of the conditional request execution.</returns>
     ICommandExecutionContext IfBreakRequest<T>(
       Func<IRequest<Response>> requestBuilder,
       Func<bool> ifBeforePredicate = null,
-      Func<Response, bool> ifAfterPredicate = null) where T : class =>
-          WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, continueOnCheckError: false);
+      Func<Response, bool> ifAfterPredicate = null,
+      string blockName = null) where T : class =>
+          WithRequest(requestBuilder, checkAfterExecution: ifAfterPredicate, checkBeforeExecution: ifBeforePredicate, blockName: blockName, continueOnCheckError: false);
 }

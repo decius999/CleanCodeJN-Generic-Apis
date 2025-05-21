@@ -327,9 +327,9 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
             CommandConstants.CustomerGetById);
 ```
 
-Use WithParallelWhenAllRequests to execute multiple requests in parallel and execute when all tasks are finished:
+Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished:
 ```C#
-   .WithParallelWhenAllRequests(
+   executionContext.WithParallelWhenAllRequests(
                 [
                     () => new GetByIdRequest<Customer, int>
                           {
@@ -340,6 +340,21 @@ Use WithParallelWhenAllRequests to execute multiple requests in parallel and exe
                               Id = request.Id,
                           },
                 ])
+```
+
+
+Use IfRequest() to execute an optional request - continue when conditions are not satisfied:
+```C#
+    executionContext.IfRequest(() => new GetByIdRequest<Customer, int> { Id = request.Id },
+                               ifBeforePredicate: () => true,
+                               ifAfterPredicate: response => response.Succeeded)
+```
+
+Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied:
+```C#
+    executionContext.IfBreakRequest(() => new GetByIdRequest<Customer, int> { Id = request.Id },
+                                    ifBeforePredicate: () => true,
+                                    ifAfterPredicate: response => response.Succeeded)
 ```
 
 __See the how clean your code will look like in the end__
