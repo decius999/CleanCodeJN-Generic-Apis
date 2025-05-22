@@ -4,6 +4,39 @@
 > powered by the **Mediator pattern**, **AutoMapper**, **FluentValidation** and **Entity Framework**, 
 > all wired together with Clean Code principles._
 
+## Table of Contents
+
+- [🚀 Generic Web APIs – Fast, Clean, Powerful](#🚀-generic-web-apis-–-fast,-clean,-powerful)
+  - [What is in this package](#this-package-gives-you:)
+  - [🧪 What is IOSP?](#🧪-what-is-iosp?)
+  - [✨ Features at a Glance](#✨-features-at-a-glance)
+  - [How to use](#how-to-use)
+- [Step by step explanation](#step-by-step-explanation)
+    - [Add AddCleanCodeJN<IDataContext>() to your Program.cs](#add-addcleancodejn<idatacontext>()-to-your-program.cs)
+    - [These are the CleanCodeJN Options](#these-are-the-cleancodejn-options)
+    - [Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs](#add-app.usecleancodejnwithminimalapis()-when-using-minimal-apis-to-your-program.cs)
+    - [When using Controllers add this to your Program.cs](#when-using-controllers-add-this-to-your-program.cs)
+    - [Start writing Minimal Apis by implementing IApi](#start-writing-minimal-apis-by-implementing-iapi)
+    - [Extend standard CRUD operations by specific Where(), Include() or Select() clauses](#extend-standard-crud-operations-by-specific-where(),-include()-or-select()-clauses)
+    - [Use ApiCrudControllerBase for CRUD operations in controllers](#use-apicrudcontrollerbase-for-crud-operations-in-controllers)
+    - [You can also override your Where, Include or Select clauses](#you-can-also-override-your-where,-include-or-select-clauses)
+    - [For using the /filtered api with a filter, just provide a serialized json as filter parameter](#for-using-the-/filtered-api-with-a-filter,-just-provide-a-serialized-json-as-filter-parameter,-like-this:)
+    - [The Type can be specified with these values](#the-type-can-be-specified-with-these-values)
+- [Advanced Topics](#advanced-topics)
+    - [Built-in Support for Fluent Validation](#built-in-support-for-fluent-validation:)
+    - [Implement your own specific Request](#implement-your-own-specific-request:)
+    - [Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response](#requests-can-also-be-marked-as-icachablerequest,-which-uses-idistributedcache-to-cache-the-response:)
+    - [With your own specific Command using CleanCodeJN.Repository](#with-your-own-specific-command-using-cleancodejn.repository)
+  - [Use IOSP for complex business logic](#use-iosp-for-complex-business-logic)
+    - [Derive from BaseIntegrationCommand](#derive-from-baseintegrationcommand:)
+    - [Write Extensions on ICommandExecutionContext with Built in Requests or with your own](#write-extensions-on-icommandexecutioncontext-with-built-in-requests-or-with-your-own)
+    - [Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished](#use-withparallelwhenallrequests()-to-execute-multiple-requests-in-parallel-and-execute-when-all-tasks-are-finished:)
+    - [Use IfRequest() to execute an optional request - continue when conditions are not satisfied](#use-ifrequest()-to-execute-an-optional-request---continue-when-conditions-are-not-satisfied:)
+    - [Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied](#use-ifbreakrequest()-to-execute-an-optional-request---break-whole-process-when-conditions-are-not-satisfied:)
+    - [See the how clean your code will look like in the end](#see-the-how-clean-your-code-will-look-like-in-the-end)
+- [Sample Code](#sample-code)
+
+
 ## This package gives you:  
 - ✅ blazing-fast setup
 - ✅ CRUD APIs in seconds without writing a single line of code
@@ -39,7 +72,7 @@
 
 # Step by step explanation
 
-__Add AddCleanCodeJN<IDataContext>() to your Program.cs__
+### Add AddCleanCodeJN<IDataContext>() to your Program.cs
 ```C#
 builder.Services.AddCleanCodeJN<MyDbContext>(options => {});
 ```
@@ -47,7 +80,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options => {});
 - DTO has to start with Entity-Name and must inherits from IDto
 - Entity must inherit from IEntity
 
-__These are the CleanCodeJN Options__
+### These are the CleanCodeJN Options
 ```C#
 /// <summary>
 /// The options for the CleanCodeJN.GenericApis
@@ -91,12 +124,12 @@ public class CleanCodeOptions
 }
 ```
 
-__Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs__
+### Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs
 ```C#
 app.UseCleanCodeJNWithMinimalApis();
 ```
 
-__When using Controllers add this to your Program.cs__
+### When using Controllers add this to your Program.cs
 ```C#
 builder.Services.AddControllers()
     .AddNewtonsoftJson(); // this is needed for "http patch" only. If you do not need to use patch, you can remove this line
@@ -105,7 +138,7 @@ builder.Services.AddControllers()
 app.MapControllers();
 ```
 
-__Start writing Minimal Apis by implementing IApi__
+### Start writing Minimal Apis by implementing IApi
 ```C#
 public class CustomersV1Api : IApi
 {
@@ -141,7 +174,7 @@ public class CustomersV1Api : IApi
 }
 ```
 
-__Extend standard CRUD operations by specific Where(), Include() or Select() clauses__
+### Extend standard CRUD operations by specific Where(), Include() or Select() clauses
 ```C#
 public class CustomersV1Api : IApi
 {
@@ -156,7 +189,7 @@ public class CustomersV1Api : IApi
 }
 ```
 
-__Or use ApiCrudControllerBase for CRUD operations in controllers__
+### Use ApiCrudControllerBase for CRUD operations in controllers
 ```C#
 [Tags("Customers Controller based")]
 [Route($"api/v2/[controller]")]
@@ -167,7 +200,7 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 }
 ```
 
-__You can also override your Where, Include or Select clauses__
+### You can also override your Where, Include or Select clauses
 ```C#
 /// <summary>
 /// Customers Controller based
@@ -201,7 +234,7 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 }
 ```
 
-__For using the /filtered api with a filter, just provide a serialized json as filter parameter, like this:__
+### For using the /filtered api with a filter, just provide a serialized json as filter parameter, like this:
 ```C#
 {
     "Condition" : 0, // 0 = AND; 1 = OR
@@ -222,7 +255,7 @@ __For using the /filtered api with a filter, just provide a serialized json as f
 
 >Which means: Give me all Names which CONTAINS "aac" AND have Id EQUALS 3. So string Types use always CONTAINS and integer types use EQUALS. All filters are combined with ANDs.
 
-__The Type can be specified with these values:__
+### The Type can be specified with these values
 ```C#
 public enum FilterTypeEnum
 {
@@ -239,7 +272,7 @@ public enum FilterTypeEnum
 ```
 
 # Advanced Topics
-__Built-in Support for Fluent Validation:__
+### Built-in Support for Fluent Validation:
 
 Just write your AbstractValidators<T>. They will be automatically executed on generic POST and generic PUT actions:
 
@@ -271,7 +304,7 @@ public class CustomerPutDtoValidator : AbstractValidator<CustomerPutDto>
 }
 ```
 
-__Implement your own specific Request:__
+### Implement your own specific Request:
 ```C#
 public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 {
@@ -279,7 +312,7 @@ public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 }
 ```
 
-__Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response:__
+### Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response:
 ```C#
 public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>, ICachableRequest
 {
@@ -293,7 +326,7 @@ public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>, ICachable
 }
 ```
 
-__With your own specific Command using CleanCodeJN.Repository__
+### With your own specific Command using CleanCodeJN.Repository
 ```C#
 public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
 {
@@ -306,15 +339,15 @@ public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IReq
 }
 ```
 
-__Use IOSP for complex business logic__
+## Use IOSP for complex business logic
 
-Derive from BaseIntegrationCommand:
+### Derive from BaseIntegrationCommand:
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
     : IntegrationCommand<YourIntegrationRequest, YourDomainObject>(executionContext)
 ```
 
-Write Extensions on ICommandExecutionContext with Built in Requests or with your own
+### Write Extensions on ICommandExecutionContext with Built in Requests or with your own
 ```C#
 public static ICommandExecutionContext CustomerGetByIdRequest(
     this ICommandExecutionContext executionContext, int customerId) 
@@ -327,7 +360,7 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
             CommandConstants.CustomerGetById);
 ```
 
-Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished:
+### Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished:
 ```C#
    executionContext.WithParallelWhenAllRequests(
                 [
@@ -343,21 +376,21 @@ Use WithParallelWhenAllRequests() to execute multiple requests in parallel and e
 ```
 
 
-Use IfRequest() to execute an optional request - continue when conditions are not satisfied:
+### Use IfRequest() to execute an optional request - continue when conditions are not satisfied:
 ```C#
     executionContext.IfRequest(() => new GetByIdRequest<Customer, int> { Id = request.Id },
                                ifBeforePredicate: () => true,
                                ifAfterPredicate: response => response.Succeeded)
 ```
 
-Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied:
+### Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied:
 ```C#
     executionContext.IfBreakRequest(() => new GetByIdRequest<Customer, int> { Id = request.Id },
                                     ifBeforePredicate: () => true,
                                     ifAfterPredicate: response => response.Succeeded)
 ```
 
-__See the how clean your code will look like in the end__
+### See the how clean your code will look like in the end
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
     : IntegrationCommand<YourIntegrationRequest, Customer>(executionContext)
