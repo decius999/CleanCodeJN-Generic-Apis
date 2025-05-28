@@ -36,7 +36,11 @@ public class CustomersV1Api : IApi
 
         app => app.MapGetById<Customer, CustomerGetDto, int>(Route, Tags),
 
-        app => app.MapGetByIdRequest<Customer, CustomerGetDto, int>(Route + "/by-request", Tags, id => new GetByIdRequest<Customer, int> { Id = id }),
+        app => app.MapGetByIdRequest<Customer, CustomerGetDto, int>(Route + "/by-request", Tags, id => new GetByIdRequest<Customer, int>
+        {
+            Id = id,
+            Includes = [x => x.Invoices]
+        }),
 
         app => app.MapPut<Customer, CustomerPutDto, CustomerGetDto>(Route, Tags),
 

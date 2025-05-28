@@ -31,6 +31,8 @@
     - [Derive from BaseIntegrationCommand](#derive-from-baseintegrationcommand:)
     - [Write Extensions on ICommandExecutionContext with Built in Requests or with your own](#write-extensions-on-icommandexecutioncontext-with-built-in-requests-or-with-your-own)
     - [Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished](#use-withparallelwhenallrequests()-to-execute-multiple-requests-in-parallel-and-execute-when-all-tasks-are-finished:)
+    - [Use GetListParallelWhenAll() to get all results of WithParallelWhenAllRequests](#use-getListParallelWhenAll()-to-get-all-results-of-withParallelWhenAllRequests():)
+    - [Use GetParallelWhenAllByIndex<T> to get the result of the WithParallelWhenAllRequests with a typed object by index](#use-getParallelWhenAllByIndex<T>()-to-get-the-result-of-the-withParallelWhenAllRequests()-with-a-typed-object-by-index:)
     - [Use IfRequest() to execute an optional request - continue when conditions are not satisfied](#use-ifrequest()-to-execute-an-optional-request---continue-when-conditions-are-not-satisfied:)
     - [Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied](#use-ifbreakrequest()-to-execute-an-optional-request---break-whole-process-when-conditions-are-not-satisfied:)
     - [See the how clean your code will look like in the end](#see-the-how-clean-your-code-will-look-like-in-the-end)
@@ -373,6 +375,24 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
                               Id = request.Id,
                           },
                 ])
+```
+
+### Use GetListParallelWhenAll() to get all results of WithParallelWhenAllRequests():
+```C#
+   .WithRequest(
+                () => new YourSpecificRequest
+                {
+                    Results = executionContext.GetListParallelWhenAll("Parallel Block"),
+                })
+```
+
+### Use GetParallelWhenAllByIndex<T>() to get the result of the WithParallelWhenAllRequests() with a typed object by index:
+```C#
+   .WithRequest(
+                () => new GetByIdRequest<Invoice, Guid>
+                {
+                    Id = executionContext.GetParallelWhenAllByIndex<Invoice>("Parallel Block", 1).Id,
+                })
 ```
 
 

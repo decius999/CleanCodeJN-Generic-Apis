@@ -16,11 +16,16 @@ public class DeleteCustomerIntegrationCommand(ICommandExecutionContext execution
                           {
                               Id = request.Id,
                           },
-                    () => new GetByIdRequest<Customer, int>
+                    () => new GetByIdRequest<Invoice, Guid>
                           {
-                              Id = request.Id,
+                              Id = Guid.NewGuid(), // This should be replaced with the actual logic to get the invoice ID related to the customer
                           },
                 ], blockName: "Parallel Block")
+            .WithRequest(
+                () => new GetByIdRequest<Invoice, Guid>
+                {
+                    Id = executionContext.GetParallelWhenAllByIndex<Invoice>("Parallel Block", 1).Id,
+                })
             .CustomerGetByIdRequest(request.Id)
             .InvoiceGetFirstByIdRequest()
             .DeleteCustomerByIdRequest()

@@ -42,7 +42,7 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
     }
 
     /// <inheritdoc />
-    public ICommandExecutionContext WithParallelWhenAllRequests<T>(List<Func<IRequest<BaseResponse<T>>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false) where T : class
+    public ICommandExecutionContext WithParallelWhenAllRequests(List<Func<IRequest<Response>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<Response>, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
     {
         var guid = Guid.CreateVersion7();
 
@@ -202,6 +202,19 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
     public List<T> GetList<T>(string blockName) =>
         _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseListResponse<T>)?.Data) : default;
 
+    /// <inheritdoc />
+    public List<object> GetListParallelWhenAll(string blockName) =>
+       _responseCache.TryGetValue(blockName, out var response) ? ((response as BaseListResponse<object>)?.Data) : default;
+
+    /// <inheritdoc />
+    public T GetParallelWhenAllByIndex<T>(string blockName, int index)
+        where T : class
+    {
+        var result = GetListParallelWhenAll(blockName);
+
+        return result is not null && result.Count > index ? result[index] as T : default;
+    }
+
     private async Task<dynamic> GetParallelWhenAllResponse(dynamic response, HashSet<Guid> parallelIds, (Delegate func, string blockName, Delegate checkBeforeExecution, Delegate checkAfterExecution, bool continueOnCheckError, Guid parallelId) builder, CancellationToken cancellationToken)
     {
         var tasks = new List<Task<dynamic>>();
@@ -221,8 +234,8 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
             .ToList());
 
         response = results.All(response => response is Response parallelResponse && parallelResponse.Succeeded)
-            ? await BaseListResponse<dynamic>.Create(true, data: results.ToList(), info: builder.blockName)
-            : await BaseListResponse<dynamic>.Create(
+            ? await BaseListResponse<object>.Create(true, data: results.Select(x => x.Data).ToList(), info: builder.blockName)
+            : await BaseListResponse<object>.Create(
                 ResultEnum.FAILURE_BAD_REQUEST,
                 message: $"'Pre/Post condition' fails in: {builder.blockName}: {errors}",
                 info: builder.blockName);
@@ -268,4 +281,6 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
             return builder.checkAfterExecution != null && !(bool)builder.checkAfterExecution.DynamicInvoke(response) ? null : (dynamic)response;
         }
     }
+
+    public ICommandExecutionContext WithParallelWhenAllRequests<T>(List<Func<IRequest<BaseResponse<T>>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false) where T : class => throw new NotImplementedException();
 }

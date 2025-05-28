@@ -25,6 +25,23 @@ public interface ICommandExecutionContext
     List<T> GetList<T>(string blockName);
 
     /// <summary>
+    /// Get the result list from the <see cref="WithParallelWhenAllRequests"/>.
+    /// </summary>
+    /// <param name="blockName">The name of this specific block, which can be referenced.</param>
+    /// <returns>List of result objects.</returns>
+    List<object> GetListParallelWhenAll(string blockName);
+
+    /// <summary>
+    /// Retrieves an item of type <typeparamref name="T"/> from a parallel processing block by its name and index.
+    /// </summary>
+    /// <typeparam name="T">The type of the item to retrieve. Must be a reference type.</typeparam>
+    /// <param name="blockName">The name of the parallel processing block. Cannot be null or empty.</param>
+    /// <param name="index">The zero-based index of the item within the block. Must be a non-negative integer.</param>
+    /// <returns>The item of type <typeparamref name="T"/> at the specified index within the block,  or <see langword="null"/> if
+    /// the item does not exist or the index is out of range.</returns>
+    T GetParallelWhenAllByIndex<T>(string blockName, int index) where T : class;
+
+    /// <summary>
     /// Execute the commands in the context with BaseResponse.
     /// </summary>
     /// <typeparam name="T">The IRequest of T type.</typeparam>
@@ -75,15 +92,13 @@ public interface ICommandExecutionContext
     /// <summary>
     /// Add requests to the execution Context to execute in parallel
     /// </summary>
-    /// <typeparam name="T">The IRequest of T type.</typeparam>
     /// <param name="requestBuilder">Lamda for constructing the IRequest of T type.</param>
     /// <param name="blockName">The name of this specific block, which can be referenced.</param>
     /// <param name="checkBeforeExecution">Lamda to check if this block should be executed.</param>
     /// <param name="checkAfterExecution">Lamda to check if after the execution the next block should be executed.</param>
     /// <param name="continueOnCheckError">True: Continue executing. False: Stop executing of blocks on errors.</param>
     /// <returns>ICommandExecutionContext for pipelining more blocks.</returns>
-    ICommandExecutionContext WithParallelWhenAllRequests<T>(List<Func<IRequest<BaseResponse<T>>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false)
-       where T : class;
+    ICommandExecutionContext WithParallelWhenAllRequests(List<Func<IRequest<Response>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<Response>, bool> checkAfterExecution = null, bool? continueOnCheckError = false);
 
     /// <summary>
     /// Add a request to the execution context with List of IRequest of Response.
