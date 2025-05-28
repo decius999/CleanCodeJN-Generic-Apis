@@ -9,7 +9,7 @@
 - Uses Mediator and IOSP to execute Commands for processing Events
 - Built in Retry concept
 - Custom Configuration implementation required for event logging and configuration management
-- On latest .NET 8.0
+- On latest .NET 9.0
 
 ### How to use
 
