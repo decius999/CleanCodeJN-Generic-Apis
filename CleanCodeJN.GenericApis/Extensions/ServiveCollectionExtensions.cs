@@ -224,7 +224,7 @@ public static class ServiveCollectionExtensions
             var pairs = entities
                 .Select(e => (
                     Entity: e,
-                    Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains("Get")),
+                    Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains("GetDto")),
                     Key: e.GetProperty("Id")?.PropertyType
                 ))
                 .Where(x => x.Dto != null && x.Key != null)
@@ -279,8 +279,8 @@ public static class ServiveCollectionExtensions
                     continue;
                 }
 
-                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
-                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
+                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PostDto"));
+                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PostDto"));
 
                 if (dtoType == null || inputType == null)
                 {
@@ -309,8 +309,8 @@ public static class ServiveCollectionExtensions
                     continue;
                 }
 
-                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
-                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
+                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PutDto"));
+                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PutDto"));
 
                 if (dtoType == null || inputType == null)
                 {
