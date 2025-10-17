@@ -2,7 +2,7 @@
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
-public class AutoDeleteMutationTypeExtensions<TEntity, TKey> : ObjectTypeExtension
+public class AutoDeleteMutationTypeExtensions<TEntity, TKey>(GraphQLOptions options) : ObjectTypeExtension
     where TEntity : class, IEntity<TKey>
 {
     protected override void Configure(IObjectTypeDescriptor descriptor)
@@ -11,11 +11,17 @@ public class AutoDeleteMutationTypeExtensions<TEntity, TKey> : ObjectTypeExtensi
 
         var fieldName = "delete" + typeof(TEntity).Name;
 
-        descriptor
+        var field = descriptor
             .Field(fieldName)
             .Argument("id", a => a.Type<NonNullType<IdType>>())
-            .Type<BooleanType>()
-            .Resolve(async ctx =>
+            .Type<BooleanType>();
+
+        if (options?.AddAuthorizationWithPolicyName is not null)
+        {
+            field.Authorize(options.AddAuthorizationWithPolicyName);
+        }
+
+        field.Resolve(async ctx =>
             {
                 var id = ctx.ArgumentValue<TKey>("id");
                 var repository = ctx.Service<IRepository<TEntity, TKey>>();

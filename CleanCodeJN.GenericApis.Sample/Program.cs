@@ -31,8 +31,18 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Create = true,
         Update = true,
         Delete = true,
+        //AddAuthorizationWithPolicyName = "MyPolicy",
     };
 });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("MyPolicy", policy =>
+//    {
+//        policy.RequireAuthenticatedUser();
+//        policy.RequireClaim("role", "admin");
+//    });
+//});
 
 var app = builder.Build();
 

@@ -11,20 +11,30 @@ public class GraphQLOptions
     /// <summary>
     /// Add automatic GraphQL GET endpoint to every entity
     /// </summary>
-    public bool Get { get; set; }
+    public bool Get { get; init; }
 
     /// <summary>
     /// Add automatic GraphQL POST endpoint to every entity
     /// </summary>
-    public bool Create { get; set; }
+    public bool Create { get; init; }
 
     /// <summary>
     /// Add automatic GraphQL PUT endpoint to every entity
     /// </summary>
-    public bool Update { get; set; }
+    public bool Update { get; init; }
 
     /// <summary>
     /// Add automatic GraphQL DELETE endpoint to every entity
     /// </summary>
-    public bool Delete { get; set; }
+    public bool Delete { get; init; }
+
+    /// <summary>
+    /// Gets or sets the list of entity names to be ignored during auto wiring GraphQL endpoints.
+    /// </summary>
+    public List<string> IgnoreEntities { get; init; } = [];
+
+    /// <summary>
+    /// Gets the name of the authorization policy to be added.
+    /// </summary>
+    public string AddAuthorizationWithPolicyName { get; init; }
 }
