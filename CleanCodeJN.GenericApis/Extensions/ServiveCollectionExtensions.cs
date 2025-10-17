@@ -51,7 +51,7 @@ public static class ServiveCollectionExtensions
             services.AddDistributedMemoryCache();
         }
 
-        if (options.UseGraphQLWithAutoWiring)
+        if (options.GraphQLOptions is not null)
         {
             var schema = services
                 .AddGraphQLServer()
@@ -61,10 +61,10 @@ public static class ServiveCollectionExtensions
                 .AddFiltering()
                 .AddSorting();
 
-            schema.AddGraphQLGet(assemblies);
-            schema.AddGraphQLCreate(assemblies);
-            schema.AddGraphQLUpdate(assemblies);
-            schema.AddGraphQLDelete(assemblies);
+            schema.AddGraphQLGet(assemblies, options.GraphQLOptions.Get);
+            schema.AddGraphQLCreate(assemblies, options.GraphQLOptions.Create);
+            schema.AddGraphQLUpdate(assemblies, options.GraphQLOptions.Update);
+            schema.AddGraphQLDelete(assemblies, options.GraphQLOptions.Delete);
         }
 
         services
@@ -197,95 +197,107 @@ public static class ServiveCollectionExtensions
         return services;
     }
 
-    private static void AddGraphQLGet(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    private static void AddGraphQLGet(this IRequestExecutorBuilder schema, List<Assembly> assemblies, bool activated)
     {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
-        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
-
-        var pairs = entities
-            .Select(e => (
-                Entity: e,
-                Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains("Get")),
-                Key: e.GetProperty("Id")?.PropertyType
-            ))
-            .Where(x => x.Dto != null && x.Key != null)
-            .ToList();
-
-        foreach (var (entityType, dtoType, keyType) in pairs)
+        if (activated)
         {
-            schema.AddTypeExtension(typeof(AutoQueryTypeExtensions<,,>).MakeGenericType(dtoType, entityType, keyType));
+            var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+            var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+
+            var pairs = entities
+                .Select(e => (
+                    Entity: e,
+                    Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains("Get")),
+                    Key: e.GetProperty("Id")?.PropertyType
+                ))
+                .Where(x => x.Dto != null && x.Key != null)
+                .ToList();
+
+            foreach (var (entityType, dtoType, keyType) in pairs)
+            {
+                schema.AddTypeExtension(typeof(AutoQueryTypeExtensions<,,>).MakeGenericType(dtoType, entityType, keyType));
+            }
         }
     }
 
-    private static void AddGraphQLDelete(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    private static void AddGraphQLDelete(this IRequestExecutorBuilder schema, List<Assembly> assemblies, bool activated)
     {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
-
-        foreach (var entityType in entities)
+        if (activated)
         {
-            var keyType = entityType.GetProperty("Id")?.PropertyType;
-            if (keyType == null)
-            {
-                continue;
-            }
+            var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
 
-            schema.AddTypeExtension(typeof(AutoDeleteMutationTypeExtensions<,>).MakeGenericType(entityType, keyType));
+            foreach (var entityType in entities)
+            {
+                var keyType = entityType.GetProperty("Id")?.PropertyType;
+                if (keyType == null)
+                {
+                    continue;
+                }
+
+                schema.AddTypeExtension(typeof(AutoDeleteMutationTypeExtensions<,>).MakeGenericType(entityType, keyType));
+            }
         }
     }
 
-    private static void AddGraphQLCreate(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    private static void AddGraphQLCreate(this IRequestExecutorBuilder schema, List<Assembly> assemblies, bool activated)
     {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
-        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
-        var inputs = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
-
-        foreach (var entityType in entities)
+        if (activated)
         {
-            var keyType = entityType.GetProperty("Id")?.PropertyType;
-            if (keyType == null)
+            var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+            var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+            var inputs = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+
+            foreach (var entityType in entities)
             {
-                continue;
+                var keyType = entityType.GetProperty("Id")?.PropertyType;
+                if (keyType == null)
+                {
+                    continue;
+                }
+
+                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
+                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
+
+                if (dtoType == null || inputType == null)
+                {
+                    continue;
+                }
+
+                var mutationType = typeof(AutoCreateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
+
+                schema.AddTypeExtension(mutationType);
             }
-
-            var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
-            var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
-
-            if (dtoType == null || inputType == null)
-            {
-                continue;
-            }
-
-            var mutationType = typeof(AutoCreateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
-
-            schema.AddTypeExtension(mutationType);
         }
     }
 
-    private static void AddGraphQLUpdate(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    private static void AddGraphQLUpdate(this IRequestExecutorBuilder schema, List<Assembly> assemblies, bool activated)
     {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
-        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
-        var inputs = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
-
-        foreach (var entityType in entities)
+        if (activated)
         {
-            var keyType = entityType.GetProperty("Id")?.PropertyType;
-            if (keyType == null)
+            var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+            var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+            var inputs = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+
+            foreach (var entityType in entities)
             {
-                continue;
+                var keyType = entityType.GetProperty("Id")?.PropertyType;
+                if (keyType == null)
+                {
+                    continue;
+                }
+
+                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
+                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
+
+                if (dtoType == null || inputType == null)
+                {
+                    continue;
+                }
+
+                var mutationType = typeof(AutoUpdateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
+
+                schema.AddTypeExtension(mutationType);
             }
-
-            var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
-            var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
-
-            if (dtoType == null || inputType == null)
-            {
-                continue;
-            }
-
-            var mutationType = typeof(AutoUpdateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
-
-            schema.AddTypeExtension(mutationType);
         }
     }
 

@@ -22,7 +22,7 @@ public class AutoUpdateMutationTypeExtensions<TDto, TEntity, TKey, TInput> : Obj
                 var id = ctx.ArgumentValue<TKey>("id");
                 var input = ctx.ArgumentValue<TInput>("input");
 
-                var entity = repository.Query().First(x => x.Id.Equals(id));
+                var entity = repository.Query().FirstOrDefault(x => x.Id.Equals(id));
                 if (entity == null)
                 {
                     throw new GraphQLException("Entity not found");

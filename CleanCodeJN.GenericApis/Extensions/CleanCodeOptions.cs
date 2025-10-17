@@ -46,5 +46,5 @@ public class CleanCodeOptions
     /// <summary>
     /// Gets or sets a value indicating whether GraphQL auto-wiring is enabled.
     /// </summary>
-    public bool UseGraphQLWithAutoWiring { get; set; }
+    public GraphQLOptions GraphQLOptions { get; set; }
 }

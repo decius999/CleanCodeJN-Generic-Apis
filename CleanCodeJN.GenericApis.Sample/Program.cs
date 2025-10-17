@@ -25,7 +25,13 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly
     ];
     options.ValidatorAssembly = typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly;
-    options.UseGraphQLWithAutoWiring = true;
+    options.GraphQLOptions = new GraphQLOptions
+    {
+        Get = true,
+        Create = true,
+        Update = true,
+        Delete = true,
+    };
 });
 
 var app = builder.Build();
