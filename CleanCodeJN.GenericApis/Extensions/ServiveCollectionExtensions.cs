@@ -56,10 +56,14 @@ public static class ServiveCollectionExtensions
             var schema = services
                 .AddGraphQLServer()
                 .AddQueryType(d => d.Name("Query"))
-                .AddMutationType(d => d.Name("Mutation"))
                 .AddProjections()
                 .AddFiltering()
                 .AddSorting();
+
+            if (options.GraphQLOptions.Create || options.GraphQLOptions.Update || options.GraphQLOptions.Delete)
+            {
+                schema.AddMutationType(d => d.Name("Mutation"));
+            }
 
             if (options.GraphQLOptions.EnableIntrospection)
             {

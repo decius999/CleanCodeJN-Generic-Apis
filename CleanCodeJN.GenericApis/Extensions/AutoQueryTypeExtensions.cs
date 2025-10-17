@@ -12,7 +12,7 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
         descriptor.Name("Query");
 
         var field = descriptor
-            .Field(typeof(TEntity).Name.ToLowerInvariant() + "s")
+            .Field(typeof(TEntity).Name.ToLowerInvariant())
             .UseProjection()
             .UseFiltering()
             .UseSorting()
