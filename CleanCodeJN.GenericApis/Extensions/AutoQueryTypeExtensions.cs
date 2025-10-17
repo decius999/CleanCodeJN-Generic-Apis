@@ -15,7 +15,9 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
             .Field(typeof(TEntity).Name.ToLowerInvariant() + "s")
             .UseProjection()
             .UseFiltering()
-            .UseSorting();
+            .UseSorting()
+            .Argument("skip", a => a.Type<IntType>())
+            .Argument("take", a => a.Type<IntType>());
 
         if (options?.AddAuthorizationWithPolicyName is not null)
         {
@@ -24,9 +26,15 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
 
         field.Resolve(ctx =>
         {
-            var repo = (IRepository<TEntity, TKey>)ctx.Service(typeof(IRepository<TEntity, TKey>));
+            var repository = (IRepository<TEntity, TKey>)ctx.Service(typeof(IRepository<TEntity, TKey>));
             var mapper = ctx.Service<IMapper>();
-            return repo.Query().ProjectTo<TDto>(mapper.ConfigurationProvider);
+            var skip = ctx.ArgumentValue<int?>("skip") ?? 0;
+            var take = ctx.ArgumentValue<int?>("take") ?? 100;
+
+            return repository.Query()
+                .ProjectTo<TDto>(mapper.ConfigurationProvider)
+                .Skip(skip)
+                .Take(take);
         });
     }
 }
