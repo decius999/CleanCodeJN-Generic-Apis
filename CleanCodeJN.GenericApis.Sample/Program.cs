@@ -25,6 +25,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly
     ];
     options.ValidatorAssembly = typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly;
+    options.UseGraphQLWithAutoWiring = true;
 });
 
 var app = builder.Build();
@@ -38,6 +39,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCleanCodeJNWithMinimalApis();
+app.UseCleanCodeJNWithGraphQL();
 app.MapControllers();
 
 // For seeding of in-memory db only

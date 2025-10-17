@@ -9,6 +9,7 @@ using CleanCodeJN.GenericApis.Context;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using FluentValidation;
+using HotChocolate.Execution.Configuration;
 using MediatR;
 using Microsoft.AspNetCore.Http.Features;
 
@@ -50,14 +51,30 @@ public static class ServiveCollectionExtensions
             services.AddDistributedMemoryCache();
         }
 
+        if (options.UseGraphQLWithAutoWiring)
+        {
+            var schema = services
+                .AddGraphQLServer()
+                .AddQueryType(d => d.Name("Query"))
+                .AddMutationType(d => d.Name("Mutation"))
+                .AddProjections()
+                .AddFiltering()
+                .AddSorting();
+
+            schema.AddGraphQLGet(assemblies);
+            schema.AddGraphQLCreate(assemblies);
+            schema.AddGraphQLUpdate(assemblies);
+            schema.AddGraphQLDelete(assemblies);
+        }
+
         services
             .RegisterMinimalApiBaseClasses()
-            .RegisterCommandExecutionContext()
-            .RegisterMediatr(assemblies, options)
-            .RegisterValidatorsFromAssembly(options.ValidatorAssembly)
-            .RegisterGenericCommands(assemblies)
-            .RegisterAutomapper(assemblies, Scan(options.MappingOverrides, assemblies))
-            .RegisterDbContextAndRepositories<TDataContext>();
+                .RegisterCommandExecutionContext()
+                .RegisterMediatr(assemblies, options)
+                .RegisterValidatorsFromAssembly(options.ValidatorAssembly)
+                .RegisterGenericCommands(assemblies)
+                .RegisterAutomapper(assemblies, Scan(options.MappingOverrides, assemblies))
+                .RegisterDbContextAndRepositories<TDataContext>();
     }
 
     /// <summary>
@@ -134,6 +151,18 @@ public static class ServiveCollectionExtensions
             new Mapper(new MapperConfiguration(Scan(mapping, assemblies))));
 
     /// <summary>
+    /// Configures the application to use GraphQL with the specified default route.
+    /// </summary>
+    /// <param name="app">The <see cref="WebApplication"/> instance to configure.</param>
+    /// <param name="defaultRoute">The default route for the GraphQL endpoint. The default value is <c>"/graphql"</c>.</param>
+    /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
+    public static WebApplication UseCleanCodeJNWithGraphQL(this WebApplication app, string defaultRoute = "/graphql")
+    {
+        app.MapGraphQL(defaultRoute);
+        return app;
+    }
+
+    /// <summary>
     /// Register Generic Commands.
     /// </summary>
     /// <param name="services">The service collection.</param>
@@ -166,6 +195,98 @@ public static class ServiveCollectionExtensions
         }
 
         return services;
+    }
+
+    private static void AddGraphQLGet(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    {
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+
+        var pairs = entities
+            .Select(e => (
+                Entity: e,
+                Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains("Get")),
+                Key: e.GetProperty("Id")?.PropertyType
+            ))
+            .Where(x => x.Dto != null && x.Key != null)
+            .ToList();
+
+        foreach (var (entityType, dtoType, keyType) in pairs)
+        {
+            schema.AddTypeExtension(typeof(AutoQueryTypeExtensions<,,>).MakeGenericType(dtoType, entityType, keyType));
+        }
+    }
+
+    private static void AddGraphQLDelete(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    {
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+
+        foreach (var entityType in entities)
+        {
+            var keyType = entityType.GetProperty("Id")?.PropertyType;
+            if (keyType == null)
+            {
+                continue;
+            }
+
+            schema.AddTypeExtension(typeof(AutoDeleteMutationTypeExtensions<,>).MakeGenericType(entityType, keyType));
+        }
+    }
+
+    private static void AddGraphQLCreate(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    {
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+        var inputs = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+
+        foreach (var entityType in entities)
+        {
+            var keyType = entityType.GetProperty("Id")?.PropertyType;
+            if (keyType == null)
+            {
+                continue;
+            }
+
+            var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
+            var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Post"));
+
+            if (dtoType == null || inputType == null)
+            {
+                continue;
+            }
+
+            var mutationType = typeof(AutoCreateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
+
+            schema.AddTypeExtension(mutationType);
+        }
+    }
+
+    private static void AddGraphQLUpdate(this IRequestExecutorBuilder schema, List<Assembly> assemblies)
+    {
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToList();
+        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+        var inputs = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToList();
+
+        foreach (var entityType in entities)
+        {
+            var keyType = entityType.GetProperty("Id")?.PropertyType;
+            if (keyType == null)
+            {
+                continue;
+            }
+
+            var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
+            var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("Put"));
+
+            if (dtoType == null || inputType == null)
+            {
+                continue;
+            }
+
+            var mutationType = typeof(AutoUpdateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
+
+            schema.AddTypeExtension(mutationType);
+        }
     }
 
     private static Action<IMapperConfigurationExpression> Scan(Action<IMapperConfigurationExpression> mapping, List<Assembly> assemblies)

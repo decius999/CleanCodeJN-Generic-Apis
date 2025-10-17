@@ -42,4 +42,9 @@ public class CleanCodeOptions
     /// Mediatr Types of Closed Behaviors to register
     /// </summary>
     public List<Type> ClosedBehaviors { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets a value indicating whether GraphQL auto-wiring is enabled.
+    /// </summary>
+    public bool UseGraphQLWithAutoWiring { get; set; }
 }
