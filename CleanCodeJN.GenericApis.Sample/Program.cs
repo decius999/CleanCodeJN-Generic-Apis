@@ -31,6 +31,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Create = true,
         Update = true,
         Delete = true,
+        EnableIntrospection = true,
     };
 });
 

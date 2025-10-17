@@ -61,6 +61,14 @@ public static class ServiveCollectionExtensions
                 .AddFiltering()
                 .AddSorting();
 
+            if (options.GraphQLOptions.EnableIntrospection)
+            {
+                schema
+                    .ModifyRequestOptions(o => o.IncludeExceptionDetails = true)
+                    .AddErrorFilter<GraphQLStartupErrorFilter>()
+                    .DisableIntrospection(false);
+            }
+
             if (options.GraphQLOptions.AddAuthorizationWithPolicyName is not null)
             {
                 schema.AddAuthorization();

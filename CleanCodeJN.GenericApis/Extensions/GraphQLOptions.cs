@@ -37,4 +37,9 @@ public class GraphQLOptions
     /// Gets the name of the authorization policy to be added.
     /// </summary>
     public string AddAuthorizationWithPolicyName { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether introspection is enabled for debugging purposes.
+    /// </summary>
+    public bool EnableIntrospection { get; init; }
 }

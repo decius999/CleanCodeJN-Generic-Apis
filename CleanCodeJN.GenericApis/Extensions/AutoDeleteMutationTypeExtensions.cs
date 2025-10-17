@@ -22,12 +22,12 @@ public class AutoDeleteMutationTypeExtensions<TEntity, TKey>(GraphQLOptions opti
         }
 
         field.Resolve(async ctx =>
-            {
-                var id = ctx.ArgumentValue<TKey>("id");
-                var repository = ctx.Service<IRepository<TEntity, TKey>>();
+        {
+            var id = ctx.ArgumentValue<TKey>("id");
+            var repository = ctx.Service<IRepository<TEntity, TKey>>();
 
-                var entity = await repository.Delete(id, CancellationToken.None);
-                return entity != null;
-            });
+            var entity = await repository.Delete(id, CancellationToken.None);
+            return entity != null;
+        });
     }
 }
