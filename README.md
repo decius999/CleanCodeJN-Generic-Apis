@@ -12,29 +12,30 @@
   - [✨ Features at a Glance](#✨-features-at-a-glance)
   - [How to use](#how-to-use)
 - [Step by step explanation](#step-by-step-explanation)
-    - [Add AddCleanCodeJN<IDataContext>() to your Program.cs](#add-addcleancodejn<idatacontext>()-to-your-program.cs)
+    - [Add AddCleanCodeJN\<IDataContext>() to your Program.cs](#add-addcleancodejnidatacontext-to-your-programcs)
     - [These are the CleanCodeJN Options](#these-are-the-cleancodejn-options)
-    - [Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs](#add-app.usecleancodejnwithminimalapis()-when-using-minimal-apis-to-your-program.cs)
-    - [When using Controllers add this to your Program.cs](#when-using-controllers-add-this-to-your-program.cs)
+    - [Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs](#add-appusecleancodejnwithminimalapis-when-using-minimal-apis-to-your-programcs)
+    - [Add app.UseCleanCodeJNWithGraphQL() when using automatic GraphQL to your Program.cs](#add-appusecleancodejnwithgraphql-when-using-automatic-graphql-to-your-programcs)
+    - [When using Controllers add this to your Program.cs](#when-using-controllers-add-this-to-your-programcs)
     - [Start writing Minimal Apis by implementing IApi](#start-writing-minimal-apis-by-implementing-iapi)
-    - [Extend standard CRUD operations by specific Where(), Include() or Select() clauses](#extend-standard-crud-operations-by-specific-where(),-include()-or-select()-clauses)
+    - [Extend standard CRUD operations by specific Where(), Include() or Select() clauses](#extend-standard-crud-operations-by-specific-where-include-or-select-clauses)
     - [Use ApiCrudControllerBase for CRUD operations in controllers](#use-apicrudcontrollerbase-for-crud-operations-in-controllers)
-    - [You can also override your Where, Include or Select clauses](#you-can-also-override-your-where,-include-or-select-clauses)
-    - [For using the /filtered api with a filter, just provide a serialized json as filter parameter](#for-using-the-/filtered-api-with-a-filter,-just-provide-a-serialized-json-as-filter-parameter,-like-this:)
+    - [You can also override your Where, Include or Select clauses](#you-can-also-override-your-where-include-or-select-clauses)
+    - [For using the /filtered api with a filter, just provide a serialized json as filter parameter](#for-using-the-filtered-api-with-a-filter-just-provide-a-serialized-json-as-filter-parameter-like-this)
     - [The Type can be specified with these values](#the-type-can-be-specified-with-these-values)
 - [Advanced Topics](#advanced-topics)
-    - [Built-in Support for Fluent Validation](#built-in-support-for-fluent-validation:)
-    - [Implement your own specific Request](#implement-your-own-specific-request:)
-    - [Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response](#requests-can-also-be-marked-as-icachablerequest,-which-uses-idistributedcache-to-cache-the-response:)
-    - [With your own specific Command using CleanCodeJN.Repository](#with-your-own-specific-command-using-cleancodejn.repository)
+    - [Built-in Support for Fluent Validation](#built-in-support-for-fluent-validation)
+    - [Implement your own specific Request](#implement-your-own-specific-request)
+    - [Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response](#requests-can-also-be-marked-as-icachablerequest-which-uses-idistributedcache-to-cache-the-response)
+    - [With your own specific Command using CleanCodeJN.Repository](#with-your-own-specific-command-using-cleancodejnrepository)
   - [Use IOSP for complex business logic](#use-iosp-for-complex-business-logic)
-    - [Derive from BaseIntegrationCommand](#derive-from-baseintegrationcommand:)
+    - [Derive from BaseIntegrationCommand](#derive-from-baseintegrationcommand)
     - [Write Extensions on ICommandExecutionContext with Built in Requests or with your own](#write-extensions-on-icommandexecutioncontext-with-built-in-requests-or-with-your-own)
-    - [Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished](#use-withparallelwhenallrequests()-to-execute-multiple-requests-in-parallel-and-execute-when-all-tasks-are-finished:)
-    - [Use GetListParallelWhenAll() to get all results of WithParallelWhenAllRequests](#use-getListParallelWhenAll()-to-get-all-results-of-withParallelWhenAllRequests():)
-    - [Use GetParallelWhenAllByIndex<T> to get the result of the WithParallelWhenAllRequests with a typed object by index](#use-getParallelWhenAllByIndex<T>()-to-get-the-result-of-the-withParallelWhenAllRequests()-with-a-typed-object-by-index:)
-    - [Use IfRequest() to execute an optional request - continue when conditions are not satisfied](#use-ifrequest()-to-execute-an-optional-request---continue-when-conditions-are-not-satisfied:)
-    - [Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied](#use-ifbreakrequest()-to-execute-an-optional-request---break-whole-process-when-conditions-are-not-satisfied:)
+    - [Use WithParallelWhenAllRequests() to execute multiple requests in parallel and execute when all tasks are finished](#use-withparallelwhenallrequests-to-execute-multiple-requests-in-parallel-and-execute-when-all-tasks-are-finished)
+    - [Use GetListParallelWhenAll() to get all results of WithParallelWhenAllRequests](#use-getlistparallelwhenall-to-get-all-results-of-withparallelwhenallrequests)
+    - [Use GetParallelWhenAllByIndex\<T> to get the result of the WithParallelWhenAllRequests with a typed object by index](#use-getparallelwhenallbyindext-to-get-the-result-of-the-withparallelwhenallrequests-with-a-typed-object-by-index)
+    - [Use IfRequest() to execute an optional request - continue when conditions are not satisfied](#use-ifrequest-to-execute-an-optional-request---continue-when-conditions-are-not-satisfied)
+    - [Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied](#use-ifbreakrequest-to-execute-an-optional-request---break-whole-process-when-conditions-are-not-satisfied)
     - [See the how clean your code will look like in the end](#see-the-how-clean-your-code-will-look-like-in-the-end)
 - [Sample Code](#sample-code)
 
@@ -42,6 +43,7 @@
 ## This package gives you:  
 - ✅ blazing-fast setup
 - ✅ CRUD APIs in seconds without writing a single line of code
+- ✅ GraphQL Support with automatic schema generation from your Entities and DTOs
 - ✅ complex business logic with **IOSP**
 - ✅ testable architecture  
 - ✅ maintainable and modular code
@@ -55,6 +57,7 @@
 
 ## ✨ Features at a Glance
 - ⚡ **Plug & Play CRUD APIs** (Minimal API or Controller-based)
+- 🧬 **Auto-generated GraphQL API** with query/mutation/filter/sort/projection support via HotChocolate
 - 📦 **Built-in paging, filtering & projections**
 - 🧠 **Clean separation of logic** using the **Mediator pattern**
 - 🧱 **Entity Framework abstraction** via `DataRepositories`
@@ -68,6 +71,7 @@
 
 - Add AddCleanCodeJN<IDataContext>() to your Program.cs
 - Add app.UseCleanCodeJNWithMinimalApis() to your Program.cs for minimal APIs or use AddControllers + MapControllers()
+- Add app.UseCleanCodeJNWithGraphQL() to your Program.cs for GraphQL support
 - Start writing Apis by implementing IApi
 - Extend standard CRUD operations by specific Where() and Include() clauses
 - Use IOSP for complex business logic
@@ -123,12 +127,22 @@ public class CleanCodeOptions
     /// Mediatr Types of Closed Behaviors to register
     /// </summary>
     public List<Type> ClosedBehaviors { get; set; } = [];
+    
+    /// <summary>
+    /// Gets or sets a value indicating whether GraphQL auto-wiring is enabled.
+    /// </summary>
+    public GraphQLOptions GraphQLOptions { get; set; }
 }
 ```
 
 ### Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs
 ```C#
 app.UseCleanCodeJNWithMinimalApis();
+```
+
+### Add app.UseCleanCodeJNWithGraphQL() when using automatic GraphQL to your Program.cs
+```C#
+app.UseCleanCodeJNWithGraphQL();
 ```
 
 ### When using Controllers add this to your Program.cs
@@ -138,6 +152,40 @@ builder.Services.AddControllers()
 
 // After Build()
 app.MapControllers();
+```
+
+### When using GraphQL add this to your Program.cs
+```C#
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    options.ApplicationAssemblies =
+    [
+        typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
+        typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly,
+        typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly
+    ];
+    options.ValidatorAssembly = typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly;
+
+    // Enable GraphQL with all CRUD operations
+    options.GraphQLOptions = new GraphQLOptions
+    {
+        Get = true,
+        Create = true,
+        Update = true,
+        Delete = true,
+        AddAuthorizationWithPolicyName = "MyPolicy", // optional for adding authorization policy
+    };
+});
+
+// Optional: Add Authentication and Authorization if needed
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MyPolicy", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("role", "admin");
+    });
+});
 ```
 
 ### Start writing Minimal Apis by implementing IApi
@@ -410,7 +458,7 @@ public static ICommandExecutionContext CustomerGetByIdRequest(
                                     ifAfterPredicate: response => response.Succeeded)
 ```
 
-### See the how clean your code will look like in the end
+### This is how clean your code will look like in the end
 ```C#
 public class YourIntegrationCommand(ICommandExecutionContext executionContext)
     : IntegrationCommand<YourIntegrationRequest, Customer>(executionContext)
