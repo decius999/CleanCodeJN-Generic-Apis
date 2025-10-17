@@ -41,11 +41,11 @@
     <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.11" />
     <PackageReference Include="HotChocolate.Data" Version="15.1.11" />
     <PackageReference Include="MediatR" Version="12.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="System.Formats.Asn1" Version="9.0.9" />
-    <PackageReference Include="System.Text.Json" Version="9.0.9" />
+    <PackageReference Include="System.Formats.Asn1" Version="9.0.10" />
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
   </ItemGroup>
 
 
