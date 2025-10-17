@@ -1,8 +1,8 @@
 # 🚀 Generic Web APIs – Fast, Clean, Powerful
 
-> _Create clean and testable web APIs in seconds – from **simple CRUD** to fully structured **IOSP-based** architectures – 
-> powered by the **Mediator pattern**, **AutoMapper**, **FluentValidation** and **Entity Framework**, 
-> all wired together with Clean Code principles._
+> _Build **production-ready APIs** instantly – from **Minimal APIs** and **Controllers** to fully integrated **GraphQL endpoints** with 
+**CRUD**, **filtering**, **sorting** & **paging** – powered by **Mediator**, **AutoMapper**, **EF Core**, **FluentValidation**, and the 
+**IOSP architecture pattern**._
 
 ## Table of Contents
 
