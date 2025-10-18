@@ -15,7 +15,7 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
             .Field(typeof(TEntity).Name.ToLowerInvariant())
             .UseProjection()
             .UseFiltering()
-            .UseSorting()
+            .Argument("order", a => a.Type<ListType<NonNullType<CustomSortInputType<TEntity>>>>())
             .Argument("skip", a => a.Type<IntType>())
             .Argument("take", a => a.Type<IntType>());
 
@@ -28,13 +28,43 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
         {
             var repository = (IRepository<TEntity, TKey>)ctx.Service(typeof(IRepository<TEntity, TKey>));
             var mapper = ctx.Service<IMapper>();
+
+            var orders = ctx.ArgumentValue<IReadOnlyList<SortInput>>("order");
             var skip = ctx.ArgumentValue<int?>("skip") ?? 0;
             var take = ctx.ArgumentValue<int?>("take") ?? 100;
 
-            return repository.Query()
-                .ProjectTo<TDto>(mapper.ConfigurationProvider)
-                .Skip(skip)
-                .Take(take);
+            var query = repository.Query();
+            foreach (var order in orders)
+            {
+                query = query.OrderByString(order.Field, order.Direction == SortDirection.DESC);
+            }
+
+            return query
+                    .Skip(skip)
+                    .Take(take)
+                    .ProjectTo<TDto>(mapper.ConfigurationProvider);
         });
+    }
+}
+
+public enum SortDirection
+{
+    ASC,
+    DESC
+}
+
+public class SortInput
+{
+    public string Field { get; set; } = "";
+    public SortDirection Direction { get; set; } = SortDirection.ASC;
+}
+
+public class CustomSortInputType<TEntity> : InputObjectType<SortInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<SortInput> descriptor)
+    {
+        descriptor.Name($"{typeof(TEntity).Name}SortInput");
+        descriptor.Field(x => x.Field).Type<NonNullType<StringType>>();
+        descriptor.Field(x => x.Direction).Type<NonNullType<EnumType<SortDirection>>>();
     }
 }
