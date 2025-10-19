@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Path = System.IO.Path;
 
@@ -38,19 +39,20 @@ public static class DocumentationExtensions
 
             var commands = xml
             .Descendants("member")
-            .Where(x => x.Attribute("name")?.Value.StartsWith("T:") == true && x.Attribute("name").Value.EndsWith("Command"))
+            .Where(x => x.Attribute("name")?.Value.StartsWith("T:") == true &&
+                        x.Attribute("name").Value.EndsWith("IntegrationCommand"))
             .Select(x => new
             {
                 name = GetLastPart(x.Attribute("name")?.Value.Split(':')[1]),
                 @namespace = GetWithoutLastPart(x.Attribute("name")?.Value.Split(':')[1]),
                 summary = x.Element("summary")?.Value.Trim(),
                 remarks = x.Element("remarks")?.Value.Trim(),
-                steps = new[]
-                {
-                    new { title = "SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)", description = "Setzt Submission Status auf PROCESSING_STARTED." },
-                    new { title = "SubmissionGetByIdRequest", description = "Lädt Submission anhand ID." },
-                    new { title = "SendSubmissionSendEvent", description = "Sendet Completion Event." }
-                }
+                steps = ExtractExecutionContextCalls(x.Attribute("name")?.Value.Split(':')[1])
+                        .Select(x => new
+                        {
+                            title = x,
+                            description = $"{xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("summary")?.Value?.Trim()} {xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("remarks")?.Value?.Trim()}"
+                        }).ToList()
             })
             .ToList();
 
@@ -58,6 +60,48 @@ public static class DocumentationExtensions
         });
 
         return app;
+    }
+
+    private static IEnumerable<string> ExtractExecutionContextCalls(string fullClassName)
+    {
+        var baseDir = Path.GetFullPath(
+            Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!, "..", "..", "..", "..")
+        );
+
+        var parts = fullClassName.Split('.');
+        var className = parts.Last() + ".cs";
+        var relativePath = GetWithoutLastPart(GetWithoutLastPart(fullClassName));
+        var dir = Path.Combine(baseDir, relativePath, "CustomerCommands");
+        var filePath = Path.Combine(dir, className);
+
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException($"File not found: {filePath}");
+        }
+
+        var code = File.ReadAllText(filePath);
+        var handleBodyPattern = @"ExecutionContext[\s\S]*?\.Execute";
+        var handleMatch = Regex.Match(code, handleBodyPattern);
+
+        if (!handleMatch.Success)
+        {
+            yield break;
+        }
+
+        var handleBody = handleMatch.Value;
+        var callPattern = @"\.\s*(?<method>[A-Za-z_][A-Za-z0-9_]*)\s*\(";
+        var matches = Regex.Matches(handleBody, callPattern);
+
+        foreach (Match match in matches)
+        {
+            var methodName = match.Groups["method"].Value;
+
+            if (methodName.EndsWith("Request", StringComparison.OrdinalIgnoreCase)
+                || methodName.EndsWith("Requests", StringComparison.OrdinalIgnoreCase))
+            {
+                yield return methodName;
+            }
+        }
     }
 
     private static string GetWithoutLastPart(this string input)
