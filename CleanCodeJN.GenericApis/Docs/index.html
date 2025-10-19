@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Documentation</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dagre-d3@0.6.4/dist/dagre-d3.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #e6edf3;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --highlight-color: #2f81f7;
+            --highlight-bg: rgba(47, 129, 247, 0.25);
+            --highlight-glow: 0 0 25px rgba(47, 129, 247, 0.8);
+        }
+
+        body.light {
+            --bg-color: #f4f4f4;
+            --text-color: #111;
+            --panel-bg: #fff;
+            --border-color: #ccc;
+            --highlight-color: #0d6efd;
+            --highlight-bg: rgba(13, 110, 253, 0.3);
+            --highlight-glow: 0 0 25px rgba(13, 110, 253, 0.8);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: Segoe UI,Roboto,Arial,sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            background: var(--panel-bg);
+            color: var(--text-color);
+            padding: 16px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 22px;
+            transition: transform 0.3s;
+        }
+
+            .theme-toggle:hover {
+                transform: rotate(20deg);
+            }
+
+        #searchBox {
+            display: block;
+            margin: 20px 0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .command {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        summary {
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+
+        .panel {
+            padding: 15px 20px;
+        }
+
+        .content-flex {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .steps-container {
+            flex: 1;
+        }
+
+        .diagram-container {
+            flex: 1;
+        }
+
+        details.step {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 8px 0;
+            background: var(--bg-color);
+            transition: all 0.2s;
+        }
+
+            details.step summary {
+                cursor: pointer;
+                padding: 8px 12px;
+                font-weight: 600;
+            }
+
+            details.step div {
+                padding: 10px 12px;
+            }
+
+            details.step.highlight {
+                border-color: var(--highlight-color);
+                background: var(--highlight-bg);
+                box-shadow: var(--highlight-glow);
+            }
+
+        svg {
+            width: 100%;
+            min-height: 500px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+        }
+
+        .node rect {
+            fill: var(--bg-color);
+            stroke: #58a6ff;
+            stroke-width: 2px;
+            rx: 6;
+            ry: 6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edgePath path {
+            stroke: #58a6ff;
+            stroke-width: 2px;
+            fill: none;
+        }
+
+        .node text {
+            fill: var(--text-color);
+            font-size: 10px;
+        }
+
+        .node.highlight rect {
+            stroke: var(--highlight-color);
+            fill: var(--highlight-bg);
+            stroke-width: 6px;
+            filter: drop-shadow(0 0 20px var(--highlight-color));
+            transform: scale(1.15);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="dark">
+    <header>
+        <h1>Documentation</h1>
+        <span class="theme-toggle" id="themeToggle" title="switch theme">☀️</span>
+    </header>
+
+    <input id="searchBox" type="text" placeholder="🔍 Search Commands..." />
+    <div id="content"></div>
+
+    <script>
+        let isDark = true;
+        const toggle = document.getElementById('themeToggle');
+        const searchBox = document.getElementById('searchBox');
+
+        toggle.addEventListener('click', () => {
+            isDark = !isDark;
+            document.body.classList.toggle('light', !isDark);
+            toggle.textContent = isDark ? '☀️' : '🌙';
+            document.querySelectorAll('svg').forEach(svg => svg.style.background = isDark ? '#161b22' : '#fff');
+        });
+
+        const docs = {
+            commands: [
+                {
+                    name: 'SubmissionProcessingEventIntegrationCommand1',
+                    namespace: 'OneApi.Business.CustomMailMessageCommands',
+                    summary: 'Steuert den kompletten Lifecycle eines Submission Processing Events. Setzt Zustände, lädt Entitäten, erzeugt Mails und triggert Events. Diese Klasse orchestriert die gesamte Verarbeitung von Submission-bezogenen Events über den ExecutionContext, setzt Statusänderungen, verarbeitet Template-Parameter und löst den Versand aus.',
+                    steps: [
+                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)', description: 'Setzt Submission Status auf PROCESSING_STARTED.' },
+                        { title: 'SubmissionGetByIdRequest', description: 'Lädt Submission anhand ID.' },
+                        { title: 'CustomMailMessageGetUnsendSubmissionRequest', description: 'Lädt nicht gesendete Mails.' },
+                        { title: 'GetTemplateIdBySubmissionRequest', description: 'Ermittelt Mailtemplate-ID.' },
+                        { title: 'CustomMailAddressGetBySubmissionRequest', description: 'Ermittelt Empfängeradressen.' },
+                        { title: 'CandidateGetBySubmissionRequest', description: 'Lädt Kandidat zur Submission.' },
+                        { title: 'CustomerGetBySubmissionRequest', description: 'Lädt Kunden zur Submission.' },
+                        { title: 'GetSkillsByCandidateIdRequest', description: 'Lädt Skills des Kandidaten.' },
+                        { title: 'BrevoGetTemplateParametersForSubmissionByIdRequest', description: 'Ermittelt Parameter fürs Template.' },
+                        { title: 'SubmissionProcessingEventRequest', description: 'Verarbeitet Submission Event.' },
+                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_FINISHED)', description: 'Setzt Submission Status auf PROCESSING_FINISHED.' },
+                        { title: 'SendSubmissionSendEvent', description: 'Sendet Completion Event.' }
+                    ]
+                },
+                {
+                    name: 'SubmissionProcessingEventIntegrationCommand2',
+                    namespace: 'OneApi.Business.CustomMailMessageCommands',
+                    summary: 'Steuert den kompletten Lifecycle eines Submission Processing Events. Setzt Zustände, lädt Entitäten, erzeugt Mails und triggert Events. Diese Klasse orchestriert die gesamte Verarbeitung von Submission-bezogenen Events über den ExecutionContext, setzt Statusänderungen, verarbeitet Template-Parameter und löst den Versand aus.',
+                    steps: [
+                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)', description: 'Setzt Submission Status auf PROCESSING_STARTED.' },
+                        { title: 'SubmissionGetByIdRequest', description: 'Lädt Submission anhand ID.' },
+                        { title: 'CustomMailMessageGetUnsendSubmissionRequest', description: 'Lädt nicht gesendete Mails.' },
+                        { title: 'GetTemplateIdBySubmissionRequest', description: 'Ermittelt Mailtemplate-ID.' },
+                        { title: 'CustomMailAddressGetBySubmissionRequest', description: 'Ermittelt Empfängeradressen.' },
+                        { title: 'CandidateGetBySubmissionRequest', description: 'Lädt Kandidat zur Submission.' },
+                        { title: 'CustomerGetBySubmissionRequest', description: 'Lädt Kunden zur Submission.' },
+                        { title: 'GetSkillsByCandidateIdRequest', description: 'Lädt Skills des Kandidaten.' },
+                        { title: 'BrevoGetTemplateParametersForSubmissionByIdRequest', description: 'Ermittelt Parameter fürs Template.' },
+                        { title: 'SubmissionProcessingEventRequest', description: 'Verarbeitet Submission Event.' },
+                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_FINISHED)', description: 'Setzt Submission Status auf PROCESSING_FINISHED.' },
+                        { title: 'SendSubmissionSendEvent', description: 'Sendet Completion Event.' }
+                    ]
+                },
+                {
+                    name: 'SubmissionProcessingEventIntegrationCommand3',
+                    namespace: 'OneApi.Business.CustomMailMessageCommands',
+                    summary: 'Steuert den kompletten Lifecycle eines Submission Processing Events. Setzt Zustände, lädt Entitäten, erzeugt Mails und triggert Events. Diese Klasse orchestriert die gesamte Verarbeitung von Submission-bezogenen Events über den ExecutionContext, setzt Statusänderungen, verarbeitet Template-Parameter und löst den Versand aus.',
+                    steps: [
+                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)', description: 'Setzt Submission Status auf PROCESSING_STARTED.' },
+                        { title: 'SubmissionGetByIdRequest', description: 'Lädt Submission anhand ID.' },
+                        { title: 'CustomMailMessageGetUnsendSubmissionRequest', description: 'Lädt nicht gesendete Mails.' },
+                        { title: 'GetTemplateIdBySubmissionRequest', description: 'Ermittelt Mailtemplate-ID.' },
+                        { title: 'CustomMailAddressGetBySubmissionRequest', description: 'Ermittelt Empfängeradressen.' },
+                        { title: 'CandidateGetBySubmissionRequest', description: 'Lädt Kandidat zur Submission.' },
+                        { title: 'CustomerGetBySubmissionRequest', description: 'Lädt Kunden zur Submission.' },
+                        { title: 'GetSkillsByCandidateIdRequest', description: 'Lädt Skills des Kandidaten.' },
+                        { title: 'BrevoGetTemplateParametersForSubmissionByIdRequest', description: 'Ermittelt Parameter fürs Template.' },
+                        { title: 'SubmissionProcessingEventRequest', description: 'Verarbeitet Submission Event.' },
+                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_FINISHED)', description: 'Setzt Submission Status auf PROCESSING_FINISHED.' },
+                        { title: 'SendSubmissionSendEvent', description: 'Sendet Completion Event.' }
+                    ]
+                }
+            ]
+        };
+
+        function render(filter = '') {
+            const container = document.getElementById('content');
+            container.innerHTML = '';
+
+            const filtered = docs.commands.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+
+            filtered.forEach(cmd => {
+                const det = document.createElement('details');
+                det.className = 'command';
+                det.innerHTML = `<summary>${cmd.name} – <small>${cmd.namespace}</small></summary>`;
+
+                const panel = document.createElement('div');
+                panel.className = 'panel';
+                const stepsHTML = cmd.steps.map((s, i) => `<details class='step' id='${cmd.name}-step-${i}'><summary>${s.title}</summary><div><p>${s.description}</p></div></details>`).join('');
+
+                panel.innerHTML = `
+          <p>${cmd.summary}</p>
+          <div class='content-flex'>
+            <div class='steps-container'>
+              <h3>Steps</h3>
+              ${stepsHTML}
+            </div>
+            <div class='diagram-container'>
+              <h3>Flow</h3>
+              <svg id='graph-${cmd.name}'></svg>
+            </div>
+          </div>
+        `;
+
+                det.appendChild(panel);
+                container.appendChild(det);
+
+                det.addEventListener('toggle', () => {
+                    if (det.open) renderDagreD3(cmd);
+                });
+            });
+        }
+
+        function renderDagreD3(cmd) {
+            const g = new dagreD3.graphlib.Graph().setGraph({ rankdir: 'TB', marginx: 20, marginy: 20 });
+            cmd.steps.forEach((s, i) => {
+                const id = 'n' + i;
+                g.setNode(id, { label: s.title, rx: 5, ry: 5 });
+                if (i > 0) g.setEdge('n' + (i - 1), id, { arrowhead: 'vee' });
+            });
+
+            const svg = d3.select(`#graph-${cmd.name}`);
+            svg.selectAll('*').remove();
+            const inner = svg.append('g');
+            const render = new dagreD3.render();
+            render(inner, g);
+
+            const graphHeight = g.graph().height || 400;
+            svg.attr('height', Math.min(Math.max(graphHeight + 300, 500), 1800));
+
+            const width = svg.node().clientWidth;
+            const height = svg.node().clientHeight;
+            const scaleX = width / (g.graph().width + 100);
+            const scaleY = height / (g.graph().height + 100);
+            const scale = Math.min(scaleX, scaleY);
+            const x = (width - g.graph().width * scale) / 2;
+            const y = (height - g.graph().height * scale) / 2;
+            inner.attr('transform', `translate(${x},${y}) scale(${scale})`);
+
+            // Scope-Root für diesen Command (verhindert globale Selektoren)
+            const graphEl = document.getElementById(`graph-${cmd.name}`);
+            const commandRoot = graphEl ? graphEl.closest('.content-flex') : document;
+
+            const updateHighlight = index => {
+                commandRoot.querySelectorAll(`details.step[id^='${cmd.name}-step-']`).forEach(s => {
+                    s.classList.remove('highlight');
+                    if (s.id !== `${cmd.name}-step-${index}`) s.open = false;
+                });
+                const stepElement = commandRoot.querySelector(`#${CSS.escape(cmd.name)}-step-${index}`);
+                if (stepElement) stepElement.classList.add('highlight');
+
+                inner.selectAll('g.node rect')
+                    .attr('stroke-width', 2)
+                    .attr('stroke', '#58a6ff')
+                    .attr('fill', getComputedStyle(document.body).getPropertyValue('--bg-color'))
+                    .style('filter', 'none')
+                    .attr('transform', 'scale(1)');
+
+                const node = inner.select(`#n${index}`);
+                if (!node.empty()) node.select('rect')
+                    .transition().duration(250)
+                    .attr('stroke-width', 6)
+                    .attr('stroke', getComputedStyle(document.body).getPropertyValue('--highlight-color'))
+                    .attr('fill', getComputedStyle(document.body).getPropertyValue('--highlight-bg'))
+                    .style('filter', `drop-shadow(0 0 25px ${getComputedStyle(document.body).getPropertyValue('--highlight-color')})`)
+                    .attr('transform', 'scale(1.15)');
+            };
+
+            inner.selectAll('g.node').on('click', function (event, nodeId) {
+                const stepIndex = parseInt(String(nodeId).replace('n', ''), 10);
+                updateHighlight(stepIndex);
+                const stepElement = commandRoot.querySelector(`#${CSS.escape(cmd.name)}-step-${stepIndex}`);
+                if (stepElement) {
+                    stepElement.open = true;
+                    stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            cmd.steps.forEach((_, i) => {
+                const step = commandRoot.querySelector(`#${CSS.escape(cmd.name)}-step-${i}`);
+                if (step) {
+                    step.addEventListener('toggle', () => {
+                        if (step.open) updateHighlight(i);
+                    });
+                }
+            });
+        }
+
+        searchBox.addEventListener('input', e => render(e.target.value));
+        render();
+    </script>
+</body>
+</html>

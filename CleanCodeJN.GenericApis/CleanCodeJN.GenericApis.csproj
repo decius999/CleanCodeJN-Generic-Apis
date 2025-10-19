@@ -56,4 +56,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Docs\index.html" />
+  </ItemGroup>
+
 </Project>

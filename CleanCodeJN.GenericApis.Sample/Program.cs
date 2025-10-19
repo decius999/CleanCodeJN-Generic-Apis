@@ -47,6 +47,8 @@ app.UseHttpsRedirection();
 
 app.UseCleanCodeJNWithMinimalApis();
 app.UseCleanCodeJNWithGraphQL();
+app.UseCleanCodeJNDocumentation("/docs");
+
 app.MapControllers();
 
 // For seeding of in-memory db only
