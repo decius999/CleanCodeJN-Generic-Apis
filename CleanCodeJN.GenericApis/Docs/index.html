@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Documentation</title>
+    <title>Command Documentation</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dagre-d3@0.6.4/dist/dagre-d3.min.js"></script>
     <style>
@@ -182,7 +182,7 @@
 </head>
 <body class="dark">
     <header>
-        <h1>Documentation</h1>
+        <h1>Command Documentation</h1>
         <span class="theme-toggle" id="themeToggle" title="switch theme">☀️</span>
     </header>
 
@@ -222,14 +222,14 @@
             filtered.forEach(cmd => {
                 const det = document.createElement('details');
                 det.className = 'command';
-                det.innerHTML = `<summary>${cmd.name} – <small>${cmd.namespace}</small></summary>`;
+                det.innerHTML = `<summary>${cmd.name} - ${cmd.namespace}</summary>`;
 
                 const panel = document.createElement('div');
                 panel.className = 'panel';
                 const stepsHTML = cmd.steps.map((s, i) => `<details class='step' id='${cmd.name}-step-${i}'><summary>${s.title}</summary><div><p>${s.description}</p></div></details>`).join('');
 
                 panel.innerHTML = `
-          <p class='text'>${cmd.summary}</p>
+          <p class='text'>${cmd.summary} ${cmd.remarks}</p>
           <div class='content-flex'>
             <div class='steps-container'>
               <h3>Steps</h3>
