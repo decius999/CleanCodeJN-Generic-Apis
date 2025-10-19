@@ -15,6 +15,7 @@
             --highlight-color: #2f81f7;
             --highlight-bg: rgba(47, 129, 247, 0.25);
             --highlight-glow: 0 0 25px rgba(47, 129, 247, 0.8);
+            --comment-green: #57f287;
         }
 
         body.light {
@@ -25,6 +26,7 @@
             --highlight-color: #0d6efd;
             --highlight-bg: rgba(13, 110, 253, 0.3);
             --highlight-glow: 0 0 25px rgba(13, 110, 253, 0.8);
+            --comment-green: #228b22;
         }
 
         body {
@@ -89,6 +91,11 @@
             padding: 15px 20px;
         }
 
+        .text {
+            color: var(--comment-green);
+            font-family: Consolas, monospace;
+        }
+
         .content-flex {
             display: flex;
             flex-direction: row;
@@ -121,6 +128,12 @@
             details.step div {
                 padding: 10px 12px;
             }
+
+                details.step div p {
+                    color: var(--comment-green);
+                    font-family: Consolas, monospace;
+                    font-size: 14px;
+                }
 
             details.step.highlight {
                 border-color: var(--highlight-color);
@@ -181,6 +194,17 @@
         const toggle = document.getElementById('themeToggle');
         const searchBox = document.getElementById('searchBox');
 
+        const API_URL = '/api/docs'; // Backend Endpoint
+
+        async function loadDocs() {
+            const res = await fetch(API_URL);
+            if (!res.ok) {
+                console.error('Failed to load docs');
+                return { commands: [] };
+            }
+            return await res.json();
+        }
+
         toggle.addEventListener('click', () => {
             isDark = !isDark;
             document.body.classList.toggle('light', !isDark);
@@ -188,69 +212,8 @@
             document.querySelectorAll('svg').forEach(svg => svg.style.background = isDark ? '#161b22' : '#fff');
         });
 
-        const docs = {
-            commands: [
-                {
-                    name: 'SubmissionProcessingEventIntegrationCommand1',
-                    namespace: 'OneApi.Business.CustomMailMessageCommands',
-                    summary: 'Steuert den kompletten Lifecycle eines Submission Processing Events. Setzt Zustände, lädt Entitäten, erzeugt Mails und triggert Events. Diese Klasse orchestriert die gesamte Verarbeitung von Submission-bezogenen Events über den ExecutionContext, setzt Statusänderungen, verarbeitet Template-Parameter und löst den Versand aus.',
-                    steps: [
-                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)', description: 'Setzt Submission Status auf PROCESSING_STARTED.' },
-                        { title: 'SubmissionGetByIdRequest', description: 'Lädt Submission anhand ID.' },
-                        { title: 'CustomMailMessageGetUnsendSubmissionRequest', description: 'Lädt nicht gesendete Mails.' },
-                        { title: 'GetTemplateIdBySubmissionRequest', description: 'Ermittelt Mailtemplate-ID.' },
-                        { title: 'CustomMailAddressGetBySubmissionRequest', description: 'Ermittelt Empfängeradressen.' },
-                        { title: 'CandidateGetBySubmissionRequest', description: 'Lädt Kandidat zur Submission.' },
-                        { title: 'CustomerGetBySubmissionRequest', description: 'Lädt Kunden zur Submission.' },
-                        { title: 'GetSkillsByCandidateIdRequest', description: 'Lädt Skills des Kandidaten.' },
-                        { title: 'BrevoGetTemplateParametersForSubmissionByIdRequest', description: 'Ermittelt Parameter fürs Template.' },
-                        { title: 'SubmissionProcessingEventRequest', description: 'Verarbeitet Submission Event.' },
-                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_FINISHED)', description: 'Setzt Submission Status auf PROCESSING_FINISHED.' },
-                        { title: 'SendSubmissionSendEvent', description: 'Sendet Completion Event.' }
-                    ]
-                },
-                {
-                    name: 'SubmissionProcessingEventIntegrationCommand2',
-                    namespace: 'OneApi.Business.CustomMailMessageCommands',
-                    summary: 'Steuert den kompletten Lifecycle eines Submission Processing Events. Setzt Zustände, lädt Entitäten, erzeugt Mails und triggert Events. Diese Klasse orchestriert die gesamte Verarbeitung von Submission-bezogenen Events über den ExecutionContext, setzt Statusänderungen, verarbeitet Template-Parameter und löst den Versand aus.',
-                    steps: [
-                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)', description: 'Setzt Submission Status auf PROCESSING_STARTED.' },
-                        { title: 'SubmissionGetByIdRequest', description: 'Lädt Submission anhand ID.' },
-                        { title: 'CustomMailMessageGetUnsendSubmissionRequest', description: 'Lädt nicht gesendete Mails.' },
-                        { title: 'GetTemplateIdBySubmissionRequest', description: 'Ermittelt Mailtemplate-ID.' },
-                        { title: 'CustomMailAddressGetBySubmissionRequest', description: 'Ermittelt Empfängeradressen.' },
-                        { title: 'CandidateGetBySubmissionRequest', description: 'Lädt Kandidat zur Submission.' },
-                        { title: 'CustomerGetBySubmissionRequest', description: 'Lädt Kunden zur Submission.' },
-                        { title: 'GetSkillsByCandidateIdRequest', description: 'Lädt Skills des Kandidaten.' },
-                        { title: 'BrevoGetTemplateParametersForSubmissionByIdRequest', description: 'Ermittelt Parameter fürs Template.' },
-                        { title: 'SubmissionProcessingEventRequest', description: 'Verarbeitet Submission Event.' },
-                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_FINISHED)', description: 'Setzt Submission Status auf PROCESSING_FINISHED.' },
-                        { title: 'SendSubmissionSendEvent', description: 'Sendet Completion Event.' }
-                    ]
-                },
-                {
-                    name: 'SubmissionProcessingEventIntegrationCommand3',
-                    namespace: 'OneApi.Business.CustomMailMessageCommands',
-                    summary: 'Steuert den kompletten Lifecycle eines Submission Processing Events. Setzt Zustände, lädt Entitäten, erzeugt Mails und triggert Events. Diese Klasse orchestriert die gesamte Verarbeitung von Submission-bezogenen Events über den ExecutionContext, setzt Statusänderungen, verarbeitet Template-Parameter und löst den Versand aus.',
-                    steps: [
-                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_STARTED)', description: 'Setzt Submission Status auf PROCESSING_STARTED.' },
-                        { title: 'SubmissionGetByIdRequest', description: 'Lädt Submission anhand ID.' },
-                        { title: 'CustomMailMessageGetUnsendSubmissionRequest', description: 'Lädt nicht gesendete Mails.' },
-                        { title: 'GetTemplateIdBySubmissionRequest', description: 'Ermittelt Mailtemplate-ID.' },
-                        { title: 'CustomMailAddressGetBySubmissionRequest', description: 'Ermittelt Empfängeradressen.' },
-                        { title: 'CandidateGetBySubmissionRequest', description: 'Lädt Kandidat zur Submission.' },
-                        { title: 'CustomerGetBySubmissionRequest', description: 'Lädt Kunden zur Submission.' },
-                        { title: 'GetSkillsByCandidateIdRequest', description: 'Lädt Skills des Kandidaten.' },
-                        { title: 'BrevoGetTemplateParametersForSubmissionByIdRequest', description: 'Ermittelt Parameter fürs Template.' },
-                        { title: 'SubmissionProcessingEventRequest', description: 'Verarbeitet Submission Event.' },
-                        { title: 'SetSubmissionStateOrInterruptRequest (PROCESSING_FINISHED)', description: 'Setzt Submission Status auf PROCESSING_FINISHED.' },
-                        { title: 'SendSubmissionSendEvent', description: 'Sendet Completion Event.' }
-                    ]
-                }
-            ]
-        };
-
-        function render(filter = '') {
+        async function render(filter = '') {
+            const docs = await loadDocs();
             const container = document.getElementById('content');
             container.innerHTML = '';
 
@@ -266,7 +229,7 @@
                 const stepsHTML = cmd.steps.map((s, i) => `<details class='step' id='${cmd.name}-step-${i}'><summary>${s.title}</summary><div><p>${s.description}</p></div></details>`).join('');
 
                 panel.innerHTML = `
-          <p>${cmd.summary}</p>
+          <p class='text'>${cmd.summary}</p>
           <div class='content-flex'>
             <div class='steps-container'>
               <h3>Steps</h3>
@@ -314,7 +277,6 @@
             const y = (height - g.graph().height * scale) / 2;
             inner.attr('transform', `translate(${x},${y}) scale(${scale})`);
 
-            // Scope-Root für diesen Command (verhindert globale Selektoren)
             const graphEl = document.getElementById(`graph-${cmd.name}`);
             const commandRoot = graphEl ? graphEl.closest('.content-flex') : document;
 
