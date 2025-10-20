@@ -28,13 +28,7 @@ public static class DocumentationExtensions
 
         app.MapGet("/api/docs", () =>
         {
-            var xmlPath = Path.ChangeExtension(Assembly.GetEntryAssembly().Location, ".Business.xml");
-
-            if (!File.Exists(xmlPath))
-            {
-                return Results.Json(new { commands = Array.Empty<object>() });
-            }
-
+            var xml = LoadMergedXmlDocs();
             var assemblyDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
             var projectRoot = FindProjectRoot(assemblyDir);
 
@@ -44,7 +38,6 @@ public static class DocumentationExtensions
             }
 
             var allCsFiles = Directory.GetFiles(projectRoot, "*.cs", SearchOption.AllDirectories).ToList();
-            var xml = XDocument.Load(xmlPath);
 
             var commands = xml
             .Descendants("member")
@@ -69,6 +62,46 @@ public static class DocumentationExtensions
         });
 
         return app;
+    }
+
+    private static XDocument LoadMergedXmlDocs()
+    {
+        var baseDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
+        var xmlFiles = Directory.GetFiles(baseDir, "*.xml", SearchOption.TopDirectoryOnly);
+
+        if (xmlFiles.Length == 0)
+        {
+            throw new FileNotFoundException($"No XML docs found in: {baseDir}");
+        }
+
+        var merged = new XDocument(new XElement("doc",
+            new XElement("assembly", new XElement("name", "MergedDocs")),
+            new XElement("members")
+        ));
+
+        var membersRoot = merged.Root!.Element("members")!;
+
+        foreach (var file in xmlFiles)
+        {
+            try
+            {
+                var doc = XDocument.Load(file);
+                var members = doc.Descendants("member");
+                foreach (var m in members)
+                {
+                    if (!membersRoot.Elements("member").Any(e => (string?)e.Attribute("name") == (string?)m.Attribute("name")))
+                    {
+                        membersRoot.Add(new XElement(m));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"XML error in {file}: {ex.Message}");
+            }
+        }
+
+        return merged;
     }
 
     private static string FindSourceFile(string fullClassName, string projectRoot, List<string> allCsFiles)
