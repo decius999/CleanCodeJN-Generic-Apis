@@ -228,19 +228,25 @@
                 panel.className = 'panel';
                 const stepsHTML = cmd.steps.map((s, i) => `<details class='step' id='${cmd.name}-step-${i}'><summary>${s.title}</summary><div><p>${s.description}</p></div></details>`).join('');
 
-                panel.innerHTML = `
-          <p class='text'>${cmd.summary} ${cmd.remarks}</p>
-          <div class='content-flex'>
-            <div class='steps-container'>
-              <h3>Steps</h3>
-              ${stepsHTML}
-            </div>
-            <div class='diagram-container'>
-              <h3>Flow</h3>
-              <svg id='graph-${cmd.name}'></svg>
-            </div>
-          </div>
-        `;
+                if (cmd.steps?.length > 0) {
+                    panel.innerHTML = `
+                      <p class='text'>${cmd.summary} ${cmd.remarks}</p>
+                      <div class='content-flex'>
+                        <div class='steps-container'>
+                          <h3>Steps</h3>
+                          ${stepsHTML}
+                        </div>
+                        <div class='diagram-container'>
+                          <h3>Flow</h3>
+                          <svg id='graph-${cmd.name}'></svg>
+                        </div>
+                      </div>
+                    `;
+                }
+                else {
+                    panel.innerHTML = `
+                      <p class='text'>${cmd.summary} ${cmd.remarks}</p>`;
+                }
 
                 det.appendChild(panel);
                 container.appendChild(det);

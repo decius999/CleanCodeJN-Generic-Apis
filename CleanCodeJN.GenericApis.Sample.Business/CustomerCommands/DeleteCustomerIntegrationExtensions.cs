@@ -57,4 +57,42 @@ public static class DeleteCustomerIntegrationExtensions
               Id = executionContext.Get<Customer>(CommandConstants.CustomerGetById).Id,
           },
           CommandConstants.DeleteCustomerById);
+
+    /// <summary>
+    /// Configures the execution context to load customer and related invoice data in parallel.
+    /// </summary>
+    /// <remarks>This method adds parallel requests to the execution context for retrieving a customer by
+    /// their ID  and an associated invoice. The invoice ID is determined by the logic provided in the request
+    /// configuration.</remarks>
+    /// <param name="executionContext">The execution context to configure.</param>
+    /// <param name="customerId">The unique identifier of the customer to retrieve.</param>
+    /// <returns>The updated <see cref="ICommandExecutionContext"/> configured with parallel requests to load the specified
+    /// customer and a related invoice.</returns>
+    public static ICommandExecutionContext LoadCustomersInParallelRequest(this ICommandExecutionContext executionContext, int customerId) => executionContext
+      .WithParallelWhenAllRequests(
+            [
+                () => new GetByIdRequest<Customer, int>
+                        {
+                            Id = customerId,
+                        },
+                () => new GetByIdRequest<Invoice, Guid>
+                        {
+                            Id = Guid.NewGuid(), // This should be replaced with the actual logic to get the invoice ID related to the customer
+                        },
+            ], blockName: "Parallel Block");
+
+    /// <summary>
+    /// Configures the execution context to load an invoice by its identifier for the specified customer.
+    /// </summary>
+    /// <remarks>This method creates a request to retrieve an invoice by its unique identifier and associates
+    /// it with the execution context. The invoice identifier is determined based on the parallel execution block and
+    /// the specified index.</remarks>
+    /// <param name="executionContext">The execution context in which the request is executed.</param>
+    /// <returns>The updated execution context configured with the request to load the invoice.</returns>
+    public static ICommandExecutionContext LoadInvoiceByIdRequest(this ICommandExecutionContext executionContext) => executionContext
+        .WithRequest(
+            () => new GetByIdRequest<Invoice, Guid>
+            {
+                Id = executionContext.GetParallelWhenAllByIndex<Invoice>("Parallel Block", 1).Id,
+            });
 }

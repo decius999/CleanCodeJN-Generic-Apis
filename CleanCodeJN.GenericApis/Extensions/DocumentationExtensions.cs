@@ -40,7 +40,7 @@ public static class DocumentationExtensions
             var commands = xml
             .Descendants("member")
             .Where(x => x.Attribute("name")?.Value.StartsWith("T:") == true &&
-                        x.Attribute("name").Value.EndsWith("IntegrationCommand"))
+                        x.Attribute("name").Value.EndsWith("Command"))
             .Select(x => new
             {
                 name = GetLastPart(x.Attribute("name")?.Value.Split(':')[1]),
@@ -62,24 +62,41 @@ public static class DocumentationExtensions
         return app;
     }
 
-    private static IEnumerable<string> ExtractExecutionContextCalls(string fullClassName)
+    private static string FindSourceFile(string fullClassName)
     {
-        var baseDir = Path.GetFullPath(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!, "..", "..", "..", "..")
-        );
+        var assemblyDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
+        var projectRoot = FindProjectRoot(assemblyDir);
 
-        var parts = fullClassName.Split('.');
-        var className = parts.Last() + ".cs";
-        var relativePath = GetWithoutLastPart(GetWithoutLastPart(fullClassName));
-        var dir = Path.Combine(baseDir, relativePath, "CustomerCommands");
-        var filePath = Path.Combine(dir, className);
-
-        if (!File.Exists(filePath))
+        if (projectRoot == null)
         {
-            throw new FileNotFoundException($"File not found: {filePath}");
+            throw new DirectoryNotFoundException("No project or solution root found.");
         }
 
-        var code = File.ReadAllText(filePath);
+        var className = fullClassName.Split('.').Last() + ".cs";
+        var foundFile = Directory.GetFiles(projectRoot, className, SearchOption.AllDirectories).FirstOrDefault();
+
+        return foundFile ?? throw new FileNotFoundException($"Class {fullClassName} could not be found.");
+    }
+
+    private static string FindProjectRoot(string startDir)
+    {
+        var dir = new DirectoryInfo(startDir);
+        while (dir != null)
+        {
+            if (dir.GetFiles("*.sln").Any())
+            {
+                return dir.FullName;
+            }
+
+            dir = dir.Parent;
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<string> ExtractExecutionContextCalls(string fullClassName)
+    {
+        var code = File.ReadAllText(FindSourceFile(fullClassName));
         var handleBodyPattern = @"ExecutionContext[\s\S]*?\.Execute";
         var handleMatch = Regex.Match(code, handleBodyPattern);
 

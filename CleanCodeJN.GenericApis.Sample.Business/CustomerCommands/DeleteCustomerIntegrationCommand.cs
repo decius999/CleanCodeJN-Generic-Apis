@@ -16,24 +16,11 @@ namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 public class DeleteCustomerIntegrationCommand(ICommandExecutionContext executionContext)
     : IntegrationCommand<DeleteCustomerIntegrationRequest, Customer>(executionContext)
 {
+    /// <inheritdoc/>
     public override async Task<BaseResponse<Customer>> Handle(DeleteCustomerIntegrationRequest request, CancellationToken cancellationToken) =>
         await ExecutionContext
-            .WithParallelWhenAllRequests(
-                [
-                    () => new GetByIdRequest<Customer, int>
-                          {
-                              Id = request.Id,
-                          },
-                    () => new GetByIdRequest<Invoice, Guid>
-                          {
-                              Id = Guid.NewGuid(), // This should be replaced with the actual logic to get the invoice ID related to the customer
-                          },
-                ], blockName: "Parallel Block")
-            .WithRequest(
-                () => new GetByIdRequest<Invoice, Guid>
-                {
-                    Id = executionContext.GetParallelWhenAllByIndex<Invoice>("Parallel Block", 1).Id,
-                })
+            .LoadCustomersInParallelRequest(request.Id)
+            .LoadInvoiceByIdRequest()
             .CustomerGetByIdRequest(request.Id)
             .InvoiceGetFirstByIdRequest()
             .DeleteCustomerByIdRequest()
