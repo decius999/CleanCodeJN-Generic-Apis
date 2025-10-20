@@ -30,11 +30,20 @@ public static class DocumentationExtensions
         {
             var xmlPath = Path.ChangeExtension(Assembly.GetEntryAssembly().Location, ".Business.xml");
 
-            if (!System.IO.File.Exists(xmlPath))
+            if (!File.Exists(xmlPath))
             {
                 return Results.Json(new { commands = Array.Empty<object>() });
             }
 
+            var assemblyDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
+            var projectRoot = FindProjectRoot(assemblyDir);
+
+            if (projectRoot == null)
+            {
+                throw new DirectoryNotFoundException("No project or solution root found.");
+            }
+
+            var allCsFiles = Directory.GetFiles(projectRoot, "*.cs", SearchOption.AllDirectories).ToList();
             var xml = XDocument.Load(xmlPath);
 
             var commands = xml
@@ -47,7 +56,7 @@ public static class DocumentationExtensions
                 @namespace = GetWithoutLastPart(x.Attribute("name")?.Value.Split(':')[1]),
                 summary = x.Element("summary")?.Value.Trim(),
                 remarks = x.Element("remarks")?.Value.Trim(),
-                steps = ExtractExecutionContextCalls(x.Attribute("name")?.Value.Split(':')[1])
+                steps = ExtractExecutionContextCalls(x.Attribute("name")?.Value.Split(':')[1], projectRoot, allCsFiles)
                         .Select(x => new
                         {
                             title = x,
@@ -62,18 +71,9 @@ public static class DocumentationExtensions
         return app;
     }
 
-    private static string FindSourceFile(string fullClassName)
+    private static string FindSourceFile(string fullClassName, string projectRoot, List<string> allCsFiles)
     {
-        var assemblyDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
-        var projectRoot = FindProjectRoot(assemblyDir);
-
-        if (projectRoot == null)
-        {
-            throw new DirectoryNotFoundException("No project or solution root found.");
-        }
-
-        var className = fullClassName.Split('.').Last() + ".cs";
-        var foundFile = Directory.GetFiles(projectRoot, className, SearchOption.AllDirectories).FirstOrDefault();
+        var foundFile = allCsFiles.FirstOrDefault(x => x.Contains(fullClassName.Split('.').Last() + ".cs"));
 
         return foundFile ?? throw new FileNotFoundException($"Class {fullClassName} could not be found.");
     }
@@ -94,9 +94,9 @@ public static class DocumentationExtensions
         return null;
     }
 
-    private static IEnumerable<string> ExtractExecutionContextCalls(string fullClassName)
+    private static IEnumerable<string> ExtractExecutionContextCalls(string fullClassName, string projectRoot, List<string> allCsFiles)
     {
-        var code = File.ReadAllText(FindSourceFile(fullClassName));
+        var code = File.ReadAllText(FindSourceFile(fullClassName, projectRoot, allCsFiles));
         var handleBodyPattern = @"ExecutionContext[\s\S]*?\.Execute";
         var handleMatch = Regex.Match(code, handleBodyPattern);
 
