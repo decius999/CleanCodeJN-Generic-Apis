@@ -47,13 +47,13 @@ public static class DocumentationExtensions
             {
                 name = GetLastPart(x.Attribute("name")?.Value.Split(':')[1]),
                 @namespace = GetWithoutLastPart(x.Attribute("name")?.Value.Split(':')[1]),
-                summary = x.Element("summary")?.Value.Trim(),
-                remarks = x.Element("remarks")?.Value.Trim(),
+                summary = x.Element("summary")?.Value.Trim() ?? string.Empty,
+                remarks = x.Element("remarks")?.Value.Trim() ?? string.Empty,
                 steps = ExtractExecutionContextCalls(x.Attribute("name")?.Value.Split(':')[1], projectRoot, allCsFiles)
                         .Select(x => new
                         {
                             title = x,
-                            description = $"{xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("summary")?.Value?.Trim()} {xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("remarks")?.Value?.Trim()}"
+                            description = $"{xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("summary")?.Value?.Trim() ?? string.Empty} {xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("remarks")?.Value?.Trim() ?? string.Empty}"
                         }).ToList()
             })
             .ToList();
