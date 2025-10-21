@@ -53,7 +53,17 @@ public static class DocumentationExtensions
                         .Select(x => new
                         {
                             title = x,
-                            description = $"{xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("summary")?.Value?.Trim() ?? string.Empty} {xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("remarks")?.Value?.Trim() ?? string.Empty}"
+                            summary = $"{xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("summary")?.Value?.Trim() ?? string.Empty}",
+                            remarks = $"{xml.Descendants("member").FirstOrDefault(y => y.Attribute("name").Value.Contains(x))?.Element("remarks")?.Value?.Trim() ?? string.Empty}",
+                            @params = xml.Descendants("member")
+                                         .FirstOrDefault(y => y.Attribute("name")?.Value.Contains(x) == true)?
+                                         .Elements("param")
+                                         .Select(p => new
+                                         {
+                                             name = p.Attribute("name")?.Value,
+                                             text = p.Value.Trim()
+                                         })
+                                        .ToList()
                         }).ToList()
             })
             .ToList();

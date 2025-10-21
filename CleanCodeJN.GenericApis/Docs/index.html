@@ -129,11 +129,11 @@
                 padding: 10px 12px;
             }
 
-                details.step div p {
+                /*details.step div p {
                     color: var(--comment-green);
                     font-family: Consolas, monospace;
                     font-size: 14px;
-                }
+                }*/
 
             details.step.highlight {
                 border-color: var(--highlight-color);
@@ -226,11 +226,32 @@
 
                 const panel = document.createElement('div');
                 panel.className = 'panel';
-                const stepsHTML = cmd.steps.map((s, i) => `<details class='step' id='${cmd.name}-step-${i}'><summary>${s.title}</summary><div><p>${s.description}</p></div></details>`).join('');
+                const stepsHTML = cmd.steps.map((s, i) =>
+                    `<details class='step' id='${cmd.name}-step-${i}'>
+                        <summary>${s.title}</summary>
+                        <div>
+                            <p class='text'><b>/// Summary</b><p>${s.summary}</p></p>
+                            <p class='text'><b>/// Remarks</b><p>${s.remarks}</p></p>
+                                ${s.params.filter(x => x.name !== 'executionContext').length > 0
+                                        ? `
+                                              <p class='text'>
+                                                <b>/// Parameters</b>
+                                                <p>
+                                                  ${s.params.filter(x => x.name !== 'executionContext')
+                                                            .map(x => `<p><b>${x.name}</b>: ${x.text}</p>`)
+                                                            .join('')}
+                                                </p>
+                                              </p>
+                                            `
+                                        : ''
+                                }
+                        </div>
+                     </details>`).join('');
+
 
                 if (cmd.steps?.length > 0) {
                     panel.innerHTML = `
-                      <p class='text'>${cmd.summary} ${cmd.remarks}</p>
+                      <p class='text'><b>/// Summary</b><p>${cmd.summary}</p></p><p class='text'><b>/// Remarks</b><p>${cmd.remarks}</p></p>
                       <div class='content-flex'>
                         <div class='steps-container'>
                           <h3>Steps</h3>
@@ -244,8 +265,7 @@
                     `;
                 }
                 else {
-                    panel.innerHTML = `
-                      <p class='text'>${cmd.summary} ${cmd.remarks}</p>`;
+                    panel.innerHTML = `<p class='text'><b>/// Summary</b><p>${cmd.summary}</p></p><p class='text'><b>/// Remarks</b><p>${cmd.remarks}</p></p>`;
                 }
 
                 det.appendChild(panel);
