@@ -226,47 +226,66 @@
 
                 const panel = document.createElement('div');
                 panel.className = 'panel';
-                const stepsHTML = cmd.steps.map((s, i) =>
-                    `<details class='step' id='${cmd.name}-step-${i}'>
-                        <summary>${s.title}</summary>
-                        <div>
-                            <p class='text'><b>/// Summary</b><p>${s.summary}</p></p>
-                            <p class='text'><b>/// Remarks</b><p>${s.remarks}</p></p>
-                                ${s.params.filter(x => x.name !== 'executionContext').length > 0
-                                        ? `
-                                              <p class='text'>
-                                                <b>/// Parameters</b>
-                                                <p>
-                                                  ${s.params.filter(x => x.name !== 'executionContext')
-                                                            .map(x => `<p><b>${x.name}</b>: ${x.text}</p>`)
-                                                            .join('')}
-                                                </p>
-                                              </p>
-                                            `
-                                        : ''
-                                }
-                        </div>
-                     </details>`).join('');
+                const stepsHTML = cmd.steps.map((s, i) => {
+                    const hasSummary = s.summary && s.summary.trim().length > 0;
+                    const hasRemarks = s.remarks && s.remarks.trim().length > 0;
+                    const params = s.params?.filter(x => x.name !== 'executionContext') ?? [];
+                    const hasParams = params.length > 0;
 
+                    return `<details class='step' id='${cmd.name}-step-${i}'>
+                                <summary>${s.title}</summary>
+                                    <div>
+                                        ${hasSummary
+                                            ? `<p class='text'><b>/// Summary</b><p>${s.summary}</p></p>`
+                                            : ''}
+                                                    ${hasRemarks
+                                            ? `<p class='text'><b>/// Remarks</b><p>${s.remarks}</p></p>`
+                                            : ''}
+                                                    ${hasParams
+                                            ? `
+                                          <p class='text'>
+                                            <b>/// Parameters</b>
+                                            <p>
+                                              ${params.map(x => `<p><b>${x.name}</b>: ${x.text}</p>`).join('')}
+                                            </p>
+                                          </p>
+                                        `
+                            : ''}
+                                  </div>
+                                </details>
+                              `;
+                }).join('')
+
+                const hasSummary = cmd.summary && cmd.summary.trim().length > 0;
+                const hasRemarks = cmd.remarks && cmd.remarks.trim().length > 0;
+
+                const summaryHtml = hasSummary
+                    ? `<p class='text'><b>/// Summary</b><p>${cmd.summary}</p></p>`
+                    : '';
+
+                const remarksHtml = hasRemarks
+                    ? `<p class='text'><b>/// Remarks</b><p>${cmd.remarks}</p></p>`
+                    : '';
 
                 if (cmd.steps?.length > 0) {
                     panel.innerHTML = `
-                      <p class='text'><b>/// Summary</b><p>${cmd.summary}</p></p><p class='text'><b>/// Remarks</b><p>${cmd.remarks}</p></p>
-                      <div class='content-flex'>
-                        <div class='steps-container'>
-                          <h3>Steps</h3>
-                          ${stepsHTML}
-                        </div>
-                        <div class='diagram-container'>
-                          <h3>Flow</h3>
-                          <svg id='graph-${cmd.name}'></svg>
-                        </div>
-                      </div>
-                    `;
+                                ${summaryHtml}
+                                ${remarksHtml}
+                                <div class='content-flex'>
+                                  <div class='steps-container'>
+                                    <h3>Steps</h3>
+                                    ${stepsHTML}
+                                  </div>
+                                  <div class='diagram-container'>
+                                    <h3>Flow</h3>
+                                    <svg id='graph-${cmd.name}'></svg>
+                                  </div>
+                                </div>
+                              `;
+                } else {
+                    panel.innerHTML = `${summaryHtml}${remarksHtml}`;
                 }
-                else {
-                    panel.innerHTML = `<p class='text'><b>/// Summary</b><p>${cmd.summary}</p></p><p class='text'><b>/// Remarks</b><p>${cmd.remarks}</p></p>`;
-                }
+
 
                 det.appendChild(panel);
                 container.appendChild(det);
