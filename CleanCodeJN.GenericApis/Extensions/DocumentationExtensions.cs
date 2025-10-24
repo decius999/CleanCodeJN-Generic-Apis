@@ -7,9 +7,9 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class DocumentationExtensions
 {
-    public static IApplicationBuilder UseCleanCodeJNDocumentation(this WebApplication app, string path = "/docs")
+    public static IApplicationBuilder UseCleanCodeJNDocumentation(this WebApplication app)
     {
-        app.MapGet($"{path}", async context =>
+        app.MapGet($"/docs", async context =>
         {
             context.Response.ContentType = "text/html";
             var stream = typeof(DocumentationExtensions).Assembly.GetManifestResourceStream("CleanCodeJN.GenericApis.Docs.index.html");
