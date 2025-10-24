@@ -8,7 +8,7 @@ namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 /// <summary>
 /// Handles the deletion of a specific customer entity based on the provided request.
 /// </summary>
-/// <param name="repository"></param>
+/// <param name="repository">The customers repository. Implements <see cref="IRepository{TEntity, TKey}"/></param>
 public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IRequestHandler<SpecificDeleteRequest, BaseResponse<Customer>>
 {
     public async Task<BaseResponse<Customer>> Handle(SpecificDeleteRequest request, CancellationToken cancellationToken)

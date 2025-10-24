@@ -283,9 +283,29 @@
                                 </div>
                               `;
                 } else {
-                    panel.innerHTML = `${summaryHtml}${remarksHtml}`;
-                }
+                    const hasSummary = cmd.summary && cmd.summary.trim().length > 0;
+                    const hasRemarks = cmd.remarks && cmd.remarks.trim().length > 0;
+                    const hasParams = cmd.params && cmd.params.length > 0;
 
+                    panel.innerHTML = `
+                            ${hasSummary
+                                                ? `<p class='text'><b>/// Summary</b><p>${cmd.summary}</p></p>`
+                                                : ``}
+                            ${hasRemarks
+                                                ? `<p class='text'><b>/// Remarks</b><p>${cmd.remarks}</p></p>`
+                                                : ``}
+                            ${hasParams
+                                                ? `
+                                                    <p class='text'>
+                                                        <b>/// Parameters</b>
+                                                        <p>
+                                                            ${cmd.params.map(x => `<p><b>${x.name}</b>: ${x.text}</p>`).join('')}
+                                                        </p>
+                                                    </p>
+                                                  `
+                                                : ``}
+                        `;
+                }
 
                 det.appendChild(panel);
                 container.appendChild(det);

@@ -47,8 +47,18 @@ public static class DocumentationExtensions
             {
                 name = GetLastPart(x.Attribute("name")?.Value.Split(':')[1]),
                 @namespace = GetWithoutLastPart(x.Attribute("name")?.Value.Split(':')[1]),
-                summary = x.Element("summary")?.Value.Trim() ?? string.Empty,
-                remarks = x.Element("remarks")?.Value.Trim() ?? string.Empty,
+                @params = xml
+                            .Descendants("member")
+                            .FirstOrDefault(y => y.Attribute("name")?.Value.Contains(GetLastPart(x.Attribute("name")?.Value.Split(':')[1])) == true)?
+                            .Elements("param")
+                            .Select(p => new
+                            {
+                                name = p.Attribute("name")?.Value,
+                                text = ConvertXmlToText(p),
+                            })
+                            .ToList(),
+                summary = ConvertXmlToText(x.Element("summary")) ?? string.Empty,
+                remarks = ConvertXmlToText(x.Element("remarks")) ?? string.Empty,
                 steps = ExtractExecutionContextCalls(x.Attribute("name")?.Value.Split(':')[1], projectRoot, allCsFiles)
                         .Select(x => new
                         {
@@ -61,7 +71,7 @@ public static class DocumentationExtensions
                                          .Select(p => new
                                          {
                                              name = p.Attribute("name")?.Value,
-                                             text = p.Value.Trim()
+                                             text = ConvertXmlToText(p),
                                          })
                                         .ToList()
                         }).ToList()
@@ -72,6 +82,37 @@ public static class DocumentationExtensions
         });
 
         return app;
+    }
+
+    private static string ConvertXmlToText(XElement element)
+    {
+        if (element == null)
+        {
+            return string.Empty;
+        }
+
+        var result = element.Nodes()
+            .Select(node =>
+            {
+                if (node is XElement el && el.Name.LocalName == "see")
+                {
+                    var cref = el.Attribute("cref")?.Value ?? "";
+                    return cref.StartsWith("T:") || cref.StartsWith("M:")
+                        ? cref[2..]
+                        : cref;
+                }
+                else
+                {
+                    return node.ToString(SaveOptions.DisableFormatting);
+                }
+            })
+            .Aggregate(string.Empty, (a, b) => a + b);
+
+        return System.Text.RegularExpressions.Regex
+            .Replace(result, "<.*?>", string.Empty)
+            .Replace("\r", " ")
+            .Replace("\n", " ")
+            .Trim();
     }
 
     private static XDocument LoadMergedXmlDocs()
