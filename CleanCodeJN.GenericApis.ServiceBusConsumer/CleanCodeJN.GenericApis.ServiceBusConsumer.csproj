@@ -19,7 +19,7 @@
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>2.1.7</VersionPrefix>
+    <VersionPrefix>2.1.8</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
-    <PackageReference Include="CleanCodeJN.GenericApis" Version="4.2.9" />
+    <PackageReference Include="CleanCodeJN.GenericApis" Version="4.2.10" />
     <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="3.0.7" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.13.0" />
