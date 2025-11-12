@@ -88,6 +88,7 @@ public class YourIntegrationCommand(ICommandExecutionContext executionContext)
     - [Implement your own specific Request](#implement-your-own-specific-request)
     - [Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response](#requests-can-also-be-marked-as-icachablerequest-which-uses-idistributedcache-to-cache-the-response)
     - [With your own specific Command using CleanCodeJN.Repository](#with-your-own-specific-command-using-cleancodejnrepository)
+    - [Custom Middlewares](#custom-middlewares)
   - [Use IOSP for complex business logic](#use-iosp-for-complex-business-logic)
     - [Derive from BaseIntegrationCommand](#derive-from-baseintegrationcommand)
     - [Write Extensions on ICommandExecutionContext with Built in Requests or with your own](#write-extensions-on-icommandexecutioncontext-with-built-in-requests-or-with-your-own)
@@ -453,6 +454,89 @@ public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IReq
         return await BaseResponse<Customer>.Create(deletedCustomer is not null, deletedCustomer);
     }
 }
+```
+
+### Custom Middlewares
+
+CleanCodeJN.GenericApis is fully compatible with the standard ASP.NET Core middleware pipeline.  
+You can easily add **custom middlewares** for authentication, logging, exception handling, or any other cross-cutting concern — before or after the CleanCodeJN setup.
+
+#### Where to Add Middlewares
+
+Custom middlewares should be registered in your `Program.cs` **after** the `AddCleanCodeJN()` call, but **before** the CleanCodeJN 
+middlewares such as `UseCleanCodeJNWith`. Global mediator behaviours for logging or caching can directly be added in the `AddCleanCodeJN()` options.
+
+There already is a default logging behaviour included, which can be enabled in the options. This behaviour logs the execution and exection time of each command.
+#### Example Structure
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Add CleanCodeJN
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    options.AddDefaultLoggingBehavior = true; // Enables default logging behaviour
+    options.OpenBehaviors = [typeof(CustomBehavior<,>)]; // Adds custom behaviour with 2 generic parameters for TRequest, TResponse
+
+    options.ApplicationAssemblies = [typeof(Program).Assembly];
+    options.ValidatorAssembly = typeof(Program).Assembly;
+});
+
+// Add custom services
+builder.Services.AddLogging();
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = "https://your-keycloak-domain/auth/realms/yourrealm";
+        options.Audience = "your-api";
+    });
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
+
+// Add your middlewares in the right order
+
+// Authentication & Authorization
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Custom Logging Middleware
+app.Use(async (context, next) =>
+{
+    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("➡️ Request: {Method} {Path}", context.Request.Method, context.Request.Path);
+    await next();
+    logger.LogInformation("⬅️ Response: {StatusCode}", context.Response.StatusCode);
+});
+
+// Global Exception Handling
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Unhandled exception occurred");
+
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsJsonAsync(new
+        {
+            Title = "Unexpected Error",
+            Detail = ex.Message
+        });
+    }
+});
+
+// CleanCodeJN Middlewares
+app.UseCleanCodeJNWithMinimalApis();
+app.UseCleanCodeJNWithGraphQL();
+app.UseCleanCodeJNDocumentation();
+
+// Run
+app.Run();
 ```
 
 ## Use IOSP for complex business logic
