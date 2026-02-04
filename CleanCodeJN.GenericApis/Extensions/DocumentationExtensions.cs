@@ -140,7 +140,7 @@ public static class DocumentationExtensions
                 var members = doc.Descendants("member");
                 foreach (var m in members)
                 {
-                    if (!membersRoot.Elements("member").Any(e => (string?)e.Attribute("name") == (string?)m.Attribute("name")))
+                    if (!membersRoot.Elements("member").Any(e => (string)e.Attribute("name") == (string)m.Attribute("name")))
                     {
                         membersRoot.Add(new XElement(m));
                     }
