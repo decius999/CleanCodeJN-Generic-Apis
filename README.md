@@ -262,6 +262,54 @@ public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
 ];
 ```
 
+#### Enrich tool schemas with DTO XML comments
+
+Add `/// <summary>` comments to your DTO properties — the MCP server reads them automatically and includes them as `description` fields in the JSON schema. This tells the AI assistant exactly what each field means, including constraints and examples.
+
+**Step 1:** Enable XML doc generation in your DTO project's `.csproj`:
+```xml
+<PropertyGroup>
+  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+</PropertyGroup>
+```
+
+**Step 2:** Add XML comments to your DTO properties:
+```csharp
+public class CustomerPostDto : IDto
+{
+    /// <summary>Full name of the customer, e.g. 'Acme Corp'. Maximum 100 characters.</summary>
+    public string Name { get; set; }
+}
+
+public class CustomerPutDto : IDto
+{
+    /// <summary>Unique identifier of the customer to update.</summary>
+    public int Id { get; set; }
+
+    /// <summary>New full name of the customer, e.g. 'Acme Corp'. Maximum 100 characters.</summary>
+    public string Name { get; set; }
+}
+```
+
+The MCP tool schema for `create_customer` will then look like:
+```json
+{
+  "name": "create_customer",
+  "inputSchema": {
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Full name of the customer, e.g. 'Acme Corp'. Maximum 100 characters."
+      }
+    }
+  }
+}
+```
+
+This enables AI assistants to ask the right questions when creating or updating records — e.g. _"What is the customer's full name?"_ — before sending the request.
+
+---
+
 **IOSP Command tools** are generated from your XML documentation — giving AI assistants insight into your business workflows:
 
 ```C#

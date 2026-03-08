@@ -28,6 +28,12 @@ public static class McpExtensions
         WriteIndented = false
     };
 
+    private static readonly Lazy<XDocument?> XmlDocs = new(() =>
+    {
+        try { return LoadMergedXmlDocs(); }
+        catch { return null; }
+    });
+
     /// <summary>
     /// Maps a /mcp endpoint implementing the Model Context Protocol (MCP) Streamable HTTP transport.
     /// CRUD operations from ApiCrudControllerBase subclasses become executable MCP tools.
@@ -488,7 +494,8 @@ public static class McpExtensions
         foreach (var prop in dtoType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanWrite))
         {
             var camelName = JsonNamingPolicy.CamelCase.ConvertName(prop.Name);
-            properties[camelName] = new { type = GetJsonType(prop.PropertyType), description = $"{prop.Name} property." };
+            var description = GetXmlPropertyDescription(dtoType, prop) ?? $"{prop.Name} property.";
+            properties[camelName] = new { type = GetJsonType(prop.PropertyType), description };
             if (prop.PropertyType.IsValueType && Nullable.GetUnderlyingType(prop.PropertyType) == null)
                 required.Add(camelName);
         }
@@ -596,6 +603,17 @@ public static class McpExtensions
         }
 
         return merged;
+    }
+
+    private static string? GetXmlPropertyDescription(Type dtoType, PropertyInfo prop)
+    {
+        var xml = XmlDocs.Value;
+        if (xml == null) return null;
+        var memberName = $"P:{dtoType.FullName}.{prop.Name}";
+        var member = xml.Descendants("member")
+            .FirstOrDefault(x => x.Attribute("name")?.Value == memberName);
+        var text = member == null ? null : GetXmlText(member.Element("summary"));
+        return string.IsNullOrWhiteSpace(text) ? null : text;
     }
 
     private static string GetXmlText(XElement? element)
