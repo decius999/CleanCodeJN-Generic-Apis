@@ -281,6 +281,4 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
             return builder.checkAfterExecution != null && !(bool)builder.checkAfterExecution.DynamicInvoke(response) ? null : (dynamic)response;
         }
     }
-
-    public ICommandExecutionContext WithParallelWhenAllRequests<T>(List<Func<IRequest<BaseResponse<T>>>> requestBuilder, string blockName = null, Func<bool> checkBeforeExecution = null, Func<BaseResponse<T>, bool> checkAfterExecution = null, bool? continueOnCheckError = false) where T : class => throw new NotImplementedException();
 }
