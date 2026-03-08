@@ -32,12 +32,9 @@ public static class DocumentationExtensions
             var assemblyDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
             var projectRoot = FindProjectRoot(assemblyDir);
 
-            if (projectRoot == null)
-            {
-                throw new DirectoryNotFoundException("No project or solution root found.");
-            }
-
-            var allCsFiles = Directory.GetFiles(projectRoot, "*.cs", SearchOption.AllDirectories).ToList();
+            var allCsFiles = projectRoot != null
+                ? Directory.GetFiles(projectRoot, "*.cs", SearchOption.AllDirectories).ToList()
+                : [];
 
             var commands = xml
             .Descendants("member")
@@ -156,11 +153,7 @@ public static class DocumentationExtensions
     }
 
     private static string FindSourceFile(string fullClassName, string projectRoot, List<string> allCsFiles)
-    {
-        var foundFile = allCsFiles.FirstOrDefault(x => x.Contains(fullClassName.Split('.').Last() + ".cs"));
-
-        return foundFile ?? throw new FileNotFoundException($"Class {fullClassName} could not be found.");
-    }
+        => allCsFiles.FirstOrDefault(x => x.Contains(fullClassName.Split('.').Last() + ".cs"));
 
     private static string FindProjectRoot(string startDir)
     {
@@ -180,7 +173,14 @@ public static class DocumentationExtensions
 
     private static IEnumerable<string> ExtractExecutionContextCalls(string fullClassName, string projectRoot, List<string> allCsFiles)
     {
-        var code = File.ReadAllText(FindSourceFile(fullClassName, projectRoot, allCsFiles));
+        var sourceFile = FindSourceFile(fullClassName, projectRoot, allCsFiles);
+
+        if (sourceFile == null)
+        {
+            yield break;
+        }
+
+        var code = File.ReadAllText(sourceFile);
         var handleBodyPattern = @"ExecutionContext[\s\S]*?\.Execute";
         var handleMatch = Regex.Match(code, handleBodyPattern);
 
