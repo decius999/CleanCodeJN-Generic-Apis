@@ -47,7 +47,8 @@ app.UseHttpsRedirection();
 
 app.UseCleanCodeJNWithMinimalApis();
 app.UseCleanCodeJNWithGraphQL();
-app.UseCleanCodeJNDocumentation();
+app.UseCleanCodeJNWithDocumentation();
+app.UseCleanCodeJNWithMcp();
 
 app.MapControllers();
 

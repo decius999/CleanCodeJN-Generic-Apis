@@ -49,7 +49,7 @@ public static class MinimalAPIExtensions
             service.Where = where;
             service.Select = select;
             return await service.Get<TKey>(asNoTracking, ignoreQueryFilters, asSplitQuery);
-        }).WithTags(tags.ToArray());
+        }).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), null, typeof(TKey), "LIST"));
 
     /// <summary>
     /// Maps a GET endpoint to retrieve a paged list of entities.
@@ -84,7 +84,7 @@ public static class MinimalAPIExtensions
             service.Where = where;
             service.Select = select;
             return await service.Get<TKey>(page, pageSize, direction, sortBy, asNoTracking, ignoreQueryFilters, asSplitQuery);
-        }).WithTags(tags.ToArray());
+        }).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), null, typeof(TKey), "LIST_PAGED"));
 
     /// <summary>
     /// Maps a GET endpoint to retrieve a filtered and paged list of entities.
@@ -119,7 +119,7 @@ public static class MinimalAPIExtensions
            service.Where = where;
            service.Select = select;
            return await service.Get<TKey>(page, pageSize, direction, sortBy, filter, asNoTracking, ignoreQueryFilters, asSplitQuery);
-       }).WithTags(tags.ToArray());
+       }).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), null, typeof(TKey), "LIST_FILTERED"));
 
     /// <summary>
     /// Maps a GET endpoint to retrieve a single entity by ID with a delegate.
@@ -167,7 +167,7 @@ public static class MinimalAPIExtensions
             service.Includes = includes;
             service.Where = where;
             return await service.Get(id, asNoTracking, ignoreQueryFilters, asSplitQuery);
-        }).WithTags(tags.ToArray());
+        }).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), null, typeof(TKey), "GET_BY_ID"));
 
     /// <summary>
     /// Maps a GET endpoint to retrieve a single entity by ID with a request.
@@ -208,7 +208,7 @@ public static class MinimalAPIExtensions
         where TEntity : class
         where TGetDto : class, IDto
         where TPutDto : class, IDto => app.MapPut(route, async (TPutDto dto, [FromServices] PutBase<TEntity, TPutDto, TGetDto> service) =>
-        await service.Put(dto)).WithTags(tags.ToArray());
+        await service.Put(dto)).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), typeof(TPutDto), null, "PUT"));
 
     /// <summary>
     /// Maps a PUT endpoint to update an entity with a delegate.
@@ -251,7 +251,8 @@ public static class MinimalAPIExtensions
        where TGetDto : class, IDto => app.MapPatch(route + "/{id}", async (TKey id, HttpContext httpContext, [FromServices] PatchBase<TEntity, TGetDto, TKey> service) =>
        await service.Patch(id, httpContext))
         .WithTags(tags.ToArray())
-        .Accepts<JsonPatchDocument<TEntity>>("application/json-patch+json");
+        .Accepts<JsonPatchDocument<TEntity>>("application/json-patch+json")
+        .WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), null, typeof(TKey), "PATCH"));
 
     /// <summary>
     /// Maps a PATCH endpoint to update an entity with a delegate.
@@ -297,7 +298,7 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapPost<TEntity, TPostDto, TGetDto>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
         where TGetDto : class, IDto
-        where TPostDto : class, IDto => app.MapPost(route, async (TPostDto dto, [FromServices] PostBase<TEntity, TPostDto, TGetDto> service) => await service.Post(dto)).WithTags(tags.ToArray());
+        where TPostDto : class, IDto => app.MapPost(route, async (TPostDto dto, [FromServices] PostBase<TEntity, TPostDto, TGetDto> service) => await service.Post(dto)).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), typeof(TPostDto), null, "POST"));
 
     /// <summary>
     /// Maps a POST endpoint to create an entity with a delegate.
@@ -337,7 +338,7 @@ public static class MinimalAPIExtensions
     /// <returns>Route handler builder.</returns>
     public static RouteHandlerBuilder MapDelete<TEntity, TGetDto, TKey>(this WebApplication app, string route, List<string> tags)
         where TEntity : class
-        where TGetDto : class, IDto => app.MapDelete(route, async (TKey id, [FromServices] DeleteBase<TEntity, TGetDto> service) => await service.Delete(id)).WithTags(tags.ToArray());
+        where TGetDto : class, IDto => app.MapDelete(route, async (TKey id, [FromServices] DeleteBase<TEntity, TGetDto> service) => await service.Delete(id)).WithTags(tags.ToArray()).WithMetadata(new API.CleanCodeEntityMetadata(typeof(TEntity), typeof(TGetDto), null, typeof(TKey), "DELETE"));
 
     /// <summary>
     /// Maps a DELETE endpoint to delete an entity by ID with a delegate.

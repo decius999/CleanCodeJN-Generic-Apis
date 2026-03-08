@@ -7,7 +7,7 @@ namespace CleanCodeJN.GenericApis.Extensions;
 
 public static class DocumentationExtensions
 {
-    public static IApplicationBuilder UseCleanCodeJNDocumentation(this WebApplication app)
+    public static IApplicationBuilder UseCleanCodeJNWithDocumentation(this WebApplication app)
     {
         app.MapGet($"/docs", async context =>
         {
