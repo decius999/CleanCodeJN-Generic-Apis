@@ -292,7 +292,7 @@ public static class McpExtensions
         return await ExecuteCrudToolViaHttp(toolName, entityName, args, services, httpContext);
     }
 
-    private static string? ResolveEntityNameFromToolName(string toolName)
+    internal static string? ResolveEntityNameFromToolName(string toolName)
     {
         if (toolName.StartsWith("list_"))
             return SnakeCaseToPascal(toolName["list_".Length..]);
@@ -457,7 +457,7 @@ public static class McpExtensions
             client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", (string?)auth);
     }
 
-    private static string RouteToSnakeCase(string route) =>
+    internal static string RouteToSnakeCase(string route) =>
         string.Join("_", route.Replace("{", "").Replace("}", "")
             .Split('/', StringSplitOptions.RemoveEmptyEntries));
 
@@ -498,7 +498,7 @@ public static class McpExtensions
             : new { type = "object", properties };
     }
 
-    private static string GetJsonType(Type type)
+    internal static string GetJsonType(Type type)
     {
         var t = Nullable.GetUnderlyingType(type) ?? type;
         if (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte)) return "integer";
@@ -536,7 +536,7 @@ public static class McpExtensions
     private static void SetProp(object obj, string propName, object? value) =>
         obj.GetType().GetProperty(propName)?.SetValue(obj, value);
 
-    private static string ToSnakeCase(string name)
+    internal static string ToSnakeCase(string name)
     {
         var sb = new StringBuilder();
         for (var i = 0; i < name.Length; i++)
@@ -548,7 +548,7 @@ public static class McpExtensions
         return sb.ToString();
     }
 
-    private static string SnakeCaseToPascal(string name) =>
+    internal static string SnakeCaseToPascal(string name) =>
         string.Concat(name.Split('_').Select(s => s.Length > 0 ? char.ToUpperInvariant(s[0]) + s[1..] : s));
 
     // ─── Response Helpers ───────────────────────────────────────────────────────
