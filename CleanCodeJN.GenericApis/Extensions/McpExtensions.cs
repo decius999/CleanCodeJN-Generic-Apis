@@ -590,13 +590,30 @@ public static class McpExtensions
     {
         var properties = new Dictionary<string, object>();
         var required = new List<string>();
+        var visited = new HashSet<Type>();
 
         var nullabilityCtx = new NullabilityInfoContext();
         foreach (var prop in dtoType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanWrite))
         {
             var camelName = JsonNamingPolicy.CamelCase.ConvertName(prop.Name);
             var description = GetXmlPropertyDescription(dtoType, prop) ?? $"{prop.Name} property.";
-            properties[camelName] = new { type = GetJsonType(prop.PropertyType), description };
+
+            var underlying = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+            var isPrimitive = underlying == typeof(string) || underlying == typeof(Guid)
+                || underlying == typeof(int) || underlying == typeof(long) || underlying == typeof(short) || underlying == typeof(byte)
+                || underlying == typeof(double) || underlying == typeof(float) || underlying == typeof(decimal)
+                || underlying == typeof(bool) || underlying == typeof(DateTime) || underlying == typeof(DateTimeOffset) || underlying == typeof(DateOnly);
+
+            if (isPrimitive)
+            {
+                properties[camelName] = new { type = GetJsonType(prop.PropertyType), description };
+            }
+            else
+            {
+                // Complex type or collection: build full nested schema
+                properties[camelName] = BuildPropertySchema(prop.PropertyType, visited);
+            }
+
             // Required: non-nullable value types, and reference types that are not explicitly nullable (string? etc.)
             var isExplicitlyNullable = Nullable.GetUnderlyingType(prop.PropertyType) != null
                 || nullabilityCtx.Create(prop).WriteState == NullabilityState.Nullable;

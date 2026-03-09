@@ -50,6 +50,25 @@
 
             <!-- Chat messages -->
             <MudPaper Elevation="0" Class="flex-grow-1 overflow-y-auto pa-2 mb-4" Style="background: transparent;" @ref="_chatContainer">
+
+                @if (_entries.Count == 0)
+                {
+                    <div class="d-flex flex-column align-center justify-center" style="height: 100%; gap: 24px; padding: 40px;">
+                        <img src="_content/CleanCodeJN.GenericApis.Chat/CleanCodeJN-Icon-Green.png" style="width: 180px; opacity: 0.9;" />
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="color: #81C784; font-weight: 600;">@Options.Value.Title</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" Style="color: #90A4AE; max-width: 520px; line-height: 1.7;">
+                            This assistant connects directly to your API and can query, create, update and delete data — just by chatting.
+                            It uses the available tools shown on the left to interact with your backend.
+                            Click a tool to insert it into your message, or just ask naturally.
+                        </MudText>
+                        <div class="d-flex flex-wrap justify-center gap-2" style="max-width: 480px;">
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Icon="@Icons.Material.Filled.Search">List all customers</MudChip>
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Icon="@Icons.Material.Filled.Add">Create a new invoice</MudChip>
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" Icon="@Icons.Material.Filled.TableChart">Show a summary table</MudChip>
+                        </div>
+                    </div>
+                }
+
                 @foreach (var entry in _entries)
                 {
                     @if (entry.Role == "user")
