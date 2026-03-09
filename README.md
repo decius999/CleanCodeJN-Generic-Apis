@@ -23,15 +23,9 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
     options.AddDefaultLoggingBehavior = true; // optional
 });
 
-// optional — only add what you need:
-builder.Services.AddControllers().AddNewtonsoftJson(); // controllers + PATCH support
-builder.Services.AddHttpClient("AiProxy");             // AI chat proxy
-builder.Services.Configure<AiProxyOptions>(builder.Configuration.GetSection("AiProxy"));
-builder.Services.AddScoped<AiProxyService>();
-
 var app = builder.Build();
 
-app.UseCleanCodeJNWithMinimalApis();   // REST: registers all IApi endpoints      → /api/...
+app.UseCleanCodeJNWithMinimalApis();   // REST: registers all IApi endpoints       → /api/...
 app.UseCleanCodeJNWithGraphQL();       // GraphQL: auto-schema from entities/DTOs  → /graphql
 app.UseCleanCodeJNWithMcp();           // MCP Server: every endpoint = AI tool     → /mcp
 app.UseCleanCodeJNWithDocumentation(); // IOSP command docs from XML comments      → /docs
@@ -82,17 +76,16 @@ public class DeleteCustomerCommand(ICommandExecutionContext ctx)
 | `UseCleanCodeJNWithDocumentation()` | IOSP command docs | `/docs` |
 | `AddCleanCodeJNWithAiChat()` _(Blazor WASM)_ | AI Chat UI connected to your MCP backend | `/ai` |
 
-### 3. `appsettings.json` — AI Proxy config (only if using `/ai`)
+### 3. `Program.cs` — AI Proxy config (only if using `/ai`)
 
-```json
-{
-  "AiProxy": {
-    "AnthropicApiKey": "sk-ant-...",
-    "Model": "claude-opus-4-5",
-    "MaxTokens": 8096,
-    "SelfBaseUrl": "https://localhost:7132"
-  }
-}
+```csharp
+    options.AiProxyOptions = new AiProxyOptions
+    {
+        AnthropicApiKey = configuration["Anthropic:ApiKey"],
+        SelfBaseUrl = configuration["SelfBaseUrl"],
+        Model = "claude-sonnet-4-6",
+        MaxTokens = 4096,
+    };
 ```
 
 ### 4. The three building blocks
