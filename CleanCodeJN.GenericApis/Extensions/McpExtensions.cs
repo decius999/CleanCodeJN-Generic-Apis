@@ -282,6 +282,13 @@ public static class McpExtensions
                         BuildDtoSchema(meta.WriteType), singleSchema);
                     break;
 
+                case "PATCH" when meta.KeyType != null:
+                    covered.Add(toolName);
+                    yield return MakeTool(toolName,
+                        description ?? $"Partially update an existing {entityName}. Provide only the fields you want to change.",
+                        BuildPatchSchema(meta.KeyType, getDtoType), singleSchema);
+                    break;
+
                 case "DELETE" when meta.KeyType != null:
                     covered.Add(toolName);
                     yield return MakeTool(toolName,
@@ -456,6 +463,25 @@ public static class McpExtensions
         {
             req = new HttpRequestMessage(new HttpMethod(httpMethod), fullUrl);
         }
+        else if (httpMethod is "PATCH")
+        {
+            // JSON Patch (RFC 6902): convert flat args into replace-operations array
+            var ops = new JsonArray();
+            foreach (var kv in nonRouteArgs)
+            {
+                ops.Add(new JsonObject
+                {
+                    ["op"] = "replace",
+                    ["path"] = "/" + kv.Key,
+                    ["value"] = kv.Value?.DeepClone()
+                });
+            }
+
+            req = new HttpRequestMessage(new HttpMethod(httpMethod), fullUrl)
+            {
+                Content = new StringContent(ops.ToJsonString(), Encoding.UTF8, "application/json-patch+json")
+            };
+        }
         else
         {
             var body = new JsonObject();
@@ -626,6 +652,30 @@ public static class McpExtensions
         return required.Count > 0
             ? (new { type = "object", properties, required })
             : new { type = "object", properties };
+    }
+
+    /// <summary>
+    /// Builds the input schema for a PATCH tool: id is required, all other DTO fields are optional.
+    /// The AI provides only the fields it wants to update; the executor converts them to JSON Patch replace-ops.
+    /// </summary>
+    private static object BuildPatchSchema(Type keyType, Type getDtoType)
+    {
+        var properties = new Dictionary<string, object>
+        {
+            ["id"] = new { type = GetJsonType(keyType), description = "The identifier of the entity to patch." }
+        };
+
+        var visited = new HashSet<Type>();
+        foreach (var prop in getDtoType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead))
+        {
+            var camelName = JsonNamingPolicy.CamelCase.ConvertName(prop.Name);
+            if (camelName == "id")
+                continue;
+
+            properties[camelName] = BuildPropertySchema(prop.PropertyType, visited);
+        }
+
+        return new { type = "object", properties, required = new[] { "id" } };
     }
 
     internal static string GetJsonType(Type type)
