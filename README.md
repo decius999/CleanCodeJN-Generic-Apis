@@ -25,10 +25,11 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 
 var app = builder.Build();
 
-app.UseCleanCodeJNWithMinimalApis();   // REST: registers all IApi endpoints       → /api/...
-app.UseCleanCodeJNWithGraphQL();       // GraphQL: auto-schema from entities/DTOs  → /graphql
-app.UseCleanCodeJNWithMcp();           // MCP Server: every endpoint = AI tool     → /mcp
-app.UseCleanCodeJNWithDocumentation(); // IOSP command docs from XML comments      → /docs
+app.UseCleanCodeJNWithMinimalApis();   // REST: registers all IApi endpoints        → /api/...
+app.UseCleanCodeJNWithGraphQL();       // GraphQL: auto-schema from entities/DTOs   → /graphql
+app.UseCleanCodeJNWithMcp();           // MCP Server: every endpoint = AI tool      → /mcp
+app.UseCleanCodeJNWithDocumentation(); // IOSP command docs from XML comments       → /docs
+app.UseCleanCodeJNWithAiChat();        // AI chat with your API based on MCP server → /ai
 app.MapControllers();
 
 app.Run();
