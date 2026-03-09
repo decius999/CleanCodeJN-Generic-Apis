@@ -12,6 +12,6 @@ public class CustomerPutDtoValidator : AbstractValidator<CustomerPutDto>
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(10);
+            .MaximumLength(100);
     }
 }

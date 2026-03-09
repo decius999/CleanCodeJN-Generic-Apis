@@ -7,5 +7,5 @@ public class CustomerPostDtoValidator : AbstractValidator<CustomerPostDto>
 {
     public CustomerPostDtoValidator() => RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(10);
+            .MaximumLength(100);
 }
