@@ -1,16 +1,22 @@
 ﻿using CleanCodeJN.GenericApis.Sample.Domain;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace CleanCodeJN.GenericApis.Sample.DataAccess;
 
-public class MyDbContext : DbContext, IDataContext
+public class MyDbContext(IConfiguration configuration) : DbContext, IDataContext
 {
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseInMemoryDatabase("MyDatabase");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
+                .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                .EnableDetailedErrors()
+                .EnableSensitiveDataLogging()
+                .LogTo(Console.WriteLine, LogLevel.Information);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +48,16 @@ public class MyDbContext : DbContext, IDataContext
             HouseNo = $"HouseNo_3",
             Zip = "Zip_3",
             City = "City_3",
+        });
+
+        modelBuilder.Entity<Customer>().OwnsOne(p => p.AddressInfo).HasData(new
+        {
+            Id = 4,
+            CustomerId = 4,
+            Street = string.Empty,
+            HouseNo = string.Empty,
+            Zip = string.Empty,
+            City = string.Empty,
         });
 
         modelBuilder.Entity<Customer>().HasData(new Customer

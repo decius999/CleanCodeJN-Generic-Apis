@@ -18,7 +18,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 
 builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 {
-    options.MappingOverrides = AutomapperExtensions.Mapping();
     options.ApplicationAssemblies =
     [
         typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
@@ -61,7 +60,7 @@ app.UseCleanCodeJNWithAiChat();
 
 app.MapControllers();
 
-// For seeding of in-memory db only
+// For seeding of db only
 app.EnsureDatabaseCreated();
 
 app.Run();
