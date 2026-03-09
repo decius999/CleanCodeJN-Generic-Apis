@@ -14,7 +14,7 @@ public static class AiProxyExtensions
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public static WebApplication UseCleanCodeJNWithAiProxy(this WebApplication app)
+    public static WebApplication UseCleanCodeJNWithAiChat(this WebApplication app)
     {
         app.UseCors("BlazorChat");
 

@@ -18,6 +18,7 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 
 builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 {
+    options.MappingOverrides = AutomapperExtensions.Mapping();
     options.ApplicationAssemblies =
     [
         typeof(CleanCodeJN.GenericApis.Sample.Business.AssemblyRegistration).Assembly,
@@ -56,7 +57,7 @@ app.UseCleanCodeJNWithMinimalApis();
 app.UseCleanCodeJNWithGraphQL();
 app.UseCleanCodeJNWithDocumentation();
 app.UseCleanCodeJNWithMcp();
-app.UseCleanCodeJNWithAiProxy();
+app.UseCleanCodeJNWithAiChat();
 
 app.MapControllers();
 
