@@ -1,4 +1,5 @@
 ﻿using CleanCodeJN.GenericApis.Chat.Models;
+using Markdig;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
@@ -11,6 +12,7 @@ public partial class AiChatPage
     private string _input = string.Empty;
     private bool _isStreaming;
     private bool _focusInput;
+    private bool _drawerOpen = true;
     private MudPaper _chatContainer;
     private MudTextField<string> _inputField;
 
@@ -27,6 +29,20 @@ public partial class AiChatPage
             if (_inputField is not null)
                 await _inputField.FocusAsync();
         }
+    }
+
+    private static readonly MarkdownPipeline _markdownPipeline =
+        new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
+    private static string RenderMarkdown(string text) =>
+        string.IsNullOrEmpty(text) ? string.Empty : Markdown.ToHtml(text, _markdownPipeline);
+
+    private void InsertToolName(string toolName)
+    {
+        _input = string.IsNullOrWhiteSpace(_input)
+            ? $"Use {toolName} "
+            : _input.TrimEnd() + $" Use {toolName} ";
+        _focusInput = true;
     }
 
     private async Task OnKeyDown(KeyboardEventArgs e)
