@@ -22,8 +22,10 @@ public class CustomersV1Api : IApi
             Tags,
             where: x => x.Name.StartsWith("Customer"),
             includes: [x => x.Invoices],
-            select: x => new Customer { Id = x.Id, Name = x.Name },
-            ignoreQueryFilters: true),
+            //select: x => new Customer { Id = x.Id, Name = x.Name },
+            ignoreQueryFilters: true)
+                .WithSummary("Get all customers including invoices")
+                .WithDescription("Returns a list of all customers which starts with Customer in their Name including their invoices."),
 
         app => app.MapGetRequest(Route + "/cached", Tags, async ([FromServices] ApiBase api) =>
                 await api.Handle<Customer, List<CustomerGetDto>>(new CachedCustomerRequest()))

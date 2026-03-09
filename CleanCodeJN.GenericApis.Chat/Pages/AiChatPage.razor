@@ -1,0 +1,106 @@
+@page "/ai"
+@using CleanCodeJN.GenericApis.Chat.Models
+@using CleanCodeJN.GenericApis.Chat.Services
+@using Microsoft.Extensions.Options
+@using MudBlazor
+@inject ChatService ChatService
+@inject IOptions<ChatOptions> Options
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIcon Icon="@Icons.Material.Filled.SmartToy" Class="mr-2" />
+        <MudText Typo="Typo.h6">@Options.Value.Title</MudText>
+    </MudAppBar>
+
+    <MudDrawer Open="true" Variant="DrawerVariant.Persistent" Width="420px" Elevation="1">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.subtitle1" Class="mt-2"><b>Available Tools</b></MudText>
+        </MudDrawerHeader>
+        <MudDivider />
+        <div style="padding: 8px; display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start; width: 100%; overflow-y: auto; flex: 1 1 auto;">
+            @if (_tools.Count == 0)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Loading tools...</MudText>
+            }
+            @foreach (var tool in _tools)
+            {
+                <MudTooltip Text="@tool.Description" Placement="Placement.Right">
+                    <MudChip T="string" Icon="@Icons.Material.Filled.Build" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">
+                        @tool.Name
+                    </MudChip>
+                </MudTooltip>
+            }
+        </div>
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pa-4" Style="height: calc(100vh - 64px); display: flex; flex-direction: column;">
+
+            <!-- Chat messages -->
+            <MudPaper Elevation="0" Class="flex-grow-1 overflow-y-auto pa-2 mb-4" Style="background: transparent;" @ref="_chatContainer">
+                @foreach (var entry in _entries)
+                {
+                    @if (entry.Role == "user")
+                    {
+                        <div class="d-flex justify-end mb-3">
+                            <MudPaper Elevation="2" Class="pa-3 mud-theme-primary" Style="max-width: 70%; border-radius: 16px 16px 4px 16px;">
+                                <MudText Typo="Typo.body1" Style="white-space: pre-wrap;">@entry.Text</MudText>
+                            </MudPaper>
+                        </div>
+                    }
+                    else if (entry.Role == "assistant" && (entry.IsStreaming || !string.IsNullOrEmpty(entry.Text)))
+                    {
+                        <div class="d-flex justify-start mb-3">
+                            <MudAvatar Color="Color.Secondary" Class="mr-2 mt-1" Size="Size.Small">
+                                <MudIcon Icon="@Icons.Material.Filled.SmartToy" />
+                            </MudAvatar>
+                            <MudPaper Elevation="2" Class="pa-3" Style="max-width: 70%; border-radius: 16px 16px 16px 4px;">
+                                <MudText Typo="Typo.body1" Style="white-space: pre-wrap;">@entry.Text</MudText>
+                                @if (entry.IsStreaming)
+                                {
+                                    <MudProgressLinear Color="Color.Secondary" Indeterminate="true" Class="mt-1" Style="height: 2px;" />
+                                }
+                            </MudPaper>
+                        </div>
+                    }
+                    else if (Options.Value.ShowToolCalls && entry.Role == "tool_call")
+                    {
+                        <div class="d-flex justify-start mb-1 ml-8">
+                            <MudChip T="string" Icon="@Icons.Material.Filled.Build" Color="Color.Warning" Size="Size.Small" Variant="Variant.Outlined">
+                                Calling: @entry.ToolName
+                            </MudChip>
+                        </div>
+                    }
+                    else if (Options.Value.ShowToolCalls && entry.Role == "tool_result")
+                    {
+                        <div class="d-flex justify-start mb-2 ml-8">
+                            <MudChip T="string" Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Small" Variant="Variant.Outlined">
+                                Done: @entry.ToolName
+                            </MudChip>
+                        </div>
+                    }
+                }
+            </MudPaper>
+
+            <!-- Input area -->
+            <MudPaper Elevation="2" Class="pa-3" Style="border-radius: 16px;">
+                <div class="d-flex align-center gap-2">
+                    <MudTextField @bind-Value="_input"
+                                  @ref="_inputField"
+                                  Placeholder="Ask anything..."
+                                  Variant="Variant.Text"
+                                  Class="flex-grow-1"
+                                  Lines="1"
+                                  OnKeyDown="@OnKeyDown"
+                                  Immediate="true"
+                                  Disabled="_isStreaming" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Send"
+                                   Color="Color.Primary"
+                                   OnClick="SendMessage"
+                                   Disabled="@(_isStreaming || string.IsNullOrWhiteSpace(_input))" />
+                </div>
+            </MudPaper>
+
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

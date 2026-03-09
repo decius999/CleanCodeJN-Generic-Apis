@@ -47,4 +47,9 @@ public class CleanCodeOptions
     /// Gets or sets a value indicating whether GraphQL auto-wiring is enabled.
     /// </summary>
     public GraphQLOptions GraphQLOptions { get; set; }
+
+    /// <summary>
+    /// Options for AI Proxy
+    /// </summary>
+    public AiProxyOptions AiProxyOptions { get; set; }
 }

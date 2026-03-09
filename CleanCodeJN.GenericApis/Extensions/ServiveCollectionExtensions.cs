@@ -6,12 +6,14 @@ using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Behaviors;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Context;
+using CleanCodeJN.GenericApis.Services;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using FluentValidation;
 using HotChocolate.Execution.Configuration;
 using MediatR;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Options;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
@@ -82,6 +84,27 @@ public static class ServiveCollectionExtensions
             schema.AddGraphQLCreate(assemblies, options.GraphQLOptions);
             schema.AddGraphQLUpdate(assemblies, options.GraphQLOptions);
             schema.AddGraphQLDelete(assemblies, options.GraphQLOptions);
+        }
+
+        if (options.AiProxyOptions is not null)
+        {
+            services.AddHttpClient("AiProxy")
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            });
+            services.AddScoped(sp =>
+                  new AiProxyService(
+                      Options.Create(options.AiProxyOptions),
+                      sp.GetRequiredService<IHttpClientFactory>(),
+                      sp.GetRequiredService<ILogger<AiProxyService>>()
+                  ));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("BlazorChat", policy =>
+                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
         }
 
         services

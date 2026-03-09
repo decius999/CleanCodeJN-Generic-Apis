@@ -33,6 +33,13 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Delete = true,
         EnableIntrospection = true,
     };
+    options.AiProxyOptions = new AiProxyOptions
+    {
+        AnthropicApiKey = configuration["Anthropic:ApiKey"],
+        SelfBaseUrl = configuration["SelfBaseUrl"],
+        Model = "claude-sonnet-4-6",
+        MaxTokens = 4096,
+    };
 });
 
 var app = builder.Build();
@@ -49,6 +56,7 @@ app.UseCleanCodeJNWithMinimalApis();
 app.UseCleanCodeJNWithGraphQL();
 app.UseCleanCodeJNWithDocumentation();
 app.UseCleanCodeJNWithMcp();
+app.UseCleanCodeJNWithAiProxy();
 
 app.MapControllers();
 
@@ -56,4 +64,3 @@ app.MapControllers();
 app.EnsureDatabaseCreated();
 
 app.Run();
-

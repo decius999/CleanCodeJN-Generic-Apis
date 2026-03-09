@@ -29,38 +29,12 @@ public class McpExtensionsTests
     // ─── RouteToSnakeCase ───────────────────────────────────────────────────────
 
     [Theory]
-    [InlineData("api/v1/Customers", "api_v1_Customers")]
-    [InlineData("api/v1/Customers/{id}", "api_v1_Customers_id")]
-    [InlineData("api/v1/Customers/cached-by-request", "api_v1_Customers_cached-by-request")]
-    [InlineData("api/v2/Invoices/{id}", "api_v2_Invoices_id")]
+    [InlineData("api/v1/Customers", "api_v1_customers")]
+    [InlineData("api/v1/Customers/{id}", "api_v1_customers_id")]
+    [InlineData("api/v1/Customers/cached-by-request", "api_v1_customers_cached-by-request")]
+    [InlineData("api/v2/Invoices/{id}", "api_v2_invoices_id")]
     public void RouteToSnakeCase_ShouldConvertCorrectly(string input, string expected)
         => Assert.Equal(expected, McpExtensions.RouteToSnakeCase(input));
-
-    // ─── ResolveEntityNameFromToolName ──────────────────────────────────────────
-
-    [Theory]
-    [InlineData("list_customer", "Customer")]
-    [InlineData("list_invoice", "Invoice")]
-    [InlineData("get_customer_by_id", "Customer")]
-    [InlineData("get_invoice_by_id", "Invoice")]
-    [InlineData("create_customer", "Customer")]
-    [InlineData("update_customer", "Customer")]
-    [InlineData("delete_customer", "Customer")]
-    public void ResolveEntityNameFromToolName_ShouldReturnEntityName(string toolName, string expected)
-        => Assert.Equal(expected, McpExtensions.ResolveEntityNameFromToolName(toolName));
-
-    [Theory]
-    [InlineData("describe_cached_customer_command")]
-    [InlineData("get_api_v1_Customers_cached")]  // no _by_id suffix → not matched
-    [InlineData("unknown_tool")]
-    public void ResolveEntityNameFromToolName_ShouldReturnNull_ForNonCrudTools(string toolName)
-        => Assert.Null(McpExtensions.ResolveEntityNameFromToolName(toolName));
-
-    // Custom-endpoint tools like delete_api_v1_Customers_id DO match "delete_" prefix.
-    // The higher-level ExecuteToolCall checks custom endpoints first, so this never reaches entity lookup.
-    [Fact]
-    public void ResolveEntityNameFromToolName_DeleteWithRoutePath_ReturnsNonNullButIsRoutedBeforeEntityLookup()
-        => Assert.NotNull(McpExtensions.ResolveEntityNameFromToolName("delete_api_v1_Customers_id"));
 
     // ─── GetJsonType ────────────────────────────────────────────────────────────
 

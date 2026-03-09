@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
-    <PackageReleaseNotes>DTOs can be documented via XML comments and the mcp server will fetch these comments.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added /ai page for using MCP Server with AI.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>5.1.1</VersionPrefix>
+    <VersionPrefix>5.2.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,6 +45,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Formats.Asn1" Version="10.0.3" />
     <PackageReference Include="System.Text.Json" Version="10.0.3" />
+    <PackageReference Include="Anthropic.SDK" Version="5.10.0" />
   </ItemGroup>
 
 
