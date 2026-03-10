@@ -131,7 +131,7 @@ public class CustomersApi : IApi
 | `UseCleanCodeJNWithMcp()` | MCP Server (AI-callable tools) | `/mcp` |
 | `UseCleanCodeJNWithDocumentation()` | Automatic documentation from XML comments | `/docs` |
 | `UseCleanCodeJNWithAiChat()` | AI chat with your API based on MCP server | `/ai` |
----
+
 
 ## Table of Contents
 
