@@ -254,11 +254,36 @@ public static class McpExtensions
 
             switch (meta.Operation)
             {
-                case "LIST" or "LIST_PAGED":
+                case "LIST":
                     covered.Add(toolName);
                     yield return MakeTool(toolName,
                         description ?? $"Retrieve all {entityName} records.",
                         BuildSchema(), listSchema);
+                    break;
+
+                case "LIST_PAGED":
+                    covered.Add(toolName);
+                    yield return MakeTool(toolName,
+                        description ?? $"Retrieve a paged list of {entityName} records.",
+                        BuildSchema(
+                            ("page", "integer", "Page number (1-based).", true),
+                            ("pageSize", "integer", "Number of records per page.", true),
+                            ("direction", "string", "Sort direction: 'asc' or 'desc'.", true),
+                            ("sortBy", "string", $"Property name of {entityName} to sort by.", true)),
+                        listSchema);
+                    break;
+
+                case "LIST_FILTERED":
+                    covered.Add(toolName);
+                    yield return MakeTool(toolName,
+                        description ?? $"Retrieve a filtered and paged list of {entityName} records.",
+                        BuildSchema(
+                            ("page", "integer", "Page number (1-based).", true),
+                            ("pageSize", "integer", "Number of records per page.", true),
+                            ("direction", "string", "Sort direction: 'asc' or 'desc'.", true),
+                            ("sortBy", "string", $"Property name of {entityName} to sort by.", true),
+                            ("filter", "string", "Filter string applied server-side.", true)),
+                        listSchema);
                     break;
 
                 case "GET_BY_ID" when meta.KeyType != null:

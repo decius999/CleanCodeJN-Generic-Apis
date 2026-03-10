@@ -69,14 +69,6 @@ public class DeleteCustomerCommand(ICommandExecutionContext ctx)
 }
 ```
 
-| `Use*` call | What it adds | Endpoint |
-|---|---|---|
-| `UseCleanCodeJNWithMinimalApis()` | All `IApi` REST endpoints | `/api/...` + Swagger |
-| `UseCleanCodeJNWithGraphQL()` | Auto-generated GraphQL | `/graphql` |
-| `UseCleanCodeJNWithMcp()` | AI-callable MCP tools | `/mcp` |
-| `UseCleanCodeJNWithDocumentation()` | IOSP command docs | `/docs` |
-| `AddCleanCodeJNWithAiChat()` _(Blazor WASM)_ | AI Chat UI connected to your MCP backend | `/ai` |
-
 ### 3. `Program.cs` — AI Proxy config (only if using `/ai`)
 
 ```csharp
@@ -134,11 +126,11 @@ public class CustomersApi : IApi
 
 | Call | Activates | Visit |
 |---|---|---|
-| `UseCleanCodeJNWithMinimalApis()` | All `IApi` REST endpoints | `/api/docs` (Swagger) |
+| `UseCleanCodeJNWithMinimalApis()` | All `IApi` REST endpoints | `/api` + /swagger |
 | `UseCleanCodeJNWithGraphQL()` | Auto-generated GraphQL schema | `/graphql` |
 | `UseCleanCodeJNWithMcp()` | MCP Server (AI-callable tools) | `/mcp` |
-| `UseCleanCodeJNWithDocumentation()` | IOSP command docs from XML | `/docs` |
-
+| `UseCleanCodeJNWithDocumentation()` | Automatic documentation from XML comments | `/docs` |
+| `UseCleanCodeJNWithAiChat()` | AI chat with your API based on MCP server | `/ai` |
 ---
 
 ## Table of Contents
