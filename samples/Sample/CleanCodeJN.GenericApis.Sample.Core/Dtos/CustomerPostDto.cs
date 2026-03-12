@@ -2,6 +2,9 @@
 
 namespace CleanCodeJN.GenericApis.Sample.Core.Dtos;
 
+/// <summary>
+/// Data transfer object used when creating a new customer via the API.
+/// </summary>
 public class CustomerPostDto : IDto
 {
     /// <summary>Full name of the customer, e.g. 'Acme Corp'. Maximum 100 characters.</summary>

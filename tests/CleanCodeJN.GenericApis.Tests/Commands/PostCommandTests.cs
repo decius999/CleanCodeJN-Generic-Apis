@@ -8,8 +8,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Commands;
 
+/// <summary>
+/// Contains unit tests for <see cref="PostCommand{TEntity, TDto, TKey}"/>.
+/// </summary>
 public class PostCommandTests
 {
+    /// <summary>
+    /// Verifies that the handler maps the DTO, creates the entity, and returns a success response.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenEntityIsCreated()
     {
@@ -47,6 +53,9 @@ public class PostCommandTests
         Assert.Equal(testEntity, response.Data);
     }
 
+    /// <summary>
+    /// Verifies that the handler returns a bad-request failure response when validation fails.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenValidationFails()
     {
@@ -83,14 +92,30 @@ public class PostCommandTests
         Assert.Null(response.Data);
     }
 
+    /// <summary>
+    /// A simple test entity used as a stand-in for real domain entities within post command tests.
+    /// </summary>
     public class TestEntity : IEntity<int>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the test entity.
+        /// </summary>
         public string Name { get; set; }
     }
 
+    /// <summary>
+    /// A simple DTO used to supply data for creating a test entity.
+    /// </summary>
     public class TestDto
     {
+        /// <summary>
+        /// Gets or sets the name value supplied in the DTO.
+        /// </summary>
         public string Name { get; set; }
     }
 }

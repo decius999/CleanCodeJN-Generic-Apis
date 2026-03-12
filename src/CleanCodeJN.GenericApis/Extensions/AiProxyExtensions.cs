@@ -6,6 +6,9 @@ using CleanCodeJN.GenericApis.Services;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Provides extension methods to register the AI chat proxy endpoints on the web application.
+/// </summary>
 public static class AiProxyExtensions
 {
     private static readonly JsonSerializerOptions CamelCase = new()
@@ -14,6 +17,11 @@ public static class AiProxyExtensions
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
+    /// <summary>
+    /// Registers the <c>/ai/chat</c> SSE streaming endpoint and the <c>/ai/test</c> connectivity test endpoint.
+    /// </summary>
+    /// <param name="app">The web application to configure.</param>
+    /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
     public static WebApplication UseCleanCodeJNWithAiChat(this WebApplication app)
     {
         app.UseCors("BlazorChat");

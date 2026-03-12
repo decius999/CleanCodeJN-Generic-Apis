@@ -5,6 +5,9 @@ using CleanCodeJN.Repository.EntityFramework.Contracts;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Provides Entity Framework query extension methods for ordering, filtering, and paging queryable sources.
+/// </summary>
 public static class EFQueryExtensions
 {
     /// <summary>

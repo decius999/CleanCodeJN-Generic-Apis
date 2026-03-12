@@ -9,12 +9,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanCodeJN.GenericApis.Sample.Apis;
 
+/// <summary>
+/// Defines the minimal API endpoints for customer operations at version 1.
+/// </summary>
 public class CustomersV1Api : IApi
 {
+    /// <summary>
+    /// Gets the OpenAPI tags applied to all endpoints defined by this API.
+    /// </summary>
     public List<string> Tags => ["Customers Minimal API"];
 
+    /// <summary>
+    /// Gets the base route prefix used for all customer endpoints.
+    /// </summary>
     public string Route => $"api/v1/Customers";
 
+    /// <summary>
+    /// Gets the collection of HTTP method registrations that define each endpoint.
+    /// </summary>
     public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
     [
         app => app.MapGet<Customer, CustomerGetDto, int>(

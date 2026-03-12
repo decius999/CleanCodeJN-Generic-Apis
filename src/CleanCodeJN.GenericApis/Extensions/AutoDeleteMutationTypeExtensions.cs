@@ -2,6 +2,11 @@
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Automatically registers a GraphQL mutation field for deleting an entity of type <typeparamref name="TEntity"/> by its ID.
+/// </summary>
+/// <typeparam name="TEntity">The entity type to delete.</typeparam>
+/// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
 public class AutoDeleteMutationTypeExtensions<TEntity, TKey>(GraphQLOptions options) : ObjectTypeExtension
     where TEntity : class, IEntity<TKey>
 {

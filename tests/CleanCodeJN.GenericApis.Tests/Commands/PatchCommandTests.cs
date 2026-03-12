@@ -9,8 +9,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Commands;
 
+/// <summary>
+/// Contains unit tests for <see cref="PatchCommand{TEntity, TKey}"/>.
+/// </summary>
 public class PatchCommandTests
 {
+    /// <summary>
+    /// Verifies that the handler applies a patch document and returns the updated entity.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenPatchDocumentIsApplied()
     {
@@ -46,6 +52,9 @@ public class PatchCommandTests
         Assert.Equal("New Name", response.Data.Name);
     }
 
+    /// <summary>
+    /// Verifies that the handler reads and applies a patch document from an HTTP context body.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenPatchDocumentIsReadFromHttpContext()
     {
@@ -87,9 +96,19 @@ public class PatchCommandTests
         Assert.Equal("New Name", response.Data.Name);
     }
 
+    /// <summary>
+    /// A simple test entity with a name property, used within patch command tests.
+    /// </summary>
     public class TestEntity : IEntity<int>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the test entity.
+        /// </summary>
         public string Name { get; set; }
     }
 }

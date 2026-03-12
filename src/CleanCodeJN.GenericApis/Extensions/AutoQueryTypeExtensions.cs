@@ -1,9 +1,15 @@
-﻿using AutoMapper;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Automatically registers a GraphQL query field for retrieving entities of type <typeparamref name="TEntity"/> with sorting and pagination.
+/// </summary>
+/// <typeparam name="TDto">The DTO type projected and returned by the query.</typeparam>
+/// <typeparam name="TEntity">The entity type to query.</typeparam>
+/// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
 public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options) : ObjectTypeExtension
      where TEntity : class, IEntity<TKey>
 {
@@ -47,18 +53,37 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
     }
 }
 
+/// <summary>
+/// Specifies the sort direction for a GraphQL query ordering argument.
+/// </summary>
 public enum SortDirection
 {
+    /// <summary>Ascending sort order.</summary>
     ASC,
+    /// <summary>Descending sort order.</summary>
     DESC
 }
 
+/// <summary>
+/// Represents a sort specification with a field name and direction used in GraphQL query ordering.
+/// </summary>
 public class SortInput
 {
+    /// <summary>
+    /// Gets or sets the property name of the entity to sort by.
+    /// </summary>
     public string Field { get; set; } = "";
+
+    /// <summary>
+    /// Gets or sets the sort direction for the field.
+    /// </summary>
     public SortDirection Direction { get; set; } = SortDirection.ASC;
 }
 
+/// <summary>
+/// A GraphQL input object type for specifying sort order on <typeparamref name="TEntity"/> queries.
+/// </summary>
+/// <typeparam name="TEntity">The entity type whose fields can be used for sorting.</typeparam>
 public class CustomSortInputType<TEntity> : InputObjectType<SortInput>
 {
     protected override void Configure(IInputObjectTypeDescriptor<SortInput> descriptor)

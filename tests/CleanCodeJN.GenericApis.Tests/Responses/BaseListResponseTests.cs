@@ -3,8 +3,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Responses;
 
+/// <summary>
+/// Contains unit tests for <see cref="BaseListResponse{T}"/> factory methods and property behaviour.
+/// </summary>
 public class BaseListResponseTests
 {
+    /// <summary>
+    /// Verifies that creating a list response with <see cref="ResultEnum.SUCCESS"/> sets all properties correctly.
+    /// </summary>
     [Fact]
     public async Task Create_WithResultEnum_Success_ShouldSetCorrectProperties()
     {
@@ -18,6 +24,9 @@ public class BaseListResponseTests
         Assert.Equal(2, response.Count);
     }
 
+    /// <summary>
+    /// Verifies that a list response created with a failure result enum is marked as not succeeded.
+    /// </summary>
     [Fact]
     public async Task Create_WithResultEnum_Failure_ShouldSetCorrectProperties()
     {
@@ -29,6 +38,9 @@ public class BaseListResponseTests
         Assert.Equal("not found", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that passing <c>true</c> to the bool overload results in a success list response.
+    /// </summary>
     [Fact]
     public async Task Create_WithBoolTrue_ShouldSetSuccess()
     {
@@ -41,6 +53,9 @@ public class BaseListResponseTests
         Assert.Equal(data, response.Data);
     }
 
+    /// <summary>
+    /// Verifies that passing <c>false</c> to the bool overload results in a bad-request failure list response.
+    /// </summary>
     [Fact]
     public async Task Create_WithBoolFalse_ShouldSetFailure()
     {
@@ -51,6 +66,9 @@ public class BaseListResponseTests
         Assert.Null(response.Data);
     }
 
+    /// <summary>
+    /// Verifies that the interrupt flag is set when the list response is created with interrupt set to true.
+    /// </summary>
     [Fact]
     public async Task Create_WithInterruptTrue_ShouldSetInterruptFlag()
     {
@@ -59,6 +77,9 @@ public class BaseListResponseTests
         Assert.True(response.Interrupt);
     }
 
+    /// <summary>
+    /// Verifies that a success list response with an empty data collection is valid and contains no items.
+    /// </summary>
     [Fact]
     public async Task Create_WithEmptyList_ShouldSucceedWithEmptyData()
     {
@@ -68,6 +89,9 @@ public class BaseListResponseTests
         Assert.Empty(response.Data);
     }
 
+    /// <summary>
+    /// Verifies that the info string is correctly stored on the list response when specified.
+    /// </summary>
     [Fact]
     public async Task Create_WithInfo_ShouldSetInfo()
     {
@@ -76,6 +100,9 @@ public class BaseListResponseTests
         Assert.Equal("someBlock", response.Info);
     }
 
+    /// <summary>
+    /// Verifies that the <c>Succeeded</c> flag on a list response correctly reflects each possible <see cref="ResultEnum"/> value.
+    /// </summary>
     [Theory]
     [InlineData(ResultEnum.SUCCESS, true)]
     [InlineData(ResultEnum.SUCCESS_CREATED, true)]
@@ -89,8 +116,14 @@ public class BaseListResponseTests
         Assert.Equal(expectedSucceeded, response.Succeeded);
     }
 
+    /// <summary>
+    /// A minimal test entity used as a generic type argument within base list response tests.
+    /// </summary>
     public class TestEntity
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
     }
 }

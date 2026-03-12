@@ -546,6 +546,11 @@ public static class McpExtensions
         }
     }
 
+    /// <summary>
+    /// Converts an ASP.NET Core route pattern string (e.g. "api/customer/{id}") to a snake_case tool name.
+    /// </summary>
+    /// <param name="route">The route pattern string to convert.</param>
+    /// <returns>A snake_case string suitable for use as an MCP tool name.</returns>
     internal static string RouteToSnakeCase(string route) =>
         string.Join("_", route.Replace("{", "").Replace("}", "")
             .Split('/', StringSplitOptions.RemoveEmptyEntries))
@@ -703,6 +708,11 @@ public static class McpExtensions
         return new { type = "object", properties, required = new[] { "id" } };
     }
 
+    /// <summary>
+    /// Returns the JSON Schema type string ("string", "integer", "number", "boolean", or "array") for a .NET type.
+    /// </summary>
+    /// <param name="type">The .NET type to map.</param>
+    /// <returns>A JSON Schema type string representing the .NET type.</returns>
     internal static string GetJsonType(Type type)
     {
         var t = Nullable.GetUnderlyingType(type) ?? type;
@@ -760,6 +770,11 @@ public static class McpExtensions
     private static void SetProp(object obj, string propName, object? value) =>
         obj.GetType().GetProperty(propName)?.SetValue(obj, value);
 
+    /// <summary>
+    /// Converts a PascalCase or camelCase name to snake_case.
+    /// </summary>
+    /// <param name="name">The name to convert.</param>
+    /// <returns>The snake_case representation of the name.</returns>
     internal static string ToSnakeCase(string name)
     {
         var sb = new StringBuilder();
@@ -777,6 +792,11 @@ public static class McpExtensions
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Converts a snake_case name to PascalCase.
+    /// </summary>
+    /// <param name="name">The snake_case name to convert.</param>
+    /// <returns>The PascalCase representation of the name.</returns>
     internal static string SnakeCaseToPascal(string name) =>
         string.Concat(name.Split('_').Select(s => s.Length > 0 ? char.ToUpperInvariant(s[0]) + s[1..] : s));
 

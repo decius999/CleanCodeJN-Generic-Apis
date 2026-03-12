@@ -10,5 +10,8 @@ namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 /// <remarks>This request is used to remove a specific customer integration identified by its unique ID.</remarks>
 public class DeleteCustomerIntegrationRequest : IRequest<BaseResponse<Customer>>
 {
+    /// <summary>
+    /// Gets the unique identifier of the customer integration to delete.
+    /// </summary>
     public required int Id { get; init; }
 }

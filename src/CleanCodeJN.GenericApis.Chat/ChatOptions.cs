@@ -1,5 +1,6 @@
 ﻿namespace CleanCodeJN.GenericApis.Chat;
 
+/// <summary>Holds configuration options for the AI chat feature, including the backend URL, authentication, and UI settings.</summary>
 public class ChatOptions
 {
     /// <summary>Base URL of the backend (e.g. https://your-api.com). Used to reach /ai/chat and /mcp.</summary>

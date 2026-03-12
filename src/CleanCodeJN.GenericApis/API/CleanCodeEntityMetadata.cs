@@ -23,6 +23,14 @@ public class CleanCodeEntityMetadata
     /// <summary>The CRUD operation: LIST, LIST_PAGED, LIST_FILTERED, GET_BY_ID, POST, PUT, PATCH, DELETE.</summary>
     public string Operation { get; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="CleanCodeEntityMetadata"/> with the specified type and operation information.
+    /// </summary>
+    /// <param name="entityType">The entity type associated with the endpoint.</param>
+    /// <param name="getDtoType">The GET/response DTO type.</param>
+    /// <param name="writeType">The write DTO type for POST/PUT, or null for read operations.</param>
+    /// <param name="keyType">The primary key type, or null when not applicable.</param>
+    /// <param name="operation">The CRUD operation name (e.g. LIST, GET_BY_ID, POST).</param>
     public CleanCodeEntityMetadata(Type entityType, Type getDtoType, Type? writeType, Type? keyType, string operation)
     {
         EntityType = entityType;

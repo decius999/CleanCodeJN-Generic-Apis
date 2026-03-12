@@ -12,5 +12,8 @@ namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 /// information.</remarks>
 public class SpecificDeleteRequest : IRequest<BaseResponse<Customer>>
 {
+    /// <summary>
+    /// Gets the unique identifier of the customer to delete.
+    /// </summary>
     public required int Id { get; init; }
 }

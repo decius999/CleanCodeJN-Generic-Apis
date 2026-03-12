@@ -1,8 +1,20 @@
 ﻿namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Extensions;
+
+/// <summary>
+/// Provides string utility extension methods for the Service Bus Consumer package.
+/// </summary>
 public static class StringExtensions
 {
+    /// <summary>
+    /// Trims surrounding quotes from the string and returns the base instance identifier before the first underscore.
+    /// </summary>
+    /// <param name="str">The instance identifier string to trim.</param>
+    /// <returns>The base portion of the instance identifier without retry suffixes.</returns>
     public static string TrimInstanceId(this string str) => str.Trim('"').Split('_')[0];
 
+    /// <summary>
+    /// Prints the CleanCode JN ASCII art logo to the console in blue.
+    /// </summary>
     public static void PrintLogo()
     {
         string[] asciiArt =

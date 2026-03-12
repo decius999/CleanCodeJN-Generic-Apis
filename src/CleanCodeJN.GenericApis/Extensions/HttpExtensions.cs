@@ -1,6 +1,10 @@
 ﻿using CleanCodeJN.GenericApis.Abstractions.Responses;
 
 namespace CleanCodeJN.GenericApis.Extensions;
+
+/// <summary>
+/// Provides extension methods for converting internal response objects to ASP.NET Core <see cref="IResult"/> HTTP results.
+/// </summary>
 public static class HttpExtensions
 {
     /// <summary>

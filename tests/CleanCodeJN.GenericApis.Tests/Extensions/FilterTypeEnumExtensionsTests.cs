@@ -4,8 +4,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Extensions;
 
+/// <summary>
+/// Contains unit tests for the <c>FilterTypeEnumExtensions.ConvertTo</c> method across all supported filter types.
+/// </summary>
 public class FilterTypeEnumExtensionsTests
 {
+    /// <summary>
+    /// Verifies that a string filter value is returned as a <see cref="string"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnString_WhenTypeIsString()
     {
@@ -17,6 +23,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<string>(result);
     }
 
+    /// <summary>
+    /// Verifies that a null string filter value is returned as null.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnNull_WhenValueIsNullAndTypeIsString()
     {
@@ -27,6 +36,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.Null(result);
     }
 
+    /// <summary>
+    /// Verifies that an integer filter value is returned as an <see cref="int"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnInt_WhenTypeIsInteger()
     {
@@ -38,6 +50,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<int>(result);
     }
 
+    /// <summary>
+    /// Verifies that a nullable integer filter value is returned as an <see cref="int"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnInt_WhenTypeIsIntegerNullable()
     {
@@ -49,6 +64,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<int>(result);
     }
 
+    /// <summary>
+    /// Verifies that a double filter value is returned as a <see cref="double"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnDouble_WhenTypeIsDouble()
     {
@@ -60,6 +78,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<double>(result);
     }
 
+    /// <summary>
+    /// Verifies that a nullable double filter value is returned as a <see cref="double"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnDouble_WhenTypeIsDoubleNullable()
     {
@@ -71,6 +92,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<double>(result);
     }
 
+    /// <summary>
+    /// Verifies that a DateTime filter value is returned as a <see cref="DateTime"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnDateTime_WhenTypeIsDateTime()
     {
@@ -83,6 +107,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<DateTime>(result);
     }
 
+    /// <summary>
+    /// Verifies that a nullable DateTime filter value is returned as a <see cref="DateTime"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnDateTime_WhenTypeIsDateTimeNullable()
     {
@@ -95,6 +122,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<DateTime>(result);
     }
 
+    /// <summary>
+    /// Verifies that a GUID filter value is returned as a <see cref="string"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnString_WhenTypeIsGuid()
     {
@@ -107,6 +137,9 @@ public class FilterTypeEnumExtensionsTests
         Assert.IsType<string>(result);
     }
 
+    /// <summary>
+    /// Verifies that a nullable GUID filter value is returned as a <see cref="string"/>.
+    /// </summary>
     [Fact]
     public void ConvertTo_ShouldReturnString_WhenTypeIsGuidNullable()
     {

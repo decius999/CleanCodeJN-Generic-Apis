@@ -7,8 +7,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Commands;
 
+/// <summary>
+/// Contains unit tests for <see cref="GetByIdsCommand{TEntity, TKey}"/>.
+/// </summary>
 public class GetByIdsCommandTests
 {
+    /// <summary>
+    /// Verifies that the handler returns a success response containing all matched entities.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenEntitiesAreFound()
     {
@@ -48,6 +54,9 @@ public class GetByIdsCommandTests
         Assert.Equal(testEntities, response.Data);
     }
 
+    /// <summary>
+    /// Verifies that the handler returns a bad-request failure when no entities match the provided IDs.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenNoEntitiesAreFound()
     {
@@ -82,8 +91,14 @@ public class GetByIdsCommandTests
         Assert.Empty(response.Data);
     }
 
+    /// <summary>
+    /// A simple test entity used as a stand-in for real domain entities within get-by-ids command tests.
+    /// </summary>
     public class TestEntity : IEntity<int>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
     }
 }

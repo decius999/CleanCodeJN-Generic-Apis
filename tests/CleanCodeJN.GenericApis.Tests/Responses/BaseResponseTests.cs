@@ -3,8 +3,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Responses;
 
+/// <summary>
+/// Contains unit tests for <see cref="BaseResponse{T}"/> factory methods and property behaviour.
+/// </summary>
 public class BaseResponseTests
 {
+    /// <summary>
+    /// Verifies that creating a response with <see cref="ResultEnum.SUCCESS"/> sets all properties correctly.
+    /// </summary>
     [Fact]
     public async Task Create_WithResultEnum_Success_ShouldSetCorrectProperties()
     {
@@ -19,6 +25,9 @@ public class BaseResponseTests
         Assert.Equal(1, response.Count);
     }
 
+    /// <summary>
+    /// Verifies that creating a response with a failure result enum marks the response as not succeeded.
+    /// </summary>
     [Fact]
     public async Task Create_WithResultEnum_Failure_ShouldSetCorrectProperties()
     {
@@ -30,6 +39,9 @@ public class BaseResponseTests
         Assert.Equal("not found", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that passing <c>true</c> to the bool overload results in a success response.
+    /// </summary>
     [Fact]
     public async Task Create_WithBoolTrue_ShouldSetSuccess()
     {
@@ -42,6 +54,9 @@ public class BaseResponseTests
         Assert.Equal(data, response.Data);
     }
 
+    /// <summary>
+    /// Verifies that passing <c>false</c> to the bool overload results in a bad-request failure response.
+    /// </summary>
     [Fact]
     public async Task Create_WithBoolFalse_ShouldSetFailure()
     {
@@ -52,6 +67,9 @@ public class BaseResponseTests
         Assert.Null(response.Data);
     }
 
+    /// <summary>
+    /// Verifies that a response created without data reports a count of zero.
+    /// </summary>
     [Fact]
     public async Task Create_WithNoData_ShouldHaveCountZero()
     {
@@ -60,6 +78,9 @@ public class BaseResponseTests
         Assert.Equal(0, response.Count);
     }
 
+    /// <summary>
+    /// Verifies that a response created with a single data object reports a count of one.
+    /// </summary>
     [Fact]
     public async Task Create_WithData_ShouldHaveCountOne()
     {
@@ -68,6 +89,9 @@ public class BaseResponseTests
         Assert.Equal(1, response.Count);
     }
 
+    /// <summary>
+    /// Verifies that the interrupt flag is set when the response is created with interrupt set to true.
+    /// </summary>
     [Fact]
     public async Task Create_WithInterruptTrue_ShouldSetInterruptFlag()
     {
@@ -76,6 +100,9 @@ public class BaseResponseTests
         Assert.True(response.Interrupt);
     }
 
+    /// <summary>
+    /// Verifies that the delay property is correctly populated when specified during response creation.
+    /// </summary>
     [Fact]
     public async Task Create_WithDelay_ShouldSetDelay()
     {
@@ -86,6 +113,9 @@ public class BaseResponseTests
         Assert.Equal(delay, response.Delay);
     }
 
+    /// <summary>
+    /// Verifies that the info string is correctly stored on the response when specified.
+    /// </summary>
     [Fact]
     public async Task Create_WithInfo_ShouldSetInfo()
     {
@@ -94,6 +124,9 @@ public class BaseResponseTests
         Assert.Equal("block1", response.Info);
     }
 
+    /// <summary>
+    /// Verifies that the <c>Succeeded</c> flag correctly reflects each possible <see cref="ResultEnum"/> value.
+    /// </summary>
     [Theory]
     [InlineData(ResultEnum.SUCCESS, true)]
     [InlineData(ResultEnum.SUCCESS_CREATED, true)]
@@ -110,8 +143,14 @@ public class BaseResponseTests
         Assert.Equal(expectedSucceeded, response.Succeeded);
     }
 
+    /// <summary>
+    /// A minimal test entity used as a generic type argument within base response tests.
+    /// </summary>
     public class TestEntity
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
     }
 }

@@ -6,9 +6,22 @@ using FluentValidation;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.Commands;
+
+/// <summary>
+/// Handles the creation of multiple entities from a list of DTOs in a single batch operation.
+/// </summary>
+/// <typeparam name="TEntity">The entity type to create.</typeparam>
+/// <typeparam name="TDto">The DTO type used as input for each entity.</typeparam>
+/// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
 public class PostListCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntity, TKey> repository, IEnumerable<IValidator<TDto>> validators) : IRequestHandler<PostListRequest<TEntity, TDto>, BaseListResponse<TEntity>>
     where TEntity : class, IEntity<TKey>
 {
+    /// <summary>
+    /// Validates each DTO, maps them to entities, and persists them all to the repository.
+    /// </summary>
+    /// <param name="request">The post-list request containing the list of DTOs.</param>
+    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+    /// <returns>A <see cref="BaseListResponse{TEntity}"/> containing the created entities.</returns>
     public async Task<BaseListResponse<TEntity>> Handle(PostListRequest<TEntity, TDto> request, CancellationToken cancellationToken)
     {
         List<string> errorMessages = [];

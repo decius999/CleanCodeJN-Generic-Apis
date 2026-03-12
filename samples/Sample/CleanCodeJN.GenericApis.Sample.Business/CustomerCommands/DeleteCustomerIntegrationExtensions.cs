@@ -5,6 +5,9 @@ using CleanCodeJN.GenericApis.Sample.Domain;
 
 namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 
+/// <summary>
+/// Provides extension methods for building the customer integration delete execution pipeline.
+/// </summary>
 public static class DeleteCustomerIntegrationExtensions
 {
     /// <summary>

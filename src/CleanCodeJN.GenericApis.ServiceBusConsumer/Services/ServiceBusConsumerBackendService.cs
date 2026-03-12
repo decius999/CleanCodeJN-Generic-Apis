@@ -10,6 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Services;
+
+/// <summary>
+/// Hosted background service that connects to Azure Service Bus, processes incoming messages via MediatR, and handles retries and dead-lettering.
+/// </summary>
 public class ServiceBusConsumerBackendService(
     IServiceScopeFactory scopeFactory,
     IServiceBusConsumerConfigurationService service) : BackgroundService
@@ -94,6 +98,11 @@ public class ServiceBusConsumerBackendService(
         }
     }
 
+    /// <summary>
+    /// Processes an individual message received from Service Bus by dispatching it to the appropriate MediatR handler, retrying on failure, and completing the message when done.
+    /// </summary>
+    /// <param name="args">The <see cref="ProcessMessageEventArgs"/> containing the received message and settlement operations.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous message-processing operation.</returns>
     public async Task MessageHandler(ProcessMessageEventArgs args)
     {
         using var scope = scopeFactory.CreateScope();
@@ -127,6 +136,11 @@ public class ServiceBusConsumerBackendService(
         await args.CompleteMessageAsync(args.Message);
     }
 
+    /// <summary>
+    /// Handles errors raised by the Service Bus processor by delegating to the configuration service's exception logging and handling method.
+    /// </summary>
+    /// <param name="args">The <see cref="ProcessErrorEventArgs"/> containing the exception and context information.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous error-handling operation.</returns>
     public async Task ErrorHandler(ProcessErrorEventArgs args) => await service.LogAndHandleException(args.Exception, args.Exception.ToString());
 
     private async Task Retry(ProcessMessageEventArgs args, IMediator commandBus, string body, string topic, Response response, Exception exception = null, TimeSpan? customDelay = null)

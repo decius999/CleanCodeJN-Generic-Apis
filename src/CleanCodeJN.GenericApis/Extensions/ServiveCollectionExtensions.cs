@@ -126,6 +126,13 @@ public static class ServiveCollectionExtensions
     public static IServiceCollection RegisterValidatorsFromAssembly(this IServiceCollection services, Assembly validatorAssembly) =>
         services.AddValidatorsFromAssembly(validatorAssembly ?? Assembly.GetCallingAssembly());
 
+    /// <summary>
+    /// Registers MediatR with the configured behaviors and service assemblies.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="assemblies">The assemblies containing MediatR request and handler types.</param>
+    /// <param name="options">The CleanCode options specifying behaviors to register.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterMediatr(
         this IServiceCollection services,
         List<Assembly> assemblies,

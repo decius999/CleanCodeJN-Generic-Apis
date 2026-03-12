@@ -11,10 +11,14 @@ using Microsoft.Extensions.Options;
 
 namespace CleanCodeJN.GenericApis.Chat.Services;
 
+/// <summary>Provides methods for communicating with the AI chat backend, including streaming responses and retrieving available MCP tools.</summary>
 public class ChatService(IHttpClientFactory httpClientFactory, IOptions<ChatOptions> options)
 {
     private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
 
+    /// <summary>Retrieves the list of tools available on the MCP server by sending a "tools/list" JSON-RPC request.</summary>
+    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+    /// <returns>A list of <see cref="McpTool"/> instances, or an empty list if the request fails.</returns>
     public async Task<List<McpTool>> GetToolsAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -44,6 +48,10 @@ public class ChatService(IHttpClientFactory httpClientFactory, IOptions<ChatOpti
         }
     }
 
+    /// <summary>Sends the conversation history to the AI backend and asynchronously streams back <see cref="ChatStreamEvent"/> items as server-sent events.</summary>
+    /// <param name="messages">The ordered list of chat messages representing the full conversation history.</param>
+    /// <param name="cancellationToken">A token to cancel the asynchronous streaming operation.</param>
+    /// <returns>An async enumerable of <see cref="ChatStreamEvent"/> items received from the stream.</returns>
     public async IAsyncEnumerable<ChatStreamEvent> SendAsync(
         List<ChatMessage> messages,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)

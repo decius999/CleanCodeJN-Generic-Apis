@@ -2,6 +2,9 @@
 
 namespace CleanCodeJN.GenericApis.Sample.Core.Dtos;
 
+/// <summary>
+/// Data transfer object used when updating an existing customer via the API.
+/// </summary>
 public class CustomerPutDto : IDto
 {
     /// <summary>Unique identifier of the customer to update.</summary>

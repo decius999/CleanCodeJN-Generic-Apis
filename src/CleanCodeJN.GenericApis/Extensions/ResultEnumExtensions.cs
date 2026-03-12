@@ -3,6 +3,9 @@ using CleanCodeJN.GenericApis.Abstractions.Responses;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Provides extension methods for mapping <see cref="ResultEnum"/> values to ASP.NET Core <see cref="IResult"/> HTTP results.
+/// </summary>
 public static class ResultEnumExtensions
 {
     /// <summary>

@@ -2,6 +2,9 @@
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Provides extension methods for converting <see cref="FilterValue"/> objects to their strongly-typed values.
+/// </summary>
 public static class FilterTypeEnumExtensions
 {
     /// <summary>

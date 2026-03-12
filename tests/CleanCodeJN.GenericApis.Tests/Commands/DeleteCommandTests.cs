@@ -6,8 +6,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Commands;
 
+/// <summary>
+/// Contains unit tests for <see cref="DeleteCommand{TEntity, TKey}"/>.
+/// </summary>
 public class DeleteCommandTests
 {
+    /// <summary>
+    /// Verifies that the handler returns a success response when an entity is found and deleted.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenEntityIsDeleted()
     {
@@ -32,6 +38,9 @@ public class DeleteCommandTests
         Assert.Equal(testEntity, response.Data);
     }
 
+    /// <summary>
+    /// Verifies that the handler returns a not-found failure response when the entity does not exist.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenEntityIsNotFound()
     {
@@ -56,8 +65,14 @@ public class DeleteCommandTests
         Assert.Equal("Id '1' not found!", response.Message);
     }
 
+    /// <summary>
+    /// A simple test entity used as a stand-in for real domain entities within delete command tests.
+    /// </summary>
     public class TestEntity : IEntity<int>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
     }
 }

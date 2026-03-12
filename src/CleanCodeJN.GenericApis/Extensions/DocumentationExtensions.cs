@@ -5,8 +5,16 @@ using Path = System.IO.Path;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Provides extension methods to register documentation endpoints that expose API and command metadata as HTML and JSON.
+/// </summary>
 public static class DocumentationExtensions
 {
+    /// <summary>
+    /// Registers the <c>/docs</c> HTML documentation page and the <c>/api/docs</c> JSON command metadata endpoint.
+    /// </summary>
+    /// <param name="app">The web application to configure.</param>
+    /// <returns>The configured <see cref="IApplicationBuilder"/> instance.</returns>
     public static IApplicationBuilder UseCleanCodeJNWithDocumentation(this WebApplication app)
     {
         app.MapGet($"/docs", async context =>

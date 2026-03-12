@@ -1,5 +1,8 @@
 ﻿namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Configuration options for the AI Proxy service that forwards chat requests to the Anthropic Claude API.
+/// </summary>
 public class AiProxyOptions
 {
     /// <summary>The Anthropic API key used to call Claude.</summary>

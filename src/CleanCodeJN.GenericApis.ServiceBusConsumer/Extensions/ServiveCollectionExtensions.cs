@@ -12,6 +12,10 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CleanCodeJN.GenericApis.ServiceBusConsumer.Extensions;
+
+/// <summary>
+/// Provides extension methods for registering Service Bus Consumer services with the dependency injection container.
+/// </summary>
 public static class ServiveCollectionExtensions
 {
     /// <summary>

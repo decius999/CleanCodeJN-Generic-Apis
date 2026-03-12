@@ -3,6 +3,13 @@ using CleanCodeJN.Repository.EntityFramework.Contracts;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
+/// <summary>
+/// Automatically registers a GraphQL mutation field for creating an entity of type <typeparamref name="TEntity"/>.
+/// </summary>
+/// <typeparam name="TDto">The DTO type returned by the mutation.</typeparam>
+/// <typeparam name="TEntity">The entity type to create.</typeparam>
+/// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
+/// <typeparam name="TInput">The input type accepted by the mutation.</typeparam>
 public class AutoCreateMutationTypeExtensions<TDto, TEntity, TKey, TInput>(GraphQLOptions options) : ObjectTypeExtension
     where TEntity : class, IEntity<TKey>
 {

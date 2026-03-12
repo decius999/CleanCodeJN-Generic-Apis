@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 
 namespace CleanCodeJN.GenericApis.Chat.Pages;
+
+/// <summary>Code-behind for the AI chat page component, handling state management, streaming responses, and user interaction logic.</summary>
 public partial class AiChatPage
 {
     private List<McpTool> _tools = [];

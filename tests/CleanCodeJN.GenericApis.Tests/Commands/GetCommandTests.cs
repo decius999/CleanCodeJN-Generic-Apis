@@ -7,8 +7,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Commands;
 
+/// <summary>
+/// Contains unit tests for <see cref="GetCommand{TEntity, TKey}"/>.
+/// </summary>
 public class GetCommandTests
 {
+    /// <summary>
+    /// Verifies that the handler returns a success response with entities and a correct count.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenEntitiesAreFound()
     {
@@ -54,6 +60,9 @@ public class GetCommandTests
         Assert.Equal(testEntities.Count, response.Count);
     }
 
+    /// <summary>
+    /// Verifies that the handler returns a successful response with an empty list when no entities exist.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenNoEntitiesAreFound()
     {
@@ -94,8 +103,14 @@ public class GetCommandTests
         Assert.Equal(0, response.Count);
     }
 
+    /// <summary>
+    /// A simple test entity used as a stand-in for real domain entities within get command tests.
+    /// </summary>
     public class TestEntity : IEntity<int>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
     }
 }

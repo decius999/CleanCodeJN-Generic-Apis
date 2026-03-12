@@ -6,10 +6,20 @@ using Microsoft.Extensions.Logging;
 
 namespace CleanCodeJN.GenericApis.Sample.DataAccess;
 
+/// <summary>
+/// Entity Framework database context for the sample application, providing access to customers and invoices.
+/// </summary>
+/// <param name="configuration">The application configuration used to resolve the connection string.</param>
 public class MyDbContext(IConfiguration configuration) : DbContext, IDataContext
 {
+    /// <summary>
+    /// Gets or sets the database set of customer entities.
+    /// </summary>
     public virtual DbSet<Customer> Customers { get; set; }
 
+    /// <summary>
+    /// Gets or sets the database set of invoice entities.
+    /// </summary>
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder

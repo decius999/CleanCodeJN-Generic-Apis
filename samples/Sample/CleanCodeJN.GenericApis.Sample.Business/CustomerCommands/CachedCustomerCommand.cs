@@ -15,6 +15,12 @@ namespace CleanCodeJN.GenericApis.Sample.Business.CustomerCommands;
 /// cref="Customer"/> as the entity type and <see cref="int"/> as the key type.</param>
 public class CachedCustomerCommand(IRepository<Customer, int> repository) : IRequestHandler<CachedCustomerRequest, BaseListResponse<Customer>>
 {
+    /// <summary>
+    /// Handles the <see cref="CachedCustomerRequest"/> by querying and returning all customers.
+    /// </summary>
+    /// <param name="request">The cacheable request for retrieving customers.</param>
+    /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
+    /// <returns>A <see cref="BaseListResponse{T}"/> containing all customers.</returns>
     public async Task<BaseListResponse<Customer>> Handle(CachedCustomerRequest request, CancellationToken cancellationToken) =>
         await BaseListResponse<Customer>.Create(true, repository.Query().ToList());
 }
