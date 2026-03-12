@@ -3,10 +3,16 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Extensions;
 
+/// <summary>
+/// Contains unit tests for string-conversion and JSON-type utility methods in <see cref="McpExtensions"/>.
+/// </summary>
 public class McpExtensionsTests
 {
     // ─── ToSnakeCase ────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that PascalCase strings are correctly converted to snake_case.
+    /// </summary>
     [Theory]
     [InlineData("Customer", "customer")]
     [InlineData("CustomerGetDto", "customer_get_dto")]
@@ -18,6 +24,9 @@ public class McpExtensionsTests
 
     // ─── SnakeCaseToPascal ──────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that snake_case strings are correctly converted to PascalCase.
+    /// </summary>
     [Theory]
     [InlineData("customer", "Customer")]
     [InlineData("customer_get_dto", "CustomerGetDto")]
@@ -28,6 +37,9 @@ public class McpExtensionsTests
 
     // ─── RouteToSnakeCase ───────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that API route strings are correctly normalised into snake_case tool-name format.
+    /// </summary>
     [Theory]
     [InlineData("api/v1/Customers", "api_v1_customers")]
     [InlineData("api/v1/Customers/{id}", "api_v1_customers_id")]
@@ -38,6 +50,9 @@ public class McpExtensionsTests
 
     // ─── GetJsonType ────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that .NET types are correctly mapped to their JSON Schema type names.
+    /// </summary>
     [Theory]
     [InlineData(typeof(int), "integer")]
     [InlineData(typeof(long), "integer")]

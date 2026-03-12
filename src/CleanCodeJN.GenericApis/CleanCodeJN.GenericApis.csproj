@@ -41,10 +41,7 @@
     <PackageReference Include="HotChocolate.Data" Version="15.1.12" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="System.Formats.Asn1" Version="10.0.3" />
-    <PackageReference Include="System.Text.Json" Version="10.0.3" />
     <PackageReference Include="Anthropic.SDK" Version="5.10.0" />
   </ItemGroup>
 

@@ -229,7 +229,7 @@ public class AiProxyService(IOptions<AiProxyOptions> options, IHttpClientFactory
 
     // The Anthropic SDK's Function.Arguments is typed as object.
     // In streaming mode it may arrive as a JSON string, JsonElement, or JsonObject.
-    private static JsonObject ParseArguments(object? arguments)
+    private static JsonObject ParseArguments(object arguments)
     {
         if (arguments is JsonObject jo) return jo;
 

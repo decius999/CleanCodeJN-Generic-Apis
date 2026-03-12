@@ -8,6 +8,9 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Context;
 
+/// <summary>
+/// Contains unit tests for <see cref="CommandExecutionContext"/>, covering sequential, parallel, conditional, and interrupt execution scenarios.
+/// </summary>
 public class CommandExecutionContextTests
 {
     // IMediator.Send(object, CancellationToken) is what CommandExecutionContext calls internally,
@@ -25,6 +28,9 @@ public class CommandExecutionContextTests
 
     // ── Execute<T> ──────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that a single successful request results in a success response with the entity data.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldReturnSuccess_WhenSingleRequestSucceeds()
     {
@@ -41,6 +47,9 @@ public class CommandExecutionContextTests
         Assert.Equal(entity, result.Data);
     }
 
+    /// <summary>
+    /// Verifies that when multiple requests succeed, the data from the last request is returned.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldReturnDataFromLastRequest_WhenMultipleRequestsSucceed()
     {
@@ -60,6 +69,9 @@ public class CommandExecutionContextTests
         Assert.Equal(entity2, result.Data);
     }
 
+    /// <summary>
+    /// Verifies that execution stops and returns failure when a request fails and <c>continueOnCheckError</c> is false.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldReturnFailure_WhenRequestFails_AndContinueOnCheckErrorIsFalse()
     {
@@ -74,6 +86,9 @@ public class CommandExecutionContextTests
         Assert.Equal(ResultEnum.FAILURE_NOT_FOUND, result.ResultState);
     }
 
+    /// <summary>
+    /// Verifies that execution continues to the next step when a request fails and <c>continueOnCheckError</c> is true.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldContinueAndReturnSuccess_WhenRequestFails_AndContinueOnCheckErrorIsTrue()
     {
@@ -92,6 +107,9 @@ public class CommandExecutionContextTests
         Assert.Equal(entity, result.Data);
     }
 
+    /// <summary>
+    /// Verifies that the request is not executed and a failure is returned when the pre-condition fails and <c>continueOnCheckError</c> is false.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldReturnFailure_WhenPreConditionFails_AndContinueOnCheckErrorIsFalse()
     {
@@ -110,6 +128,9 @@ public class CommandExecutionContextTests
         mockMediator.Verify(m => m.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>
+    /// Verifies that a step is skipped and execution continues when its pre-condition fails and <c>continueOnCheckError</c> is true.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldSkipStepAndContinue_WhenPreConditionFails_AndContinueOnCheckErrorIsTrue()
     {
@@ -127,6 +148,9 @@ public class CommandExecutionContextTests
         mockMediator.Verify(m => m.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>
+    /// Verifies that execution stops and returns failure when the post-condition fails and <c>continueOnCheckError</c> is false.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldReturnFailure_WhenPostConditionFails_AndContinueOnCheckErrorIsFalse()
     {
@@ -145,6 +169,9 @@ public class CommandExecutionContextTests
         Assert.Equal(ResultEnum.FAILURE_BAD_REQUEST, result.ResultState);
     }
 
+    /// <summary>
+    /// Verifies that execution continues to the next step when the post-condition fails and <c>continueOnCheckError</c> is true.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldContinue_WhenPostConditionFails_AndContinueOnCheckErrorIsTrue()
     {
@@ -163,6 +190,9 @@ public class CommandExecutionContextTests
         Assert.Equal(entity2, result.Data);
     }
 
+    /// <summary>
+    /// Verifies that the interrupt flag is propagated on the result when a response carries it.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldReturnInterrupt_WhenResponseHasInterruptFlag()
     {
@@ -176,6 +206,9 @@ public class CommandExecutionContextTests
         Assert.True(result.Interrupt);
     }
 
+    /// <summary>
+    /// Verifies that no subsequent requests are executed after a response with the interrupt flag is received.
+    /// </summary>
     [Fact]
     public async Task Execute_ShouldStopProcessing_AfterInterrupt_AndNotCallNextRequest()
     {
@@ -193,6 +226,9 @@ public class CommandExecutionContextTests
 
     // ── Cache (Get / GetList) ───────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that data stored under a block name can be retrieved via <c>Get</c> after execution.
+    /// </summary>
     [Fact]
     public async Task Get_ShouldReturnCachedData_AfterExecuteWithBlockName()
     {
@@ -208,6 +244,9 @@ public class CommandExecutionContextTests
         Assert.Equal(entity, cached);
     }
 
+    /// <summary>
+    /// Verifies that <c>Get</c> returns null when the specified block name has no stored data.
+    /// </summary>
     [Fact]
     public async Task Get_ShouldReturnNull_WhenBlockNameNotInCache()
     {
@@ -218,6 +257,9 @@ public class CommandExecutionContextTests
         Assert.Null(cached);
     }
 
+    /// <summary>
+    /// Verifies that list data stored under a block name can be retrieved via <c>GetList</c> after list execution.
+    /// </summary>
     [Fact]
     public async Task GetList_ShouldReturnCachedListData_AfterExecuteListWithBlockName()
     {
@@ -236,6 +278,9 @@ public class CommandExecutionContextTests
 
     // ── ExecuteList<T> ──────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that <c>ExecuteList</c> returns a success list response with correct data.
+    /// </summary>
     [Fact]
     public async Task ExecuteList_ShouldReturnSuccess_WhenRequestSucceeds()
     {
@@ -250,6 +295,9 @@ public class CommandExecutionContextTests
         Assert.Equal(entities, result.Data);
     }
 
+    /// <summary>
+    /// Verifies that <c>ExecuteList</c> returns a failure list response when the request fails.
+    /// </summary>
     [Fact]
     public async Task ExecuteList_ShouldReturnFailure_WhenRequestFails()
     {
@@ -264,6 +312,9 @@ public class CommandExecutionContextTests
         Assert.Equal(ResultEnum.FAILURE_NOT_FOUND, result.ResultState);
     }
 
+    /// <summary>
+    /// Verifies that the interrupt flag is propagated on the list result when a list response carries it.
+    /// </summary>
     [Fact]
     public async Task ExecuteList_ShouldReturnInterrupt_WhenResponseHasInterruptFlag()
     {
@@ -276,6 +327,9 @@ public class CommandExecutionContextTests
         Assert.True(result.Interrupt);
     }
 
+    /// <summary>
+    /// Verifies that <c>ExecuteList</c> returns a failure when the pre-condition for a step is not met.
+    /// </summary>
     [Fact]
     public async Task ExecuteList_ShouldReturnFailure_WhenPreConditionFails()
     {
@@ -295,6 +349,9 @@ public class CommandExecutionContextTests
 
     // ── Execute() → Response ────────────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that <c>Execute()</c> returns a success <see cref="Response"/> when the request succeeds.
+    /// </summary>
     [Fact]
     public async Task ExecuteResponse_ShouldReturnSuccess_WhenRequestSucceeds()
     {
@@ -308,6 +365,9 @@ public class CommandExecutionContextTests
         Assert.Equal(ResultEnum.SUCCESS, result.ResultState);
     }
 
+    /// <summary>
+    /// Verifies that <c>Execute()</c> returns a failure <see cref="Response"/> when the request fails.
+    /// </summary>
     [Fact]
     public async Task ExecuteResponse_ShouldReturnFailure_WhenRequestFails()
     {
@@ -320,6 +380,9 @@ public class CommandExecutionContextTests
         Assert.False(result.Succeeded);
     }
 
+    /// <summary>
+    /// Verifies that the interrupt flag on a <see cref="Response"/> is correctly propagated by <c>Execute()</c>.
+    /// </summary>
     [Fact]
     public async Task ExecuteResponse_ShouldReturnInterrupt_WhenResponseHasInterruptFlag()
     {
@@ -332,6 +395,9 @@ public class CommandExecutionContextTests
         Assert.True(result.Interrupt);
     }
 
+    /// <summary>
+    /// Verifies that <c>Execute()</c> returns a failure without calling the mediator when the pre-condition fails.
+    /// </summary>
     [Fact]
     public async Task ExecuteResponse_ShouldReturnFailure_WhenPreConditionFails()
     {
@@ -352,6 +418,9 @@ public class CommandExecutionContextTests
 
     // ── WithParallelWhenAllRequests ─────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that all parallel requests are executed and a success result is returned when all succeed.
+    /// </summary>
     [Fact]
     public async Task Execute_WithParallelRequests_ShouldReturnSuccess_WhenAllSucceed()
     {
@@ -371,6 +440,9 @@ public class CommandExecutionContextTests
         mockMediator.Verify(m => m.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
+    /// <summary>
+    /// Verifies that results from each parallel request can be retrieved by index after execution.
+    /// </summary>
     [Fact]
     public async Task GetParallelWhenAllByIndex_ShouldReturnNonNullItems_AfterParallelExecution()
     {
@@ -393,6 +465,9 @@ public class CommandExecutionContextTests
         Assert.NotNull(item1);
     }
 
+    /// <summary>
+    /// Verifies that <c>GetParallelWhenAllByIndex</c> returns null when the requested index exceeds the number of results.
+    /// </summary>
     [Fact]
     public async Task GetParallelWhenAllByIndex_ShouldReturnNull_WhenIndexOutOfRange()
     {
@@ -407,6 +482,9 @@ public class CommandExecutionContextTests
         Assert.Null(item);
     }
 
+    /// <summary>
+    /// Verifies that the overall result is a failure when at least one parallel request fails.
+    /// </summary>
     [Fact]
     public async Task Execute_WithParallelRequests_ShouldReturnFailure_WhenOneRequestFails()
     {
@@ -424,6 +502,9 @@ public class CommandExecutionContextTests
         Assert.Equal(ResultEnum.FAILURE_BAD_REQUEST, result.ResultState);
     }
 
+    /// <summary>
+    /// Verifies that <c>GetParallelWhenAllByIndex</c> returns null when the specified block name does not exist.
+    /// </summary>
     [Fact]
     public async Task GetParallelWhenAllByIndex_ShouldReturnNull_WhenBlockNameNotFound()
     {
@@ -436,6 +517,9 @@ public class CommandExecutionContextTests
 
     // ── IfRequest / IfBreakRequest ──────────────────────────────────────────
 
+    /// <summary>
+    /// Verifies that an <c>IfRequest</c> step is skipped and execution continues when its before-predicate returns false.
+    /// </summary>
     [Fact]
     public async Task IfRequest_ShouldSkipRequest_WhenBeforePredicateFails_AndContinue()
     {
@@ -452,6 +536,9 @@ public class CommandExecutionContextTests
         mockMediator.Verify(m => m.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>
+    /// Verifies that an <c>IfRequest</c> step is executed when its before-predicate returns true.
+    /// </summary>
     [Fact]
     public async Task IfRequest_ShouldExecuteRequest_WhenBeforePredicateIsTrue()
     {
@@ -466,6 +553,9 @@ public class CommandExecutionContextTests
         mockMediator.Verify(m => m.Send(It.IsAny<object>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>
+    /// Verifies that <c>IfBreakRequest</c> stops execution and returns a failure when the after-predicate returns false.
+    /// </summary>
     [Fact]
     public async Task IfBreakRequest_ShouldBreakExecution_WhenAfterPredicateFails()
     {
@@ -483,6 +573,9 @@ public class CommandExecutionContextTests
         Assert.Equal(ResultEnum.FAILURE_BAD_REQUEST, result.ResultState);
     }
 
+    /// <summary>
+    /// Verifies that <c>IfBreakRequest</c> allows execution to continue and returns success when the after-predicate returns true.
+    /// </summary>
     [Fact]
     public async Task IfBreakRequest_ShouldContinue_WhenAfterPredicateIsTrue()
     {
@@ -502,12 +595,29 @@ public class CommandExecutionContextTests
 
     // ── Test types ──────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// A simple test entity used as a stand-in for real domain entities within command execution context tests.
+    /// </summary>
     public class TestEntity : IEntity<int>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the test entity.
+        /// </summary>
         public int Id { get; set; }
     }
 
+    /// <summary>
+    /// A test MediatR request that returns a single-entity base response.
+    /// </summary>
     public class TestRequest : IRequest<BaseResponse<TestEntity>> { }
+
+    /// <summary>
+    /// A test MediatR request that returns a list base response.
+    /// </summary>
     public class TestListRequest : IRequest<BaseListResponse<TestEntity>> { }
+
+    /// <summary>
+    /// A test MediatR request that returns a plain <see cref="Response"/>.
+    /// </summary>
     public class TestResponseRequest : IRequest<Response> { }
 }

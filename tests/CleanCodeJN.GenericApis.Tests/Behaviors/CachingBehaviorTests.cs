@@ -10,8 +10,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Behaviors;
 
+/// <summary>
+/// Contains unit tests for <see cref="CachingBehavior{TRequest, TResponse}"/>.
+/// </summary>
 public class CachingBehaviorTests
 {
+    /// <summary>
+    /// Verifies that a cached response is returned without calling the next handler on a cache hit.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldReturnCachedResponse_WhenCacheHit()
     {
@@ -33,6 +39,9 @@ public class CachingBehaviorTests
         Assert.False(nextCalled, "next should not be called on cache hit");
     }
 
+    /// <summary>
+    /// Verifies that the next handler is called and the result is stored in the cache on a cache miss.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldCallNextAndStoreInCache_WhenCacheMiss()
     {
@@ -57,6 +66,9 @@ public class CachingBehaviorTests
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>
+    /// Verifies that the cache is completely bypassed when <c>BypassCache</c> is true on the request.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldBypassCache_WhenBypassCacheIsTrue()
     {
@@ -78,6 +90,9 @@ public class CachingBehaviorTests
             It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>
+    /// Verifies that the cache is queried using the exact cache key provided by the request.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldUseCacheKey_FromRequest()
     {
@@ -95,17 +110,45 @@ public class CachingBehaviorTests
         mockCache.Verify(c => c.GetAsync("my-cache-key", It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>
+    /// A cacheable test request that uses a fixed cache key and does not bypass the cache.
+    /// </summary>
     public class TestCacheableRequest : IRequest<string>, ICacheableRequest
     {
+        /// <summary>
+        /// Gets a value indicating whether the cache should be bypassed; always <c>false</c>.
+        /// </summary>
         public bool BypassCache => false;
+
+        /// <summary>
+        /// Gets the cache key used for storing and retrieving the response.
+        /// </summary>
         public string CacheKey => "my-cache-key";
+
+        /// <summary>
+        /// Gets the duration for which the cached response is considered valid.
+        /// </summary>
         public TimeSpan? CacheDuration => TimeSpan.FromMinutes(10);
     }
 
+    /// <summary>
+    /// A cacheable test request that is configured to always bypass the cache.
+    /// </summary>
     public class TestBypassCacheRequest : IRequest<string>, ICacheableRequest
     {
+        /// <summary>
+        /// Gets a value indicating whether the cache should be bypassed; always <c>true</c>.
+        /// </summary>
         public bool BypassCache => true;
+
+        /// <summary>
+        /// Gets the cache key that would be used if caching were not bypassed.
+        /// </summary>
         public string CacheKey => "bypass-key";
+
+        /// <summary>
+        /// Gets the duration for which a cached response would be valid.
+        /// </summary>
         public TimeSpan? CacheDuration => TimeSpan.FromMinutes(10);
     }
 }

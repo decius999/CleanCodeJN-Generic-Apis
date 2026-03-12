@@ -6,8 +6,14 @@ using Xunit;
 
 namespace CleanCodeJN.GenericApis.Tests.Behaviors;
 
+/// <summary>
+/// Contains unit tests for <see cref="LoggingBehavior{TRequest, TResponse}"/>.
+/// </summary>
 public class LoggingBehaviorTests
 {
+    /// <summary>
+    /// Verifies that the behavior calls the next handler and returns its response.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldCallNext_AndReturnResponse()
     {
@@ -21,6 +27,9 @@ public class LoggingBehaviorTests
         Assert.Equal(expectedResponse, result);
     }
 
+    /// <summary>
+    /// Verifies that the behavior logs an information message containing the request type name.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldLogInformation_ForNonGenericRequest()
     {
@@ -40,6 +49,9 @@ public class LoggingBehaviorTests
             Times.Once);
     }
 
+    /// <summary>
+    /// Verifies that the behavior includes generic type argument names in the log message for generic requests.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldLogInformation_WithGenericTypeArguments_ForGenericRequest()
     {
@@ -59,6 +71,9 @@ public class LoggingBehaviorTests
             Times.Once);
     }
 
+    /// <summary>
+    /// Verifies that the behavior logs before the exception propagates when the next handler throws.
+    /// </summary>
     [Fact]
     public async Task Handle_ShouldStillReturnResponse_WhenNextThrows()
     {
@@ -79,6 +94,13 @@ public class LoggingBehaviorTests
             Times.Once);
     }
 
+    /// <summary>
+    /// A non-generic test request used in logging behavior tests.
+    /// </summary>
     public class TestRequest : IRequest<string> { }
+
+    /// <summary>
+    /// A generic test request used to verify that type arguments appear in log output.
+    /// </summary>
     public class TestGenericRequest<T> : IRequest<string> { }
 }
