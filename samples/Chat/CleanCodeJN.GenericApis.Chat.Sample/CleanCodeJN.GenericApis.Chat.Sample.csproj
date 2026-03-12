@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Chat\CleanCodeJN.GenericApis.Chat.csproj" />
+    <ProjectReference Include="..\..\..\src\CleanCodeJN.GenericApis.Chat\CleanCodeJN.GenericApis.Chat.csproj" />
   </ItemGroup>
 
 </Project>

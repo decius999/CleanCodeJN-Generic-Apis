@@ -1,6 +1,6 @@
-*/obj/*
+**/obj/
 *.suo
-*/bin/*
+**/bin/
 *.orig
 *.csproj.user
 **/node_modules/

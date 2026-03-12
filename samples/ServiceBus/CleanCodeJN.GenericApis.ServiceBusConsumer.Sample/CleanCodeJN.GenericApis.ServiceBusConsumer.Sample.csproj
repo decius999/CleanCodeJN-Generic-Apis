@@ -28,11 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Business\CleanCodeJN.GenericApis.Sample.Business.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj" />
+    <ProjectReference Include="..\..\Sample\CleanCodeJN.GenericApis.Sample.Business\CleanCodeJN.GenericApis.Sample.Business.csproj" />
+    <ProjectReference Include="..\..\Sample\CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj" />
+    <ProjectReference Include="..\..\Sample\CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj" />
+    <ProjectReference Include="..\..\Sample\CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\CleanCodeJN.GenericApis.ServiceBusConsumer\CleanCodeJN.GenericApis.ServiceBusConsumer.csproj" />
   </ItemGroup>
 
 </Project>

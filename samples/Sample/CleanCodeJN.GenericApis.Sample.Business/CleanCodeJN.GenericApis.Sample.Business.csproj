@@ -1,28 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <UserSecretsId>fcafe339-7003-4fb3-b793-44f4c794081f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="4.0.0" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.3" />
     <PackageReference Include="System.Formats.Asn1" Version="10.0.3" />
     <PackageReference Include="System.Text.Json" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Business\CleanCodeJN.GenericApis.Sample.Business.csproj" />
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.DataAccess\CleanCodeJN.GenericApis.Sample.DataAccess.csproj" />
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj" />
-    <ProjectReference Include="..\CleanCodeJN.GenericApis\CleanCodeJN.GenericApis.csproj" />
+    <ProjectReference Include="..\..\..\src\CleanCodeJN.GenericApis\CleanCodeJN.GenericApis.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,11 +3,11 @@
     "Name": "New Profile",
     "Projects": [
       {
-        "Path": "CleanCodeJN.GenericApis.Sample\\CleanCodeJN.GenericApis.Sample.csproj",
+        "Path": "samples\\Sample\\CleanCodeJN.GenericApis.Sample\\CleanCodeJN.GenericApis.Sample.csproj",
         "Action": "Start"
       },
       {
-        "Path": "CleanCodeJN.GenericApis.Chat.Sample\\CleanCodeJN.GenericApis.Chat.Sample.csproj",
+        "Path": "samples\\Chat\\CleanCodeJN.GenericApis.Chat.Sample\\CleanCodeJN.GenericApis.Chat.Sample.csproj",
         "Action": "Start"
       }
     ]
