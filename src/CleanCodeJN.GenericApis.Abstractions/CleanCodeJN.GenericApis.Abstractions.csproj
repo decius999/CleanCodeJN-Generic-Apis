@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Jörg Nieveler</Authors>
     <Title>CleanCodeJN.GenericAPIs.Abstractions</Title>
-    <PackageTags>Abstractions;CRUD;WebAPIs;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatorPattern;CleanCode;DomainDrivenDesign;DDD;Automapper;Commands;IntegrationOperationSegregationPrinciple</PackageTags>
+    <PackageTags>Abstractions;CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;DDD;AutoMapper;Commands;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>Update to .NET 10.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>

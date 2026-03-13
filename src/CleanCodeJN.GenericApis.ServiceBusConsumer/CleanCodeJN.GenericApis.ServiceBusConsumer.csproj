@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
     <Description>
       This CleanCodeJN package for Service Bus simplifies the development of asynchronous microservices by providing a framework that leverages the
       power of MediatR and IOSP to consume service bus events from topics and execute commands to process these events.
@@ -13,7 +15,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Jörg Nieveler</Authors>
     <Title>Service Bus Consumer with Commands</Title>
-    <PackageTags>IntegrationOperationSegregationPrinciple;MicroServices;ServiceBus;CommandPattern</PackageTags>
+    <PackageTags>ServiceBus;AzureServiceBus;MicroServices;IOSP;IntegrationOperationSegregationPrinciple;MediatR;CQRS;CommandPattern;EventDriven;Messaging;CleanCode;DotNet</PackageTags>
     <PackageReleaseNotes>Update to .NET 10.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>

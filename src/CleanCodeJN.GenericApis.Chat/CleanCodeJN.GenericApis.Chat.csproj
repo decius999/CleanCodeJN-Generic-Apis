@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
     <Authors>Jörg Nieveler</Authors>
     <Description>AI Chat UI component for CleanCodeJN.GenericApis — a ready-made /ai page with MudBlazor chat, tool list, SSE streaming and bearer token forwarding.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
