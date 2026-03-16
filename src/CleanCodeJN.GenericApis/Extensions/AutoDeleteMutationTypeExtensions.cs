@@ -7,14 +7,15 @@ namespace CleanCodeJN.GenericApis.Extensions;
 /// </summary>
 /// <typeparam name="TEntity">The entity type to delete.</typeparam>
 /// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
-public class AutoDeleteMutationTypeExtensions<TEntity, TKey>(GraphQLOptions options) : ObjectTypeExtension
+public class AutoDeleteMutationTypeExtensions<TEntity, TKey>(GraphQLOptions options, CleanCodeNamingConventions namingConventions = null) : ObjectTypeExtension
     where TEntity : class, IEntity<TKey>
 {
     protected override void Configure(IObjectTypeDescriptor descriptor)
     {
         descriptor.Name("Mutation");
 
-        var fieldName = "delete" + typeof(TEntity).Name;
+        var conventions = namingConventions ?? new CleanCodeNamingConventions();
+        var fieldName = conventions.GraphQLDeletePrefix + typeof(TEntity).Name;
 
         var field = descriptor
             .Field(fieldName)

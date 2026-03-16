@@ -52,4 +52,10 @@ public class CleanCodeOptions
     /// Options for AI Proxy
     /// </summary>
     public AiProxyOptions AiProxyOptions { get; set; }
+
+    /// <summary>
+    /// Naming conventions for DTO discovery and GraphQL field name generation.
+    /// Override defaults when your project uses different suffixes or prefixes.
+    /// </summary>
+    public CleanCodeNamingConventions NamingConventions { get; set; } = new();
 }

@@ -80,10 +80,10 @@ public static class ServiveCollectionExtensions
                 schema.AddAuthorization();
             }
 
-            schema.AddGraphQLGet(assemblies, options.GraphQLOptions);
-            schema.AddGraphQLCreate(assemblies, options.GraphQLOptions);
-            schema.AddGraphQLUpdate(assemblies, options.GraphQLOptions);
-            schema.AddGraphQLDelete(assemblies, options.GraphQLOptions);
+            schema.AddGraphQLGet(assemblies, options.GraphQLOptions, options.NamingConventions);
+            schema.AddGraphQLCreate(assemblies, options.GraphQLOptions, options.NamingConventions);
+            schema.AddGraphQLUpdate(assemblies, options.GraphQLOptions, options.NamingConventions);
+            schema.AddGraphQLDelete(assemblies, options.GraphQLOptions, options.NamingConventions);
         }
 
         if (options.AiProxyOptions is not null)
@@ -112,7 +112,7 @@ public static class ServiveCollectionExtensions
                 .RegisterCommandExecutionContext()
                 .RegisterMediatr(assemblies, options)
                 .RegisterValidatorsFromAssembly(options.ValidatorAssembly)
-                .RegisterGenericCommands(assemblies)
+                .RegisterGenericCommands(assemblies, options.NamingConventions)
                 .RegisterAutomapper(assemblies, Scan(options.MappingOverrides, assemblies))
                 .RegisterDbContextAndRepositories<TDataContext>();
     }
@@ -214,16 +214,18 @@ public static class ServiveCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="assemblies">The Assemblies where your Entities, DTOs and Commands are located.</param>
+    /// <param name="namingConventions">The naming conventions for DTO discovery.</param>
     /// <returns>The service collection.</returns>
-    public static IServiceCollection RegisterGenericCommands(this IServiceCollection services, List<Assembly> assemblies)
+    public static IServiceCollection RegisterGenericCommands(this IServiceCollection services, List<Assembly> assemblies, CleanCodeNamingConventions namingConventions = null)
     {
+        var conventions = namingConventions ?? new CleanCodeNamingConventions();
         var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity));
         var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto));
 
         foreach (var entityType in entities)
         {
-            var dtoPostType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Post" + "Dto");
-            var dtoPutType = dtos.FirstOrDefault(x => x.Name == entityType.Name + "Put" + "Dto");
+            var dtoPostType = dtos.FirstOrDefault(x => x.Name == entityType.Name + conventions.PostDtoSuffix);
+            var dtoPutType = dtos.FirstOrDefault(x => x.Name == entityType.Name + conventions.PutDtoSuffix);
             var idType = entityType.GetProperties().First(x => x.Name == "Id").PropertyType;
 
             Register(services, entityType, idType);
@@ -244,7 +246,7 @@ public static class ServiveCollectionExtensions
         return services;
     }
 
-    private static void AddGraphQLGet(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options)
+    private static void AddGraphQLGet(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options, CleanCodeNamingConventions conventions)
     {
         if (options.Get)
         {
@@ -254,7 +256,7 @@ public static class ServiveCollectionExtensions
             var pairs = entities
                 .Select(e => (
                     Entity: e,
-                    Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains("GetDto")),
+                    Dto: dtos.FirstOrDefault(x => x.Name.StartsWith(e.Name) && x.Name.Contains(conventions.GetDtoSuffix)),
                     Key: e.GetProperty("Id")?.PropertyType
                 ))
                 .Where(x => x.Dto != null && x.Key != null)
@@ -273,7 +275,7 @@ public static class ServiveCollectionExtensions
         }
     }
 
-    private static void AddGraphQLDelete(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options)
+    private static void AddGraphQLDelete(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options, CleanCodeNamingConventions conventions)
     {
         if (options.Delete)
         {
@@ -288,12 +290,12 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoDeleteMutationTypeExtensions<,>).MakeGenericType(entityType, keyType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options));
+                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
     }
 
-    private static void AddGraphQLCreate(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options)
+    private static void AddGraphQLCreate(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options, CleanCodeNamingConventions conventions)
     {
         if (options.Create)
         {
@@ -309,8 +311,8 @@ public static class ServiveCollectionExtensions
                     continue;
                 }
 
-                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PostDto"));
-                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PostDto"));
+                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains(conventions.PostDtoSuffix));
+                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains(conventions.PostDtoSuffix));
 
                 if (dtoType == null || inputType == null)
                 {
@@ -318,12 +320,12 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoCreateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options));
+                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
     }
 
-    private static void AddGraphQLUpdate(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options)
+    private static void AddGraphQLUpdate(this IRequestExecutorBuilder schema, List<Assembly> assemblies, GraphQLOptions options, CleanCodeNamingConventions conventions)
     {
         if (options.Update)
         {
@@ -339,8 +341,8 @@ public static class ServiveCollectionExtensions
                     continue;
                 }
 
-                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PutDto"));
-                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains("PutDto"));
+                var dtoType = dtos.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains(conventions.PutDtoSuffix));
+                var inputType = inputs.FirstOrDefault(x => x.Name.StartsWith(entityType.Name) && x.Name.Contains(conventions.PutDtoSuffix));
 
                 if (dtoType == null || inputType == null)
                 {
@@ -348,7 +350,7 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoUpdateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options));
+                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
     }

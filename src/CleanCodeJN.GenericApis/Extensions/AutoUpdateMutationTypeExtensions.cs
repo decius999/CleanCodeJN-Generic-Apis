@@ -10,15 +10,16 @@ namespace CleanCodeJN.GenericApis.Extensions;
 /// <typeparam name="TEntity">The entity type to update.</typeparam>
 /// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
 /// <typeparam name="TInput">The input type accepted by the mutation.</typeparam>
-public class AutoUpdateMutationTypeExtensions<TDto, TEntity, TKey, TInput>(GraphQLOptions options) : ObjectTypeExtension
+public class AutoUpdateMutationTypeExtensions<TDto, TEntity, TKey, TInput>(GraphQLOptions options, CleanCodeNamingConventions namingConventions = null) : ObjectTypeExtension
     where TEntity : class, IEntity<TKey>
 {
     protected override void Configure(IObjectTypeDescriptor descriptor)
     {
         descriptor.Name("Mutation");
 
+        var conventions = namingConventions ?? new CleanCodeNamingConventions();
         var field = descriptor
-            .Field("update" + typeof(TEntity).Name)
+            .Field(conventions.GraphQLUpdatePrefix + typeof(TEntity).Name)
             .Argument("id", a => a.Type<NonNullType<IdType>>())
             .Argument("input", a => a.Type<NonNullType<InputObjectType<TInput>>>())
             .Type<ObjectType<TDto>>();
