@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CleanCodeJN.GenericApis.Abstractions.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;
@@ -9,7 +8,7 @@ namespace CleanCodeJN.GenericApis.API;
 /// </summary>
 /// <typeparam name="TEntity">The entity type to delete.</typeparam>
 /// <typeparam name="TGetDto">The DTO type returned after deletion.</typeparam>
-public class Delete<TEntity, TGetDto>(IMediator commandBus, IMapper mapper) : DeleteBase<TEntity, TGetDto>(commandBus, mapper)
+public class Delete<TEntity, TGetDto>(IMediator commandBus, ICleanCodeMapper mapper) : DeleteBase<TEntity, TGetDto>(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
 {

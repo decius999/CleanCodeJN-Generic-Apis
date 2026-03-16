@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CleanCodeJN.GenericApis.Abstractions.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,7 @@ namespace CleanCodeJN.GenericApis.API;
 /// <typeparam name="TEntity">The entity type to create.</typeparam>
 /// <typeparam name="TPostDto">The DTO type accepted in the request body.</typeparam>
 /// <typeparam name="TGetDto">The DTO type returned in the response.</typeparam>
-public abstract class PostBase<TEntity, TPostDto, TGetDto>(IMediator commandBus, IMapper mapper) : ApiBase(commandBus, mapper)
+public abstract class PostBase<TEntity, TPostDto, TGetDto>(IMediator commandBus, ICleanCodeMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
     where TPostDto : class, IDto

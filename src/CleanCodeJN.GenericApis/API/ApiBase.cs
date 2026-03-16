@@ -1,4 +1,4 @@
-using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Extensions;
 using MediatR;
@@ -9,7 +9,7 @@ namespace CleanCodeJN.GenericApis.API;
 /// <summary>
 /// Base controller class providing helper methods for dispatching MediatR requests and mapping HTTP responses.
 /// </summary>
-public class ApiBase(IMediator commandBus, IMapper mapper) : ControllerBase
+public class ApiBase(IMediator commandBus, ICleanCodeMapper mapper) : ControllerBase
 {
     /// <summary>
     /// Dispatches a list-response request and maps the resulting data to a paginated DTO response.

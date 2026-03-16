@@ -40,6 +40,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Model = "claude-sonnet-4-6",
         MaxTokens = 4096,
     };
+    options.MappingProvider = MappingProvider.Mapster;
 });
 
 var app = builder.Build();

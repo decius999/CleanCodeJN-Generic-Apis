@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Mappers;
+using Mapster;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Behaviors;
@@ -113,7 +115,7 @@ public static class ServiveCollectionExtensions
                 .RegisterMediatr(assemblies, options)
                 .RegisterValidatorsFromAssembly(options.ValidatorAssembly)
                 .RegisterGenericCommands(assemblies, options.NamingConventions)
-                .RegisterAutomapper(assemblies, Scan(options.MappingOverrides, assemblies))
+                .RegisterMapper(assemblies, options)
                 .RegisterDbContextAndRepositories<TDataContext>();
     }
 
@@ -185,15 +187,49 @@ public static class ServiveCollectionExtensions
     }
 
     /// <summary>
-    /// Register Automapper.
+    /// Registers the mapping provider (AutoMapper or Mapster) based on <see cref="CleanCodeOptions.MappingProvider"/>.
+    /// Registers <see cref="ICleanCodeMapper"/> in the DI container.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="assemblies">The assemblies to scan for entity/DTO pairs.</param>
+    /// <param name="options">The CleanCode options specifying the mapping provider and overrides.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection RegisterMapper(this IServiceCollection services, List<Assembly> assemblies, CleanCodeOptions options)
+    {
+        if (options.MappingProvider == MappingProvider.Mapster)
+        {
+            return services.RegisterMapster(assemblies, options.MapsterMappingOverrides);
+        }
+
+        return services.RegisterAutomapper(assemblies, options.MappingOverrides);
+    }
+
+    /// <summary>
+    /// Register AutoMapper and exposes it as <see cref="ICleanCodeMapper"/>.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="assemblies">The Assemblies where your Entities, DTOs and Commands are located.</param>
-    /// <param name="mapping">Optional: The Automapper Mapping Profile.</param>
+    /// <param name="mapping">Optional: The AutoMapper mapping configuration.</param>
     /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterAutomapper(this IServiceCollection services, List<Assembly> assemblies, Action<IMapperConfigurationExpression> mapping = null)
     {
         services.AddAutoMapper(Scan(mapping, assemblies));
+        services.AddScoped<ICleanCodeMapper, AutoMapperAdapter>();
+        return services;
+    }
+
+    /// <summary>
+    /// Register Mapster and exposes it as <see cref="ICleanCodeMapper"/>.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="assemblies">The Assemblies where your Entities, DTOs and Commands are located.</param>
+    /// <param name="overrides">Optional: Mapster-specific mapping overrides applied after auto-scanning.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection RegisterMapster(this IServiceCollection services, List<Assembly> assemblies, Action<TypeAdapterConfig> overrides = null)
+    {
+        var config = ScanMapster(overrides, assemblies);
+        services.AddSingleton(config);
+        services.AddScoped<ICleanCodeMapper, MapsterAdapter>();
         return services;
     }
 
@@ -383,6 +419,29 @@ public static class ServiveCollectionExtensions
         }
 
         return combinedAction;
+    }
+
+    private static TypeAdapterConfig ScanMapster(Action<TypeAdapterConfig> overrides, List<Assembly> assemblies)
+    {
+        var config = new TypeAdapterConfig();
+        config.Default.PreserveReference(true);
+        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToDictionary(k => k.Name, v => v);
+        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToDictionary(k => k.Name, v => v);
+
+        foreach (var entity in entities)
+        {
+            foreach (var dto in dtos)
+            {
+                if (dto.Key.StartsWith(entity.Key))
+                {
+                    config.NewConfig(entity.Value, dto.Value);
+                    config.NewConfig(dto.Value, entity.Value);
+                }
+            }
+        }
+
+        overrides?.Invoke(config);
+        return config;
     }
 
     private static void Register(IServiceCollection services, Type entityType, Type idType)

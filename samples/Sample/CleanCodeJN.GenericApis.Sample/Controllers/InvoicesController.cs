@@ -1,5 +1,5 @@
-﻿using System.Linq.Expressions;
-using AutoMapper;
+using System.Linq.Expressions;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Sample.Core.Dtos;
 using CleanCodeJN.GenericApis.Sample.Domain;
@@ -12,10 +12,10 @@ namespace CleanCodeJN.GenericApis.Sample.Controllers;
 /// Invoices controller providing CRUD endpoints for invoice entities.
 /// </summary>
 /// <param name="commandBus">IMediator instance.</param>
-/// <param name="mapper">AutoMapper instance.</param>
+/// <param name="mapper">ICleanCodeMapper instance.</param>
 [Tags("Invoices Controller based")]
 [Route($"api/v2/[controller]")]
-public class InvoicesController(IMediator commandBus, IMapper mapper)
+public class InvoicesController(IMediator commandBus, ICleanCodeMapper mapper)
     : ApiCrudControllerBase<Invoice, InvoiceGetDto, InvoicePostDto, InvoicePutDto, Guid>(commandBus, mapper)
 {
     /// <summary>
@@ -33,4 +33,3 @@ public class InvoicesController(IMediator commandBus, IMapper mapper)
     /// </summary>
     public override List<Expression<Func<Invoice, object>>> GetByIdIncludes => [x => x.Customer];
 }
-

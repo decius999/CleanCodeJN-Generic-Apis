@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Extensions;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
@@ -13,7 +13,7 @@ namespace CleanCodeJN.GenericApis.Commands;
 /// <typeparam name="TEntity">The entity type to update.</typeparam>
 /// <typeparam name="TDto">The DTO type used as input.</typeparam>
 /// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
-public class PutCommand<TEntity, TDto, TKey>(IMapper mapper, IRepository<TEntity, TKey> repository, IEnumerable<IValidator<TDto>> validators) : IRequestHandler<PutRequest<TEntity, TDto>, BaseResponse<TEntity>>
+public class PutCommand<TEntity, TDto, TKey>(ICleanCodeMapper mapper, IRepository<TEntity, TKey> repository, IEnumerable<IValidator<TDto>> validators) : IRequestHandler<PutRequest<TEntity, TDto>, BaseResponse<TEntity>>
     where TEntity : class, IEntity<TKey>
 {
     /// <summary>

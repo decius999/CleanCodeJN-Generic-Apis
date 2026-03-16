@@ -1,5 +1,5 @@
-﻿using System.Linq.Expressions;
-using AutoMapper;
+using System.Linq.Expressions;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Sample.Core.Dtos;
 using CleanCodeJN.GenericApis.Sample.Domain;
@@ -12,10 +12,10 @@ namespace CleanCodeJN.GenericApis.Sample.Controllers;
 /// Customers Controller based
 /// </summary>
 /// <param name="commandBus">IMediatr instance.</param>
-/// <param name="mapper">Automapper instance.</param>
+/// <param name="mapper">ICleanCodeMapper instance.</param>
 [Tags("Customers Controller based")]
 [Route($"api/v2/[controller]")]
-public class CustomersController(IMediator commandBus, IMapper mapper)
+public class CustomersController(IMediator commandBus, ICleanCodeMapper mapper)
     : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
     /// <summary>

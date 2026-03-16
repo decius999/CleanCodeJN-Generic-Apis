@@ -1,5 +1,4 @@
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 
 namespace CleanCodeJN.GenericApis.Extensions;
@@ -33,7 +32,7 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
         field.Resolve(ctx =>
         {
             var repository = (IRepository<TEntity, TKey>)ctx.Service(typeof(IRepository<TEntity, TKey>));
-            var mapper = ctx.Service<IMapper>();
+            var mapper = ctx.Service<ICleanCodeMapper>();
 
             var orders = ctx.ArgumentValue<IReadOnlyList<SortInput>>("order");
             var skip = ctx.ArgumentValue<int?>("skip") ?? 0;
@@ -45,10 +44,7 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
                 query = query.OrderByString(order.Field, order.Direction == SortDirection.DESC);
             }
 
-            return query
-                    .Skip(skip)
-                    .Take(take)
-                    .ProjectTo<TDto>(mapper.ConfigurationProvider);
+            return mapper.ProjectTo<TEntity, TDto>(query.Skip(skip).Take(take));
         });
     }
 }

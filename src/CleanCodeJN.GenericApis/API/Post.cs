@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CleanCodeJN.GenericApis.Abstractions.Contracts;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using MediatR;
 
 namespace CleanCodeJN.GenericApis.API;
@@ -10,7 +9,7 @@ namespace CleanCodeJN.GenericApis.API;
 /// <typeparam name="TEntity">The entity type to create.</typeparam>
 /// <typeparam name="TPostDto">The DTO type used in the request body.</typeparam>
 /// <typeparam name="TGetDto">The DTO type returned in the response.</typeparam>
-public class Post<TEntity, TPostDto, TGetDto>(IMediator commandBus, IMapper mapper) : PostBase<TEntity, TPostDto, TGetDto>(commandBus, mapper)
+public class Post<TEntity, TPostDto, TGetDto>(IMediator commandBus, ICleanCodeMapper mapper) : PostBase<TEntity, TPostDto, TGetDto>(commandBus, mapper)
     where TEntity : class
     where TPostDto : class, IDto
     where TGetDto : class, IDto

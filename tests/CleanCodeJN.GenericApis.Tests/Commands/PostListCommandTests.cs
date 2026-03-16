@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
@@ -21,7 +21,7 @@ public class PostListCommandTests
     {
         // Arrange
         var mockRepository = new Mock<IRepository<TestEntity, int>>();
-        var mockMapper = new Mock<IMapper>();
+        var mockMapper = new Mock<ICleanCodeMapper>();
         var mockValidators = new List<IValidator<TestDto>>();
 
         var testDtos = new List<TestDto>
@@ -70,7 +70,7 @@ public class PostListCommandTests
     {
         // Arrange
         var mockRepository = new Mock<IRepository<TestEntity, int>>();
-        var mockMapper = new Mock<IMapper>();
+        var mockMapper = new Mock<ICleanCodeMapper>();
         var mockValidator = new Mock<IValidator<TestDto>>();
         var mockValidators = new List<IValidator<TestDto>> { mockValidator.Object };
 

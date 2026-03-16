@@ -14,12 +14,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CleanCodeJN.GenericAPIs.Abstractions</Title>
     <PackageTags>Abstractions;CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;DDD;AutoMapper;Commands;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
-    <PackageReleaseNotes>Update to .NET 10.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added ICleanCodeMapper abstraction to decouple mapping provider (AutoMapper / Mapster).</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>4.0.0</VersionPrefix>
+    <VersionPrefix>4.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

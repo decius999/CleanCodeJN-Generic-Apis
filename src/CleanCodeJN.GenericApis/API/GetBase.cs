@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Extensions;
 using CleanCodeJN.GenericApis.Commands;
@@ -12,7 +11,7 @@ namespace CleanCodeJN.GenericApis.API;
 /// </summary>
 /// <typeparam name="TEntity">The entity type to retrieve.</typeparam>
 /// <typeparam name="TGetDto">The DTO type returned in the response.</typeparam>
-public abstract class GetBase<TEntity, TGetDto>(IMediator commandBus, IMapper mapper) : ApiBase(commandBus, mapper)
+public abstract class GetBase<TEntity, TGetDto>(IMediator commandBus, ICleanCodeMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
 {

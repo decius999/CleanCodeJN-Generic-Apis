@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Extensions;
 using CleanCodeJN.GenericApis.Commands;
@@ -20,7 +19,7 @@ namespace CleanCodeJN.GenericApis.API;
 [ApiController]
 public class ApiCrudControllerBase<TEntity, TGetDto, TPostDto, TPutDto, TKey>(
     IMediator commandBus,
-    IMapper mapper) : ApiBase(commandBus, mapper)
+    ICleanCodeMapper mapper) : ApiBase(commandBus, mapper)
     where TEntity : class
     where TGetDto : class, IDto
     where TPostDto : class, IDto

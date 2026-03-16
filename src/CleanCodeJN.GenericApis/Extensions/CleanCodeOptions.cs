@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using AutoMapper;
+using Mapster;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
@@ -58,4 +59,14 @@ public class CleanCodeOptions
     /// Override defaults when your project uses different suffixes or prefixes.
     /// </summary>
     public CleanCodeNamingConventions NamingConventions { get; set; } = new();
+
+    /// <summary>
+    /// Selects the object mapping provider. Default is <see cref="MappingProvider.AutoMapper"/>.
+    /// </summary>
+    public MappingProvider MappingProvider { get; set; } = MappingProvider.AutoMapper;
+
+    /// <summary>
+    /// Optional Mapster-specific mapping overrides. Only used when <see cref="MappingProvider"/> is <see cref="MappingProvider.Mapster"/>.
+    /// </summary>
+    public Action<TypeAdapterConfig> MapsterMappingOverrides { get; set; }
 }

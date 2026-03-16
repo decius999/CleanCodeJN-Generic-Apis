@@ -204,51 +204,50 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options => {});
 
 ### These are the CleanCodeJN Options
 ```C#
-/// <summary>
-/// The options for the CleanCodeJN.GenericApis
-/// </summary>
-public class CleanCodeOptions
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 {
-    /// <summary>
-    /// The assemblies that contain the command types, Entity types and DTO types for automatic registration of commands, DTOs and entities.
-    /// </summary>
-    public List<Assembly> ApplicationAssemblies { get; set; } = [];
+    // Assemblies containing your Commands, DTOs and Entities
+    options.ApplicationAssemblies = [ typeof(YourAssembly).Assembly ];
 
-    /// <summary>
-    /// The assembly that contains the validators types for using Fluent Validation.
-    /// </summary>
-    public Assembly ValidatorAssembly { get; set; }
+    // Assembly with FluentValidation AbstractValidators
+    options.ValidatorAssembly = typeof(YourAssembly).Assembly;
 
-    /// <summary>
-    /// The assembly that contains the automapper mapping profiles.
-    /// </summary>
-    public Action<IMapperConfigurationExpression> MappingOverrides { get; set; }
+    // AutoMapper overrides (only used with MappingProvider.AutoMapper, the default)
+    options.MappingOverrides = cfg => cfg.CreateMap<Foo, FooDto>();
 
-    /// <summary>
-    /// If true: Use distributed memory cache. If false: you can add another Distributed Cache implementation.
-    /// </summary>
-    public bool UseDistributedMemoryCache { get; set; } = true;
+    // Use distributed memory cache (default: true)
+    options.UseDistributedMemoryCache = true;
 
-    /// <summary>
-    /// If true: Add default logging behavior. If false: you can add another logging behavior.
-    /// </summary>
-    public bool AddDefaultLoggingBehavior { get; set; }
+    // Enable built-in MediatR logging behavior
+    options.AddDefaultLoggingBehavior = true;
 
-    /// <summary>
-    /// Mediatr Types of Open Behaviors to register
-    /// </summary>
-    public List<Type> OpenBehaviors { get; set; } = [];
+    // Register custom open/closed MediatR pipeline behaviors
+    options.OpenBehaviors   = [ typeof(MyBehavior<,>) ];
+    options.ClosedBehaviors = [ typeof(MySpecificBehavior) ];
 
-    /// <summary>
-    /// Mediatr Types of Closed Behaviors to register
-    /// </summary>
-    public List<Type> ClosedBehaviors { get; set; } = [];
-    
-    /// <summary>
-    /// Gets or sets a value indicating whether GraphQL auto-wiring is enabled.
-    /// </summary>
-    public GraphQLOptions GraphQLOptions { get; set; }
-}
+    // GraphQL auto-wiring
+    options.GraphQLOptions = new GraphQLOptions { Get = true, Create = true, Update = true, Delete = true };
+
+    // AI Proxy (for /ai chat page)
+    options.AiProxyOptions = new AiProxyOptions { AnthropicApiKey = "sk-ant-..." };
+
+    // Mapping provider: AutoMapper (default) or Mapster
+    options.MappingProvider = MappingProvider.AutoMapper;
+
+    // Mapster overrides (only used with MappingProvider.Mapster)
+    options.MapsterMappingOverrides = config => config.NewConfig<Foo, FooDto>().Ignore(x => x.Secret);
+
+    // Override DTO suffix and GraphQL prefix naming conventions
+    options.NamingConventions = new CleanCodeNamingConventions
+    {
+        GetDtoSuffix          = "GetDto",   // default
+        PostDtoSuffix         = "PostDto",  // default
+        PutDtoSuffix          = "PutDto",   // default
+        GraphQLCreatePrefix   = "create",   // default → createCustomer
+        GraphQLUpdatePrefix   = "update",   // default → updateCustomer
+        GraphQLDeletePrefix   = "delete",   // default → deleteCustomer
+    };
+});
 ```
 
 ### Add app.UseCleanCodeJNWithMinimalApis() when using Minimal APIs to your Program.cs
@@ -496,7 +495,7 @@ public class CustomersV1Api : IApi
 [Tags("Customers Controller based")]
 [Route($"api/v2/[controller]")]
 
-public class CustomersController(IMediator commandBus, IMapper mapper)
+public class CustomersController(IMediator commandBus, ICleanCodeMapper mapper)
     : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
 }
@@ -508,10 +507,10 @@ public class CustomersController(IMediator commandBus, IMapper mapper)
 /// Customers Controller based
 /// </summary>
 /// <param name="commandBus">IMediatr instance.</param>
-/// <param name="mapper">Automapper instance.</param>
+/// <param name="mapper">ICleanCodeMapper instance.</param>
 [Tags("Customers Controller based")]
 [Route($"api/v2/[controller]")]
-public class CustomersController(IMediator commandBus, IMapper mapper)
+public class CustomersController(IMediator commandBus, ICleanCodeMapper mapper)
     : ApiCrudControllerBase<Customer, CustomerGetDto, CustomerPostDto, CustomerPutDto, int>(commandBus, mapper)
 {
     /// <summary>
@@ -923,6 +922,86 @@ builder.Services.AddCleanCodeJNWithAiChat(options =>
 | **Markdown rendering** | Tables, code blocks, lists rendered with syntax highlighting |
 | **Dark theme** | CleanCodeJN-branded dark UI out of the box |
 | **Auto-redirect** | App opens directly at `/ai` on start |
+
+---
+
+## 🔀 Configurable Mapping Provider
+
+CleanCodeJN internally uses an `ICleanCodeMapper` abstraction — you are not locked into any specific mapping library. By default **AutoMapper** is used, but you can switch to **Mapster** (both are free for most projects) with a single option.
+
+Both providers auto-discover Entity ⇄ DTO pairs by naming convention — no manual mapping registration required.
+
+### AutoMapper (default)
+
+```csharp
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    // No MappingProvider needed — AutoMapper is the default.
+    // Optionally override specific mappings:
+    options.MappingOverrides = cfg =>
+    {
+        cfg.CreateMap<Customer, CustomerGetDto>()
+           .ForMember(d => d.FullAddress, o => o.MapFrom(s => s.Street + ", " + s.City));
+    };
+});
+```
+
+### Mapster
+
+```csharp
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    options.MappingProvider = MappingProvider.Mapster;
+
+    // Optionally override specific Mapster mappings:
+    options.MapsterMappingOverrides = config =>
+    {
+        config.NewConfig<Customer, CustomerGetDto>()
+              .Map(d => d.FullAddress, s => s.Street + ", " + s.City);
+    };
+});
+```
+
+Both providers register `ICleanCodeMapper` in the DI container. Inject it wherever you need object mapping:
+
+```csharp
+public class MyService(ICleanCodeMapper mapper)
+{
+    public CustomerGetDto Map(Customer customer) => mapper.Map<CustomerGetDto>(customer);
+}
+```
+
+---
+
+## 🏷️ Configurable Naming Conventions
+
+By default, CleanCodeJN discovers DTOs and generates GraphQL field names using these conventions:
+
+| Convention | Default | Example |
+|---|---|---|
+| GET DTO suffix | `GetDto` | `CustomerGetDto` |
+| POST DTO suffix | `PostDto` | `CustomerPostDto` |
+| PUT DTO suffix | `PutDto` | `CustomerPutDto` |
+| GraphQL create prefix | `create` | `createCustomer` |
+| GraphQL update prefix | `update` | `updateCustomer` |
+| GraphQL delete prefix | `delete` | `deleteCustomer` |
+
+Override any of these via `CleanCodeOptions.NamingConventions`:
+
+```csharp
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    options.NamingConventions = new CleanCodeNamingConventions
+    {
+        GetDtoSuffix        = "ReadModel",  // CustomerReadModel
+        PostDtoSuffix       = "CreateDto",  // CustomerCreateDto
+        PutDtoSuffix        = "UpdateDto",  // CustomerUpdateDto
+        GraphQLCreatePrefix = "add",        // addCustomer
+        GraphQLUpdatePrefix = "edit",       // editCustomer
+        GraphQLDeletePrefix = "remove",     // removeCustomer
+    };
+});
+```
 
 ---
 

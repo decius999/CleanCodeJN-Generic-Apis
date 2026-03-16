@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 
 namespace CleanCodeJN.GenericApis.Extensions;
@@ -32,7 +32,7 @@ public class AutoUpdateMutationTypeExtensions<TDto, TEntity, TKey, TInput>(Graph
         field.Resolve(async ctx =>
         {
             var repository = ctx.Service<IRepository<TEntity, TKey>>();
-            var mapper = ctx.Service<IMapper>();
+            var mapper = ctx.Service<ICleanCodeMapper>();
             var id = ctx.ArgumentValue<TKey>("id");
             var input = ctx.ArgumentValue<TInput>("input");
 
