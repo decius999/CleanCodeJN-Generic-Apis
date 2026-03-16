@@ -192,10 +192,10 @@ public static class ServiveCollectionExtensions
     /// <param name="mapping">Optional: The Automapper Mapping Profile.</param>
     /// <returns>The service collection.</returns>
     public static IServiceCollection RegisterAutomapper(this IServiceCollection services, List<Assembly> assemblies, Action<IMapperConfigurationExpression> mapping = null)
-        => services.AddSingleton<IMapper>(
-            mapping != null ?
-            new Mapper(new MapperConfiguration(mapping)) :
-            new Mapper(new MapperConfiguration(Scan(mapping, assemblies))));
+    {
+        services.AddAutoMapper(Scan(mapping, assemblies));
+        return services;
+    }
 
     /// <summary>
     /// Configures the application to use GraphQL with the specified default route.
