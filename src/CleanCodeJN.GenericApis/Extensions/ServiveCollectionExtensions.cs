@@ -9,6 +9,7 @@ using CleanCodeJN.GenericApis.Behaviors;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Context;
 using CleanCodeJN.GenericApis.Services;
+using Microsoft.AspNetCore.Diagnostics;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using FluentValidation;
@@ -90,11 +91,15 @@ public static class ServiveCollectionExtensions
 
         if (options.AiProxyOptions is not null)
         {
-            services.AddHttpClient("AiProxy")
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            var httpClientBuilder = services.AddHttpClient("AiProxy");
+            if (options.AiProxyOptions.DisableCertificateValidation)
             {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            });
+                httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                });
+            }
+
             services.AddSingleton(Options.Create(options.AiProxyOptions));
             services.AddScoped<ILlmProvider>(sp =>
                 new AnthropicLlmProvider(
@@ -104,12 +109,15 @@ public static class ServiveCollectionExtensions
                 ));
             services.AddScoped<AiProxyService>();
 
-            services.AddCors(options =>
+            var corsPolicyName = options.AiProxyOptions.CorsPolicyName;
+            services.AddCors(corsOptions =>
             {
-                options.AddPolicy("BlazorChat", policy =>
+                corsOptions.AddPolicy(corsPolicyName, policy =>
                     policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
         }
+
+        services.AddExceptionHandler<CleanCodeExceptionHandler>();
 
         services
             .RegisterMinimalApiBaseClasses()
@@ -243,7 +251,23 @@ public static class ServiveCollectionExtensions
     /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
     public static WebApplication UseCleanCodeJNWithGraphQL(this WebApplication app, string defaultRoute = "/graphql")
     {
+        app.UseExceptionHandler();
         app.MapGraphQL(defaultRoute);
+        return app;
+    }
+
+    /// <summary>
+    /// Activates the CleanCodeJN exception handler middleware, which ensures all unhandled exceptions
+    /// are returned as <c>ProblemDetails</c> responses. Call this early in your middleware pipeline,
+    /// before routing and endpoint middleware.
+    /// Override the default behaviour by registering your own <c>IExceptionHandler</c>
+    /// implementation <em>before</em> calling <c>AddCleanCodeJN</c>.
+    /// </summary>
+    /// <param name="app">The <see cref="WebApplication"/> instance to configure.</param>
+    /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
+    public static WebApplication UseCleanCodeJNExceptionHandler(this WebApplication app)
+    {
+        app.UseExceptionHandler();
         return app;
     }
 

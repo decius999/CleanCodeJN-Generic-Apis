@@ -78,6 +78,8 @@ public class DeleteCustomerCommand(ICommandExecutionContext ctx)
         SelfBaseUrl = configuration["SelfBaseUrl"],
         Model = "claude-sonnet-4-6",
         MaxTokens = 4096,
+        CorsPolicyName = "CleanCodeJNChat",        // default — change if it conflicts with existing policies
+        DisableCertificateValidation = false,      // set true only in local dev
     };
 ```
 
@@ -170,6 +172,7 @@ public class CustomersApi : IApi
     - [See the how clean your code will look like in the end](#see-the-how-clean-your-code-will-look-like-in-the-end)
 - [💬 AI Chat UI — /ai Page](#-ai-chat-ui--ai-page)
 - [🤖 Pluggable LLM Provider](#-pluggable-llm-provider)
+- [🛡️ Pluggable Exception Handler](#️-pluggable-exception-handler)
 - [Sample Code](#sample-code)
 
 
@@ -230,7 +233,13 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
     options.GraphQLOptions = new GraphQLOptions { Get = true, Create = true, Update = true, Delete = true };
 
     // AI Proxy (for /ai chat page)
-    options.AiProxyOptions = new AiProxyOptions { LlmApiKey = "sk-ant-..." };
+    options.AiProxyOptions = new AiProxyOptions
+    {
+        LlmApiKey = "sk-ant-...",
+        SelfBaseUrl = "https://localhost:7001",
+        CorsPolicyName = "CleanCodeJNChat",   // default
+        DisableCertificateValidation = false, // set true only in local dev
+    };
 
     // Mapping provider: AutoMapper (default) or Mapster
     options.MappingProvider = MappingProvider.AutoMapper;
@@ -272,9 +281,24 @@ app.UseCleanCodeJNDocumentation();  // add <GenerateDocumentationFile>true</Gene
 
 One line of code turns your entire API into a **Model Context Protocol (MCP) Server** — discoverable and executable by any AI assistant that supports the standard MCP Streamable HTTP transport (Claude, Cursor, Continue, and more).
 
-```C#
+```csharp
 app.UseCleanCodeJNWithMcp();
 ```
+
+Use the optional delegate to exclude sensitive operations from the tool list:
+
+```csharp
+app.UseCleanCodeJNWithMcp(options =>
+{
+    // exclude all DELETE tools so AI assistants cannot delete data
+    options.ExcludeTools = name => name.StartsWith("delete_");
+
+    // or exclude specific routes
+    options.ExcludeTools = name => name.Contains("admin");
+});
+```
+
+Tool names follow the pattern `{httpMethod}_{route_in_snake_case}`, e.g. `delete_api_customers_{id}`.
 
 This registers a `POST /mcp` endpoint implementing the **MCP Streamable HTTP transport** (protocol version `2024-11-05`). No custom protocol, no vendor lock-in — any standard MCP client works out of the box.
 
@@ -826,38 +850,26 @@ dotnet add package CleanCodeJN.GenericApis.Chat      # Blazor WASM UI component
 
 ### Backend — `Program.cs` additions
 
-```csharp
-// Register the AI proxy service (streams Claude responses + executes MCP tool calls)
-builder.Services.AddHttpClient("AiProxy");
-builder.Services.Configure<AiProxyOptions>(builder.Configuration.GetSection("AiProxy"));
-builder.Services.AddScoped<AiProxyService>();
-```
-
-```json
-// appsettings.json
-{
-  "AiProxy": {
-    "LlmApiKey": "sk-ant-...",
-    "Model": "claude-opus-4-5",
-    "MaxTokens": 8096,
-    "SelfBaseUrl": "https://localhost:7132"
-  }
-}
-```
-
-The backend must also expose the `/api/ai/stream` SSE endpoint — this is included automatically when `AiProxyService` is registered and the endpoint is mapped:
+Set `AiProxyOptions` inside `AddCleanCodeJN` and call `UseCleanCodeJNWithAiChat()` to register the `/ai/chat` SSE endpoint:
 
 ```csharp
-app.MapPost("/api/ai/stream", async (
-    ChatRequest request,
-    AiProxyService aiProxy,
-    HttpContext context) =>
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 {
-    var bearer = context.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-    context.Response.ContentType = "text/event-stream";
-    await foreach (var ev in aiProxy.StreamAsync(request, bearer, context.RequestAborted))
-        await context.Response.WriteAsync($"data: {JsonSerializer.Serialize(ev)}\n\n");
+    options.AiProxyOptions = new AiProxyOptions
+    {
+        LlmApiKey              = configuration["Anthropic:ApiKey"],
+        SelfBaseUrl            = "https://localhost:7132",
+        Model                  = "claude-sonnet-4-6",
+        MaxTokens              = 8096,
+        CorsPolicyName         = "CleanCodeJNChat", // default
+        DisableCertificateValidation = false,       // set true only in local dev
+    };
 });
+
+var app = builder.Build();
+
+app.UseCleanCodeJNWithMcp();
+app.UseCleanCodeJNWithAiChat(); // registers POST /ai/chat  and GET /ai/test
 ```
 
 ### Blazor WASM — `Program.cs`
@@ -1010,6 +1022,52 @@ builder.Services.AddScoped<ILlmProvider, MyOpenAiProvider>(); // overrides Anthr
 
 ---
 
+## 🛡️ Pluggable Exception Handler
+
+All unhandled exceptions are automatically returned as `ProblemDetails` (RFC 7807) by the built-in `CleanCodeExceptionHandler`. It is activated automatically by every `UseCleanCodeJN*` method — no setup required.
+
+If you need explicit control over the position in the middleware pipeline (e.g. to catch exceptions from your own early middleware), call it manually before the other `Use*` calls:
+
+```csharp
+var app = builder.Build();
+
+app.UseCleanCodeJNExceptionHandler(); // explicit early placement
+app.UseCleanCodeJNWithMinimalApis();
+```
+
+### Override the default behaviour
+
+Derive from `CleanCodeExceptionHandler` and map exception types to appropriate HTTP status codes:
+
+```csharp
+public class MyExceptionHandler : CleanCodeExceptionHandler
+{
+    public override async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext, Exception exception, CancellationToken ct)
+    {
+        if (exception is KeyNotFoundException)
+        {
+            httpContext.Response.StatusCode = 404;
+            await httpContext.Response.WriteAsJsonAsync(
+                new ProblemDetails { Title = exception.Message, Status = 404 }, ct);
+            return true;
+        }
+
+        // fall back to default (400 + ProblemDetails with stack trace)
+        return await base.TryHandleAsync(httpContext, exception, ct);
+    }
+}
+```
+
+Register your handler **before** `AddCleanCodeJN` — ASP.NET Core tries handlers in registration order, so the first one registered wins:
+
+```csharp
+builder.Services.AddExceptionHandler<MyExceptionHandler>(); // tried first
+builder.Services.AddCleanCodeJN<MyDbContext>(...);          // CleanCodeExceptionHandler = fallback
+```
+
+---
+
 ## 🏷️ Configurable Naming Conventions
 
 By default, CleanCodeJN discovers DTOs and generates GraphQL field names using these conventions:
@@ -1043,4 +1101,4 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 ---
 
 # Sample Code
-[GitHub Full Sample](https://github.com/decius999/CleanCodeJN-Generic-Apis/tree/dev/CleanCodeJN.GenericApis.Sample)
+[GitHub Full Sample](https://github.com/decius999/CleanCodeJN-Generic-Apis/tree/dev/samples/Sample)

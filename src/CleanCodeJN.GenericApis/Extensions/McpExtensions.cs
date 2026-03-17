@@ -40,9 +40,15 @@ public static class McpExtensions
     /// IApi Minimal API registrations and IOSP Commands from XML docs become descriptive tools.
     /// </summary>
     /// <param name="app">The web application.</param>
+    /// <param name="configureOptions">Optional delegate to configure <see cref="McpOptions"/>, e.g. to exclude specific tools.</param>
     /// <returns>The web application.</returns>
-    public static WebApplication UseCleanCodeJNWithMcp(this WebApplication app)
+    public static WebApplication UseCleanCodeJNWithMcp(this WebApplication app, Action<McpOptions>? configureOptions = null)
     {
+        app.UseExceptionHandler();
+
+        var mcpOptions = new McpOptions();
+        configureOptions?.Invoke(mcpOptions);
+
         var callingAssembly = Assembly.GetCallingAssembly();
 
         app.MapPost("/mcp", async (HttpContext context) =>
@@ -83,7 +89,7 @@ public static class McpExtensions
                 {
                     "initialize" => BuildInitializeResult(),
                     "ping" => new { },
-                    "tools/list" => BuildToolsListResult(callingAssembly, context.RequestServices),
+                    "tools/list" => BuildToolsListResult(callingAssembly, context.RequestServices, mcpOptions),
                     "tools/call" => await ExecuteToolCall(@params, context.RequestServices, callingAssembly, context),
                     _ => null
                 };
@@ -121,7 +127,7 @@ public static class McpExtensions
         capabilities = new { tools = new { listChanged = false } }
     };
 
-    private static object BuildToolsListResult(Assembly callingAssembly, IServiceProvider services)
+    private static object BuildToolsListResult(Assembly callingAssembly, IServiceProvider services, McpOptions mcpOptions)
     {
         var tools = new List<object>();
         var covered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -131,6 +137,16 @@ public static class McpExtensions
         tools.AddRange(BuildControllerCrudTools(callingAssembly, covered, services));
         tools.AddRange(BuildWithSummaryTools(services, covered));
         tools.AddRange(BuildCommandDescriptionTools(covered));
+
+        if (mcpOptions.ExcludeTools is not null)
+        {
+            tools.RemoveAll(t =>
+            {
+                var name = JsonSerializer.SerializeToNode(t, JsonOptions)?["name"]?.GetValue<string>();
+                return name is not null && mcpOptions.ExcludeTools(name);
+            });
+        }
+
         return new { tools };
     }
 

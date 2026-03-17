@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CleanCodeJN.GenericApis.Models;
 using CleanCodeJN.GenericApis.Services;
+using Microsoft.Extensions.Options;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
@@ -24,7 +25,10 @@ public static class AiProxyExtensions
     /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
     public static WebApplication UseCleanCodeJNWithAiChat(this WebApplication app)
     {
-        app.UseCors("BlazorChat");
+        app.UseExceptionHandler();
+
+        var corsPolicyName = app.Services.GetService<IOptions<AiProxyOptions>>()?.Value.CorsPolicyName ?? "CleanCodeJNChat";
+        app.UseCors(corsPolicyName);
 
         app.MapPost("/ai/chat", async (HttpContext context, AiProxyService service, ILogger<AiProxyService> logger, CancellationToken cancellationToken) =>
         {

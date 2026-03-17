@@ -373,6 +373,8 @@ public static class MinimalAPIExtensions
     /// <returns>Web Application</returns>
     public static WebApplication UseCleanCodeJNWithMinimalApis(this WebApplication app)
     {
+        app.UseExceptionHandler();
+
         var interfaceType = typeof(IApi);
         var assembly = Assembly.GetCallingAssembly();
 
