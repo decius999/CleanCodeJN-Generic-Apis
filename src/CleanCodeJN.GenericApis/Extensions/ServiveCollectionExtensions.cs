@@ -95,12 +95,14 @@ public static class ServiveCollectionExtensions
             {
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             });
-            services.AddScoped(sp =>
-                  new AiProxyService(
-                      Options.Create(options.AiProxyOptions),
-                      sp.GetRequiredService<IHttpClientFactory>(),
-                      sp.GetRequiredService<ILogger<AiProxyService>>()
-                  ));
+            services.AddSingleton(Options.Create(options.AiProxyOptions));
+            services.AddScoped<ILlmProvider>(sp =>
+                new AnthropicLlmProvider(
+                    sp.GetRequiredService<IOptions<AiProxyOptions>>(),
+                    sp.GetRequiredService<IHttpClientFactory>(),
+                    sp.GetRequiredService<ILogger<AnthropicLlmProvider>>()
+                ));
+            services.AddScoped<AiProxyService>();
 
             services.AddCors(options =>
             {

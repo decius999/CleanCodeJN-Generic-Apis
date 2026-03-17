@@ -15,12 +15,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;AutoMapper;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
-    <PackageReleaseNotes>BREAKING: IMapper replaced by ICleanCodeMapper abstraction — choose AutoMapper or Mapster via MappingProvider option. AutoMapper upgraded to 16.x, MediatR to 14.x. Configurable DTO suffixes and GraphQL field prefixes via NamingConventions.</PackageReleaseNotes>
+    <PackageReleaseNotes>Pluggable LLM provider via ILlmProvider — implement your own to replace the default Anthropic backend.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.0.0</VersionPrefix>
+    <VersionPrefix>6.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

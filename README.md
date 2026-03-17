@@ -74,7 +74,7 @@ public class DeleteCustomerCommand(ICommandExecutionContext ctx)
 ```csharp
     options.AiProxyOptions = new AiProxyOptions
     {
-        AnthropicApiKey = configuration["Anthropic:ApiKey"],
+        LlmApiKey = configuration["Anthropic:ApiKey"],
         SelfBaseUrl = configuration["SelfBaseUrl"],
         Model = "claude-sonnet-4-6",
         MaxTokens = 4096,
@@ -169,6 +169,7 @@ public class CustomersApi : IApi
     - [Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied](#use-ifbreakrequest-to-execute-an-optional-request---break-whole-process-when-conditions-are-not-satisfied)
     - [See the how clean your code will look like in the end](#see-the-how-clean-your-code-will-look-like-in-the-end)
 - [💬 AI Chat UI — /ai Page](#-ai-chat-ui--ai-page)
+- [🤖 Pluggable LLM Provider](#-pluggable-llm-provider)
 - [Sample Code](#sample-code)
 
 
@@ -229,7 +230,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
     options.GraphQLOptions = new GraphQLOptions { Get = true, Create = true, Update = true, Delete = true };
 
     // AI Proxy (for /ai chat page)
-    options.AiProxyOptions = new AiProxyOptions { AnthropicApiKey = "sk-ant-..." };
+    options.AiProxyOptions = new AiProxyOptions { LlmApiKey = "sk-ant-..." };
 
     // Mapping provider: AutoMapper (default) or Mapster
     options.MappingProvider = MappingProvider.AutoMapper;
@@ -836,7 +837,7 @@ builder.Services.AddScoped<AiProxyService>();
 // appsettings.json
 {
   "AiProxy": {
-    "AnthropicApiKey": "sk-ant-...",
+    "LlmApiKey": "sk-ant-...",
     "Model": "claude-opus-4-5",
     "MaxTokens": 8096,
     "SelfBaseUrl": "https://localhost:7132"
@@ -970,6 +971,42 @@ public class MyService(ICleanCodeMapper mapper)
     public CustomerGetDto Map(Customer customer) => mapper.Map<CustomerGetDto>(customer);
 }
 ```
+
+---
+
+## 🤖 Pluggable LLM Provider
+
+By default the AI Chat feature uses **Anthropic Claude** via `AnthropicLlmProvider`. If you want to use a different LLM (OpenAI, Azure OpenAI, local models, …) you can replace the provider by implementing `ILlmProvider` and registering it **after** `AddCleanCodeJN`:
+
+```csharp
+// 1. Implement the interface
+public class MyOpenAiProvider(IOptions<AiProxyOptions> options) : ILlmProvider
+{
+    public async IAsyncEnumerable<ChatStreamEvent> StreamAsync(
+        ChatRequest request, string bearerToken, CancellationToken cancellationToken)
+    {
+        // call your preferred LLM here and yield ChatStreamEvent objects
+        yield return new ChatStreamEvent("text", Content: "Hello from my custom provider!");
+    }
+}
+
+// 2. Register it AFTER AddCleanCodeJN — it overrides the default AnthropicLlmProvider
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    options.AiProxyOptions = new AiProxyOptions { SelfBaseUrl = "https://localhost:7001" };
+});
+
+builder.Services.AddScoped<ILlmProvider, MyOpenAiProvider>(); // overrides Anthropic default
+```
+
+`ChatStreamEvent` types your provider should yield:
+
+| Type | Purpose |
+|---|---|
+| `"text"` | A text delta to stream to the client (`Content` field) |
+| `"tool_call"` | Claude/LLM is calling an MCP tool (`ToolName`, `ToolArgs`) |
+| `"tool_result"` | Result of the tool call (`ToolName`, `ToolResult`) |
+| `"error"` | An error occurred (`Content` with error message) |
 
 ---
 

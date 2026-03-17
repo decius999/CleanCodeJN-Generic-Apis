@@ -35,7 +35,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
     };
     options.AiProxyOptions = new AiProxyOptions
     {
-        AnthropicApiKey = configuration["Anthropic:ApiKey"],
+        LlmApiKey = configuration["Anthropic:ApiKey"],
         SelfBaseUrl = configuration["SelfBaseUrl"],
         Model = "claude-sonnet-4-6",
         MaxTokens = 4096,

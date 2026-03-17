@@ -5,8 +5,8 @@
 /// </summary>
 public class AiProxyOptions
 {
-    /// <summary>The Anthropic API key used to call Claude.</summary>
-    public string AnthropicApiKey { get; set; } = string.Empty;
+    /// <summary>The API key forwarded to the active <see cref="CleanCodeJN.GenericApis.Services.ILlmProvider"/>. For the default Anthropic provider this is your Claude API key.</summary>
+    public string LlmApiKey { get; set; } = string.Empty;
 
     /// <summary>The Claude model to use. Defaults to claude-sonnet-4-6.</summary>
     public string Model { get; set; } = "claude-sonnet-4-6";

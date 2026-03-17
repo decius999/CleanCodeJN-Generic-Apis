@@ -106,7 +106,7 @@ Backend `appsettings.json`:
 ```json
 {
   "AiProxy": {
-    "AnthropicApiKey": "sk-ant-...",
+    "LlmApiKey": "sk-ant-...",
     "Model":           "claude-opus-4-5",
     "MaxTokens":       8096,
     "SelfBaseUrl":     "https://localhost:7132"
