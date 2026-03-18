@@ -148,8 +148,9 @@ public class AnthropicLlmProvider(IOptions<AiProxyOptions> options, IHttpClientF
             JsonSerializer.Serialize(new { jsonrpc = "2.0", id = 1, method = "tools/list", @params = new { } }),
             Encoding.UTF8, "application/json");
 
-        logger.LogInformation("Fetching MCP tools from {Url}", $"{options.Value.SelfBaseUrl}/mcp");
-        var response = await client.PostAsync($"{options.Value.SelfBaseUrl}/mcp", payload, cancellationToken);
+        var mcpUrl = $"{options.Value.SelfBaseUrl}{options.Value.McpPath}";
+        logger.LogInformation("Fetching MCP tools from {Url}", mcpUrl);
+        var response = await client.PostAsync(mcpUrl, payload, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -194,7 +195,8 @@ public class AnthropicLlmProvider(IOptions<AiProxyOptions> options, IHttpClientF
             JsonSerializer.Serialize(new { jsonrpc = "2.0", id = 2, method = "tools/call", @params = new { name = toolName, arguments = args } }),
             Encoding.UTF8, "application/json");
 
-        var response = await client.PostAsync($"{options.Value.SelfBaseUrl}/mcp", payload, cancellationToken);
+        var mcpUrl = $"{options.Value.SelfBaseUrl}{options.Value.McpPath}";
+        var response = await client.PostAsync(mcpUrl, payload, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {

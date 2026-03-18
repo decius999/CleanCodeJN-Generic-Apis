@@ -78,6 +78,11 @@ public class DeleteCustomerCommand(ICommandExecutionContext ctx)
         SelfBaseUrl = configuration["SelfBaseUrl"],
         Model = "claude-sonnet-4-6",
         MaxTokens = 4096,
+        ChatRoute = "/ai/chat",                    // default
+        TestRoute = "/ai/test",                    // default
+        McpPath = "/mcp",                          // default — must match McpOptions.Route
+        EnableTestEndpoint = true,                 // set false in production
+        AllowedCorsOrigins = ["*"],                // default — restrict in production e.g. ["https://myapp.com"]
         CorsPolicyName = "CleanCodeJNChat",        // default — change if it conflicts with existing policies
         DisableCertificateValidation = false,      // set true only in local dev
     };
@@ -126,13 +131,13 @@ public class CustomersApi : IApi
 
 ### 5. Feature flags — what each `Use*` call activates
 
-| Call | Activates | Visit |
+| Call | Activates | Default route |
 |---|---|---|
-| `UseCleanCodeJNWithMinimalApis()` | All `IApi` REST endpoints | `/api` + /swagger |
-| `UseCleanCodeJNWithGraphQL()` | Auto-generated GraphQL schema | `/graphql` |
-| `UseCleanCodeJNWithMcp()` | MCP Server (AI-callable tools) | `/mcp` |
+| `UseCleanCodeJNWithMinimalApis()` | All `IApi` REST endpoints | `/api` + `/swagger` |
+| `UseCleanCodeJNWithGraphQL()` | Auto-generated GraphQL schema | `/graphql` (configurable) |
+| `UseCleanCodeJNWithMcp()` | MCP Server (AI-callable tools) | `/mcp` (configurable via `McpOptions.Route`) |
 | `UseCleanCodeJNWithDocumentation()` | Automatic documentation from XML comments | `/docs` |
-| `UseCleanCodeJNWithAiChat()` | AI chat with your API based on MCP server | `/ai` |
+| `UseCleanCodeJNWithAiChat()` | AI chat SSE endpoint + optional test endpoint | `/ai/chat` + `/ai/test` (configurable via `AiProxyOptions`) |
 
 
 ## Table of Contents
@@ -285,11 +290,15 @@ One line of code turns your entire API into a **Model Context Protocol (MCP) Ser
 app.UseCleanCodeJNWithMcp();
 ```
 
-Use the optional delegate to exclude sensitive operations from the tool list:
+Use the optional delegate to configure the endpoint:
 
 ```csharp
 app.UseCleanCodeJNWithMcp(options =>
 {
+    // change the endpoint route (default: /mcp)
+    // also update AiProxyOptions.McpPath to the same value when using AI chat
+    options.Route = "/tools";
+
     // exclude all DELETE tools so AI assistants cannot delete data
     options.ExcludeTools = name => name.StartsWith("delete_");
 
@@ -300,7 +309,7 @@ app.UseCleanCodeJNWithMcp(options =>
 
 Tool names follow the pattern `{httpMethod}_{route_in_snake_case}`, e.g. `delete_api_customers_{id}`.
 
-This registers a `POST /mcp` endpoint implementing the **MCP Streamable HTTP transport** (protocol version `2024-11-05`). No custom protocol, no vendor lock-in — any standard MCP client works out of the box.
+This registers a `POST /mcp` endpoint (route configurable via `McpOptions.Route`) implementing the **MCP Streamable HTTP transport** (protocol version `2024-11-05`). No custom protocol, no vendor lock-in — any standard MCP client works out of the box.
 
 #### What gets auto-generated?
 
@@ -864,19 +873,24 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
 {
     options.AiProxyOptions = new AiProxyOptions
     {
-        LlmApiKey              = configuration["Anthropic:ApiKey"],
-        SelfBaseUrl            = "https://localhost:7132",
-        Model                  = "claude-sonnet-4-6",
-        MaxTokens              = 8096,
-        CorsPolicyName         = "CleanCodeJNChat", // default
-        DisableCertificateValidation = false,       // set true only in local dev
+        LlmApiKey                  = configuration["Anthropic:ApiKey"],
+        SelfBaseUrl                = "https://localhost:7132",
+        Model                      = "claude-sonnet-4-6",
+        MaxTokens                  = 8096,
+        ChatRoute                  = "/ai/chat",           // default
+        TestRoute                  = "/ai/test",           // default
+        McpPath                    = "/mcp",               // default — must match McpOptions.Route
+        EnableTestEndpoint         = true,                 // set false in production
+        AllowedCorsOrigins         = ["*"],                // default — restrict in production
+        CorsPolicyName             = "CleanCodeJNChat",    // default
+        DisableCertificateValidation = false,              // set true only in local dev
     };
 });
 
 var app = builder.Build();
 
-app.UseCleanCodeJNWithMcp();
-app.UseCleanCodeJNWithAiChat(); // registers POST /ai/chat  and GET /ai/test
+app.UseCleanCodeJNWithMcp();     // registers MCP at McpOptions.Route (default: /mcp)
+app.UseCleanCodeJNWithAiChat();  // registers ChatRoute (default: /ai/chat) and optionally TestRoute (default: /ai/test)
 ```
 
 ### Blazor WASM — `Program.cs`

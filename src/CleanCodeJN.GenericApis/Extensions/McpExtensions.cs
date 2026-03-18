@@ -51,7 +51,7 @@ public static class McpExtensions
 
         var callingAssembly = Assembly.GetCallingAssembly();
 
-        app.MapPost("/mcp", async (HttpContext context) =>
+        app.MapPost(mcpOptions.Route, async (HttpContext context) =>
         {
             context.Response.ContentType = "application/json";
 

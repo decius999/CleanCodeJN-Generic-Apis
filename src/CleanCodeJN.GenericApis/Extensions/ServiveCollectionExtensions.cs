@@ -112,10 +112,16 @@ public static class ServiveCollectionExtensions
             services.AddScoped<AiProxyService>();
 
             var corsPolicyName = options.AiProxyOptions.CorsPolicyName;
+            var allowedOrigins = options.AiProxyOptions.AllowedCorsOrigins ?? ["*"];
             services.AddCors(corsOptions =>
             {
                 corsOptions.AddPolicy(corsPolicyName, policy =>
-                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                {
+                    var builder = allowedOrigins.Count == 1 && allowedOrigins[0] == "*"
+                        ? policy.AllowAnyOrigin()
+                        : policy.WithOrigins([.. allowedOrigins]);
+                    builder.AllowAnyMethod().AllowAnyHeader();
+                });
             });
         }
 

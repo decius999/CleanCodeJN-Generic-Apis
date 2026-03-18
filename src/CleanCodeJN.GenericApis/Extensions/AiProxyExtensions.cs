@@ -19,7 +19,8 @@ public static class AiProxyExtensions
     };
 
     /// <summary>
-    /// Registers the <c>/ai/chat</c> SSE streaming endpoint and the <c>/ai/test</c> connectivity test endpoint.
+    /// Registers the AI chat SSE streaming endpoint and optionally the connectivity test endpoint.
+    /// Routes are configurable via <see cref="AiProxyOptions.ChatRoute"/> and <see cref="AiProxyOptions.TestRoute"/>.
     /// </summary>
     /// <param name="app">The web application to configure.</param>
     /// <returns>The configured <see cref="WebApplication"/> instance.</returns>
@@ -27,10 +28,10 @@ public static class AiProxyExtensions
     {
         app.UseExceptionHandler();
 
-        var corsPolicyName = app.Services.GetService<IOptions<AiProxyOptions>>()?.Value.CorsPolicyName ?? "CleanCodeJNChat";
-        app.UseCors(corsPolicyName);
+        var aiOptions = app.Services.GetService<IOptions<AiProxyOptions>>()?.Value ?? new AiProxyOptions();
+        app.UseCors(aiOptions.CorsPolicyName);
 
-        app.MapPost("/ai/chat", async (HttpContext context, AiProxyService service, ILogger<AiProxyService> logger, CancellationToken cancellationToken) =>
+        app.MapPost(aiOptions.ChatRoute, async (HttpContext context, AiProxyService service, ILogger<AiProxyService> logger, CancellationToken cancellationToken) =>
         {
             var request = await context.Request.ReadFromJsonAsync<ChatRequest>(cancellationToken);
             if (request is null)
@@ -56,7 +57,7 @@ public static class AiProxyExtensions
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error in /ai/chat stream");
+                logger.LogError(ex, "Error in {ChatRoute} stream", aiOptions.ChatRoute);
                 var errorEvent = JsonSerializer.Serialize(new ChatStreamEvent("error", Content: ex.Message));
                 await context.Response.WriteAsync($"data: {errorEvent}\n\n", Encoding.UTF8, CancellationToken.None);
                 await context.Response.Body.FlushAsync(CancellationToken.None);
@@ -66,21 +67,23 @@ public static class AiProxyExtensions
             await context.Response.Body.FlushAsync(CancellationToken.None);
         });
 
-        // Simple test endpoint — call GET /ai/test to verify Claude connectivity
-        app.MapGet("/ai/test", async (AiProxyService service) =>
+        if (aiOptions.EnableTestEndpoint)
         {
-            var request = new ChatRequest([new ChatMessage("user", "Say: OK")]);
-            var result = new System.Text.StringBuilder();
-            await foreach (var ev in service.StreamAsync(request, null, CancellationToken.None))
+            app.MapGet(aiOptions.TestRoute, async (AiProxyService service) =>
             {
-                if (ev.Type == "text")
+                var request = new ChatRequest([new ChatMessage("user", "Say: OK")]);
+                var result = new System.Text.StringBuilder();
+                await foreach (var ev in service.StreamAsync(request, null, CancellationToken.None))
                 {
-                    result.Append(ev.Content);
+                    if (ev.Type == "text")
+                    {
+                        result.Append(ev.Content);
+                    }
                 }
-            }
 
-            return result.Length > 0 ? Results.Ok(result.ToString()) : Results.Problem("No response from Claude");
-        });
+                return result.Length > 0 ? Results.Ok(result.ToString()) : Results.Problem("No response from Claude");
+            });
+        }
 
         return app;
     }
