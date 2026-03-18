@@ -1,4 +1,6 @@
-﻿namespace CleanCodeJN.GenericApis.Extensions;
+﻿using HotChocolate.Execution.Configuration;
+
+namespace CleanCodeJN.GenericApis.Extensions;
 
 /// <summary>
 /// Represents configuration options for automatically generating GraphQL endpoints for entities.
@@ -42,4 +44,24 @@ public class GraphQLOptions
     /// Gets a value indicating whether introspection is enabled for debugging purposes.
     /// </summary>
     public bool EnableIntrospection { get; init; }
+
+    /// <summary>
+    /// Optional callback invoked after CleanCodeJN has finished auto-wiring the GraphQL schema.
+    /// Use this to add custom scalars, error filters, middleware, or any other HotChocolate configuration
+    /// that is not covered by the built-in options.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// options.GraphQLOptions = new GraphQLOptions
+    /// {
+    ///     Get = true,
+    ///     ConfigureSchema = schema =>
+    ///     {
+    ///         schema.AddType&lt;UploadType&gt;();
+    ///         schema.AddErrorFilter&lt;MyErrorFilter&gt;();
+    ///     }
+    /// };
+    /// </code>
+    /// </example>
+    public Action<IRequestExecutorBuilder> ConfigureSchema { get; init; }
 }

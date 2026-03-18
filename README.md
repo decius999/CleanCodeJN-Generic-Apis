@@ -450,6 +450,13 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Update = true,
         Delete = true,
         AddAuthorizationWithPolicyName = "MyPolicy", // optional for adding authorization policy
+
+        // optional: extend the HotChocolate schema after CleanCodeJN auto-wiring
+        ConfigureSchema = schema =>
+        {
+            schema.AddType<UploadType>();
+            schema.AddErrorFilter<MyErrorFilter>();
+        }
     };
 });
 

@@ -16,16 +16,13 @@
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;AutoMapper;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
-      Pluggable exception handler: CleanCodeExceptionHandler (IExceptionHandler) activated automatically by every UseCleanCodeJN* method — returns ProblemDetails 500 for unexpected exceptions. Derive and register before AddCleanCodeJN to override.
-      MCP tool filter: UseCleanCodeJNWithMcp(options => options.ExcludeTools = name => ...) to exclude sensitive endpoints from AI tools.
-      Added CorsPolicyName (default: CleanCodeJNChat) and DisableCertificateValidation (default: false).
-      Mapster null fix: now returns default instead of throwing NullReferenceException.
+      GraphQL schema hook: GraphQLOptions.ConfigureSchema callback for custom scalars, error filters and HotChocolate middleware after auto-wiring.
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.2.0</VersionPrefix>
+    <VersionPrefix>6.2.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

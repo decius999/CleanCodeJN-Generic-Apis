@@ -87,6 +87,8 @@ public static class ServiveCollectionExtensions
             schema.AddGraphQLCreate(assemblies, options.GraphQLOptions, options.NamingConventions);
             schema.AddGraphQLUpdate(assemblies, options.GraphQLOptions, options.NamingConventions);
             schema.AddGraphQLDelete(assemblies, options.GraphQLOptions, options.NamingConventions);
+
+            options.GraphQLOptions.ConfigureSchema?.Invoke(schema);
         }
 
         if (options.AiProxyOptions is not null)
