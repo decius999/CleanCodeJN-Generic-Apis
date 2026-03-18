@@ -136,7 +136,7 @@ public class CustomersApi : IApi
 | `UseCleanCodeJNWithMinimalApis()` | All `IApi` REST endpoints | `/api` + `/swagger` |
 | `UseCleanCodeJNWithGraphQL()` | Auto-generated GraphQL schema | `/graphql` (configurable) |
 | `UseCleanCodeJNWithMcp()` | MCP Server (AI-callable tools) | `/mcp` (configurable via `McpOptions.Route`) |
-| `UseCleanCodeJNWithDocumentation()` | Automatic documentation from XML comments | `/docs` |
+| `UseCleanCodeJNWithDocumentation()` | Automatic documentation from XML comments | `/docs` + `/api/docs` (configurable via `route` parameter) |
 | `UseCleanCodeJNWithAiChat()` | AI chat SSE endpoint + optional test endpoint | `/ai/chat` + `/ai/test` (configurable via `AiProxyOptions`) |
 
 
@@ -275,9 +275,10 @@ app.UseCleanCodeJNWithMinimalApis();
 app.UseCleanCodeJNWithGraphQL();
 ```
 
-### Add app.UseCleanCodeJNDocumentation() when using automatic Command documentation (from your XML comments) to your Program.cs
+### Add app.UseCleanCodeJNWithDocumentation() when using automatic Command documentation (from your XML comments) to your Program.cs
 ```C#
-app.UseCleanCodeJNDocumentation();  // add <GenerateDocumentationFile>true</GenerateDocumentationFile> to your .csproj file
+app.UseCleanCodeJNWithDocumentation("/mydocs");   // default: /docs
+// add <GenerateDocumentationFile>true</GenerateDocumentationFile> to your .csproj file
 ```
 
 ---

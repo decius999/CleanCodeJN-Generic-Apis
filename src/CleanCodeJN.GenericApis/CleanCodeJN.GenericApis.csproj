@@ -16,16 +16,13 @@
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;AutoMapper;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
-      - AiProxyOptions: configurable ChatRoute (default /ai/chat), TestRoute (default /ai/test), McpPath (default /mcp).
-      - AiProxyOptions: EnableTestEndpoint flag — set false to suppress GET /ai/test in production.
-      - AiProxyOptions: AllowedCorsOrigins list — defaults to ["*"] (any origin); restrict to specific origins in production.
-      - McpOptions: configurable Route (default /mcp) for the MCP middleware endpoint.
+        UseCleanCodeJNWithDocumentation: configurable route parameter (default /docs); JSON metadata at api{route} (default /api/docs).
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.2.2</VersionPrefix>
+    <VersionPrefix>6.2.3</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

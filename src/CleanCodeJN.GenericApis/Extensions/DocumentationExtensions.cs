@@ -11,13 +11,17 @@ namespace CleanCodeJN.GenericApis.Extensions;
 public static class DocumentationExtensions
 {
     /// <summary>
-    /// Registers the <c>/docs</c> HTML documentation page and the <c>/api/docs</c> JSON command metadata endpoint.
+    /// Registers the documentation HTML page and the JSON command metadata endpoint.
     /// </summary>
     /// <param name="app">The web application to configure.</param>
+    /// <param name="route">
+    /// Route for the HTML documentation page. Defaults to <c>"/docs"</c>.
+    /// The JSON metadata endpoint is registered at <c>"api{route}"</c> (e.g. <c>"/api/docs"</c>).
+    /// </param>
     /// <returns>The configured <see cref="IApplicationBuilder"/> instance.</returns>
-    public static IApplicationBuilder UseCleanCodeJNWithDocumentation(this WebApplication app)
+    public static IApplicationBuilder UseCleanCodeJNWithDocumentation(this WebApplication app, string route = "/docs")
     {
-        app.MapGet($"/docs", async context =>
+        app.MapGet(route, async context =>
         {
             context.Response.ContentType = "text/html";
             var stream = typeof(DocumentationExtensions).Assembly.GetManifestResourceStream("CleanCodeJN.GenericApis.Docs.index.html");
@@ -34,7 +38,7 @@ public static class DocumentationExtensions
             await context.Response.WriteAsync(html);
         });
 
-        app.MapGet("/api/docs", () =>
+        app.MapGet($"api{route}", () =>
         {
             var xml = LoadMergedXmlDocs();
             var assemblyDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? AppContext.BaseDirectory)!;
