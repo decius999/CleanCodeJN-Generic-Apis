@@ -1,6 +1,6 @@
 # 🚀 Generic Web APIs – Fast, Clean, Powerful
 
-![CleanCodeJN.GenericApis Demo](https://cleancodejnstorage.blob.core.windows.net/public/demo.gif)
+![CleanCodeJN.GenericApis Demo](https://raw.githubusercontent.com/decius999/CleanCodeJN-Generic-Apis/dev/demo.gif)
 
 > _Build **production-ready APIs** instantly – from **Minimal APIs** and **Controllers** to fully integrated **GraphQL endpoints** and an **AI-ready MCP Server** with
 **CRUD**, **filtering**, **sorting** & **paging** – powered by **Mediator**, **Mapster**, **EF Core**, **FluentValidation**, and the
