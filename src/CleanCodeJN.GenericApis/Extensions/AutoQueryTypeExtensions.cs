@@ -16,18 +16,38 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
     {
         descriptor.Name("Query");
 
+        // ── list field ────────────────────────────────────────────────────────
+        // Middleware order (outermost → innermost → resolver):
+        //   UseProjection → ApplyPaging → UseFiltering → Resolver
+        //
+        // Execution order is reversed (innermost first):
+        //   Resolver returns IQueryable<TDto> (no skip/take)
+        //   → UseFiltering applies WHERE on the full IQueryable
+        //   → ApplyPaging applies skip/take on the already-filtered IQueryable
+        //   → UseProjection selects only requested GraphQL fields
+        //
+        // This ensures filtering always runs against the complete dataset, not
+        // just the current page.
         var field = descriptor
             .Field(typeof(TEntity).Name.ToLowerInvariant())
             .UseProjection()
+            .Use(next => async ctx =>
+            {
+                await next(ctx);
+                if (ctx.Result is IQueryable<TDto> q)
+                {
+                    var skip = ctx.ArgumentValue<int?>("skip") ?? 0;
+                    var take = ctx.ArgumentValue<int?>("take") ?? 100;
+                    ctx.Result = q.Skip(skip).Take(take);
+                }
+            })
             .UseFiltering()
             .Argument("order", a => a.Type<ListType<NonNullType<CustomSortInputType<TEntity>>>>())
             .Argument("skip", a => a.Type<IntType>())
             .Argument("take", a => a.Type<IntType>());
 
         if (options?.AddAuthorizationWithPolicyName is not null)
-        {
             field.Authorize(options.AddAuthorizationWithPolicyName);
-        }
 
         field.Resolve(ctx =>
         {
@@ -35,16 +55,37 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
             var mapper = ctx.Service<ICleanCodeMapper>();
 
             var orders = ctx.ArgumentValue<IReadOnlyList<SortInput>>("order");
-            var skip = ctx.ArgumentValue<int?>("skip") ?? 0;
-            var take = ctx.ArgumentValue<int?>("take") ?? 100;
 
             var query = repository.Query();
-            foreach (var order in orders)
-            {
+            foreach (var order in orders ?? [])
                 query = query.OrderByString(order.Field, order.Direction == SortDirection.DESC);
-            }
 
-            return mapper.ProjectTo<TEntity, TDto>(query.Skip(skip).Take(take));
+            // skip/take NOT applied here — handled by the ApplyPaging middleware
+            // after UseFiltering has narrowed down the full result set.
+            return mapper.ProjectTo<TEntity, TDto>(query);
+        });
+
+        // ── count field ───────────────────────────────────────────────────────
+        // The custom middleware (outermost) runs AFTER UseFiltering has applied
+        // the where-clause to the IQueryable, then replaces the result with the count.
+        var countField = descriptor
+            .Field($"{typeof(TEntity).Name.ToLowerInvariant()}Count")
+            .Type<NonNullType<IntType>>()
+            .Use(next => async ctx =>
+            {
+                await next(ctx);
+                if (ctx.Result is IQueryable<TEntity> q)
+                    ctx.Result = q.Count();
+            })
+            .UseFiltering<TEntity>();
+
+        if (options?.AddAuthorizationWithPolicyName is not null)
+            countField.Authorize(options.AddAuthorizationWithPolicyName);
+
+        countField.Resolve(ctx =>
+        {
+            var repository = (IRepository<TEntity, TKey>)ctx.Service(typeof(IRepository<TEntity, TKey>));
+            return repository.Query();
         });
     }
 }

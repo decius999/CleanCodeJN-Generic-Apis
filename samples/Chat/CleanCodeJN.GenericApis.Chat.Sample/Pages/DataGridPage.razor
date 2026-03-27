@@ -1,0 +1,25 @@
+@page "/datagrid"
+@using CleanCodeJN.GenericApis.DataGrid.Components
+@using CleanCodeJN.GenericApis.Sample.Core.Dtos
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-6">
+
+    <MudText Typo="Typo.h5" Class="mb-6">CCJNDataGrid — Demo</MudText>
+
+    <CCJNDataGrid TDto="CustomerGetDto"
+                  GraphQLEndpoint="@Endpoint"
+                  EntityName="customer"
+                  Title="Kunden"
+                  Searchable="true"
+                  ExcludedProperties="@(new HashSet<string> { "AddressInfo", "Invoices" })" />
+
+    <MudDivider Class="my-8" />
+
+    <CCJNDataGrid TDto="InvoiceGetDto"
+                  GraphQLEndpoint="@Endpoint"
+                  EntityName="invoice"
+                  Title="Rechnungen"
+                  ExcludedProperties="@(new HashSet<string> { "Customer" })"
+                  ColumnHeaders="@InvoiceHeaders" />
+
+</MudContainer>

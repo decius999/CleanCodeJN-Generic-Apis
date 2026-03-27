@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="4.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.5" PrivateAssets="all" />
     <PackageReference Include="MudBlazor" Version="9.1.0" />
@@ -15,6 +16,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\CleanCodeJN.GenericApis.Chat\CleanCodeJN.GenericApis.Chat.csproj" />
+    <ProjectReference Include="..\..\..\src\CleanCodeJN.GenericApis.DataGrid\CleanCodeJN.GenericApis.DataGrid.csproj" />
+    <ProjectReference Include="..\..\Sample\CleanCodeJN.GenericApis.Sample.Core\CleanCodeJN.GenericApis.Sample.Core.csproj" />
   </ItemGroup>
 
 </Project>

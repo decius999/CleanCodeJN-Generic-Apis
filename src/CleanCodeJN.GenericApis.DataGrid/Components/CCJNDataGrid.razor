@@ -1,0 +1,80 @@
+@typeparam TDto where TDto : class
+@using MudBlazor
+
+<MudPaper Elevation="@Elevation" Class="pa-4">
+
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <MudText Typo="Typo.h6" Class="mb-4">@Title</MudText>
+    }
+
+    @if (Searchable)
+    {
+        <MudTextField T="string"
+                      Value="_searchTerm"
+                      ValueChanged="OnSearchTermChanged"
+                      Placeholder="Suchen..."
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Clearable="true"
+                      OnClearButtonClick="OnSearchCleared"
+                      Class="mb-4" />
+    }
+
+    <MudTable T="TDto"
+              ServerData="_serverDataDelegate"
+              Dense="@Dense"
+              Hover="true"
+              Striped="@Striped"
+              Bordered="false"
+              @ref="_table"
+              Loading="_loading"
+              LoadingProgressColor="Color.Primary"
+              RowsPerPage="@PageSizeOptions[0]">
+
+        <HeaderContent>
+            @foreach (var col in _columns)
+            {
+                <MudTh>
+                    @if (col.Sortable)
+                    {
+                        <MudTableSortLabel SortLabel="@col.SortFieldName" T="TDto">
+                            @col.Header
+                        </MudTableSortLabel>
+                    }
+                    else
+                    {
+                        @col.Header
+                    }
+                </MudTh>
+            }
+        </HeaderContent>
+
+        <RowTemplate>
+            @foreach (var col in _columns)
+            {
+                <MudTd DataLabel="@col.Header">@col.GetDisplayValue(context)</MudTd>
+            }
+        </RowTemplate>
+
+        <NoRecordsContent>
+            <MudText Typo="Typo.body2" Class="pa-4">Keine Einträge gefunden.</MudText>
+        </NoRecordsContent>
+
+        <LoadingContent>
+            <MudText Typo="Typo.body2" Class="pa-4">Daten werden geladen...</MudText>
+        </LoadingContent>
+
+        <PagerContent>
+            <MudTablePager PageSizeOptions="@PageSizeOptions" />
+        </PagerContent>
+
+    </MudTable>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-3">@_errorMessage</MudAlert>
+    }
+
+</MudPaper>

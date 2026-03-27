@@ -458,7 +458,11 @@ public static class ServiveCollectionExtensions
     private static TypeAdapterConfig ScanMapster(Action<TypeAdapterConfig> overrides, List<Assembly> assemblies)
     {
         var config = new TypeAdapterConfig();
-        config.Default.PreserveReference(true);
+        // PreserveReference prevents infinite loops in in-memory mapping.
+        // MaxDepth stops Mapster from generating infinitely nested expression trees
+        // when compiling ProjectTo for IQueryable — required for circular DTO/entity graphs
+        // (e.g. Customer → Invoices → Customer → …).
+        config.Default.PreserveReference(true).MaxDepth(3);
         var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToDictionary(k => k.Name, v => v);
         var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToDictionary(k => k.Name, v => v);
 
