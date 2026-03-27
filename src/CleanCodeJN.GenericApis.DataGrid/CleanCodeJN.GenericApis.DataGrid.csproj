@@ -8,13 +8,30 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <Authors>Jörg Nieveler</Authors>
+    <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <Description>Generic MudBlazor DataGrid component for CleanCodeJN.GenericApis — auto-detects columns from any DTO and connects to the automatic GraphQL endpoint with paging, sorting and search.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
     <VersionPrefix>1.0.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="CleanCodeJN-Icon-Green.png" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

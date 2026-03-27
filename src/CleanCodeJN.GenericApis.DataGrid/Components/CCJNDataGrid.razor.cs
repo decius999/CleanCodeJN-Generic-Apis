@@ -61,7 +61,7 @@ public partial class CCJNDataGrid<TDto> where TDto : class
     [Parameter] public int Elevation { get; set; } = 2;
 
     /// <summary>Bearer token forwarded as <c>Authorization: Bearer …</c> header.</summary>
-    [Parameter] public string? BearerToken { get; set; }
+    [Parameter] public string BearerToken { get; set; }
 
     /// <summary>
     /// DTO property names to exclude from the auto-generated columns.
@@ -76,7 +76,7 @@ public partial class CCJNDataGrid<TDto> where TDto : class
     /// Optional custom column overrides. When provided, replaces the auto-detected columns.
     /// Each entry maps a DTO property name to a custom column header.
     /// </summary>
-    [Parameter] public Dictionary<string, string>? ColumnHeaders { get; set; }
+    [Parameter] public Dictionary<string, string> ColumnHeaders { get; set; }
 
     // ── Internal state ────────────────────────────────────────────────────────
 
@@ -188,7 +188,7 @@ public partial class CCJNDataGrid<TDto> where TDto : class
     /// Builds a single GraphQL request that fetches both the paged list and the total count
     /// (with the same optional where-filter applied to both fields).
     /// </summary>
-    private string BuildBatchedGraphQLQuery(int skip, int take, string? sortLabel, SortDirection sortDirection, string activeSearch)
+    private string BuildBatchedGraphQLQuery(int skip, int take, string sortLabel, SortDirection sortDirection, string activeSearch)
     {
         var fields = string.Join("\n    ", _columns.Select(c => c.FieldName));
         var whereClause = BuildWhereClause(activeSearch);
@@ -226,7 +226,7 @@ public partial class CCJNDataGrid<TDto> where TDto : class
     /// </list>
     /// Returns <c>null</c> when no matching conditions can be built.
     /// </summary>
-    private string? BuildWhereClause(string search)
+    private string BuildWhereClause(string search)
     {
         if (string.IsNullOrWhiteSpace(search))
         {
@@ -260,7 +260,7 @@ public partial class CCJNDataGrid<TDto> where TDto : class
     /// Tries to produce a GraphQL literal value for an <c>eq</c> filter.
     /// Returns <c>null</c> when <paramref name="search"/> cannot be parsed as <paramref name="type"/>.
     /// </summary>
-    private static string? TryBuildEqLiteral(string search, Type type)
+    private static string TryBuildEqLiteral(string search, Type type)
     {
         if (type == typeof(Guid))
         {
@@ -282,14 +282,11 @@ public partial class CCJNDataGrid<TDto> where TDto : class
             return long.TryParse(search, out var l) ? l.ToString() : null;
         }
 
-        if (type == typeof(decimal))
-        {
-            return decimal.TryParse(search, System.Globalization.NumberStyles.Number,
+        return type == typeof(decimal)
+            ? decimal.TryParse(search, System.Globalization.NumberStyles.Number,
                 System.Globalization.CultureInfo.InvariantCulture, out var d)
-                ? d.ToString(System.Globalization.CultureInfo.InvariantCulture) : null;
-        }
-
-        return type == typeof(double)
+                ? d.ToString(System.Globalization.CultureInfo.InvariantCulture) : null
+            : type == typeof(double)
             ? double.TryParse(search, System.Globalization.NumberStyles.Number,
                 System.Globalization.CultureInfo.InvariantCulture, out var db)
                 ? db.ToString(System.Globalization.CultureInfo.InvariantCulture) : null
@@ -321,7 +318,7 @@ public partial class CCJNDataGrid<TDto> where TDto : class
 
     // ── Formatting helpers ────────────────────────────────────────────────────
 
-    private static string FormatValue(object? value, Type type)
+    private static string FormatValue(object value, Type type)
     {
         if (value is null)
         {
@@ -353,12 +350,9 @@ public partial class CCJNDataGrid<TDto> where TDto : class
             return ((TimeSpan)value).ToString(@"hh\:mm\:ss");
         }
 
-        if (type == typeof(bool))
-        {
-            return (bool)value ? "Ja" : "Nein";
-        }
-
-        return type == typeof(decimal)
+        return type == typeof(bool)
+            ? (bool)value ? "Ja" : "Nein"
+            : type == typeof(decimal)
             ? ((decimal)value).ToString("N2")
             : type == typeof(double)
             ? ((double)value).ToString("N2")
