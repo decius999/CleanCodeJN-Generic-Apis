@@ -18,8 +18,8 @@
                   AllowAdd="true"
                   AllowEdit="true"
                   AllowDelete="true"
-                  ExcludedProperties="@(new HashSet<string> { "AddressInfo", "Invoices" })"
-                  ExcludedEditProperties="@(new HashSet<string> { "AddressInfo" })" />
+                  ExcludedProperties="@(new HashSet<string> { nameof(CustomerGetDto.AddressInfo), nameof(CustomerGetDto.Invoices) })"
+                  ExcludedEditProperties="@(new HashSet<string> { nameof(CustomerGetDto.AddressInfo) })" />
 
     <MudDivider Class="my-8" />
 
@@ -34,7 +34,7 @@
                   AllowAdd="true"
                   AllowEdit="true"
                   AllowDelete="true"
-                  ExcludedProperties="@(new HashSet<string> { "Customer" })"
+                  ExcludedProperties="@(new HashSet<string> {nameof(InvoiceGetDto.Customer) })"
                   ColumnHeaders="@InvoiceHeaders">
 
         <AddFormContent>
