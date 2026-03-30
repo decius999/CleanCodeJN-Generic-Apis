@@ -5,8 +5,8 @@ using CleanCodeJN.GenericApis.DataGrid.Models;
 namespace CleanCodeJN.GenericApis.DataGrid.Services;
 
 /// <summary>
-/// Lightweight GraphQL client used by <see cref="Components.CCJNDataGrid{TDto}"/>
-/// to execute auto-generated list queries against a CleanCodeJN GraphQL endpoint.
+/// Lightweight GraphQL client used by <see cref="Components.CCJNDataGrid{TDto,TPostDto,TPutDto}"/>
+/// to execute queries and mutations against a CleanCodeJN GraphQL endpoint.
 /// </summary>
 public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
 {
@@ -17,9 +17,7 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
     };
 
     /// <summary>
-    /// Executes a batched GraphQL query that contains both a list field (<paramref name="entityName"/>)
-    /// and a matching count field (<paramref name="entityName"/>Count) in a single HTTP request.
-    /// Returns the items and the exact total count provided by the server.
+    /// Executes a batched GraphQL query that contains both a list field and a count field in one request.
     /// </summary>
     public async Task<(List<T> Items, int TotalCount)> QueryWithCountAsync<T>(
         string endpoint,
@@ -28,25 +26,16 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
         string? bearerToken = null,
         CancellationToken cancellationToken = default)
     {
-        using var client = httpClientFactory.CreateClient("CleanCodeJN.DataGrid");
-
-        if (!string.IsNullOrEmpty(bearerToken))
-            client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearerToken);
-
+        using var client = CreateClient(bearerToken);
         var body = new GraphQLRequest { Query = graphQLQuery };
 
         using var response = await client.PostAsJsonAsync(endpoint, body, JsonOptions, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<GraphQLResponse>(JsonOptions, cancellationToken);
+        ThrowOnErrors(envelope);
 
-        if (envelope?.Errors is { Count: > 0 })
-            throw new InvalidOperationException(
-                $"GraphQL error: {string.Join("; ", envelope.Errors.Select(e => e.Message))}");
-
-        if (envelope?.Data is null)
-            return ([], 0);
+        if (envelope?.Data is null) return ([], 0);
 
         List<T> items = [];
         int totalCount = 0;
@@ -61,5 +50,40 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
         }
 
         return (items, totalCount);
+    }
+
+    /// <summary>
+    /// Executes any GraphQL mutation (create, update, delete). Throws on GraphQL errors.
+    /// </summary>
+    public async Task ExecuteMutationAsync(
+        string endpoint,
+        string mutation,
+        string? bearerToken = null,
+        CancellationToken cancellationToken = default)
+    {
+        using var client = CreateClient(bearerToken);
+        var body = new GraphQLRequest { Query = mutation };
+
+        using var response = await client.PostAsJsonAsync(endpoint, body, JsonOptions, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var envelope = await response.Content.ReadFromJsonAsync<GraphQLResponse>(JsonOptions, cancellationToken);
+        ThrowOnErrors(envelope);
+    }
+
+    private HttpClient CreateClient(string? bearerToken)
+    {
+        var client = httpClientFactory.CreateClient("CleanCodeJN.DataGrid");
+        if (!string.IsNullOrEmpty(bearerToken))
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearerToken);
+        return client;
+    }
+
+    private static void ThrowOnErrors(GraphQLResponse? envelope)
+    {
+        if (envelope?.Errors is { Count: > 0 })
+            throw new InvalidOperationException(
+                $"GraphQL error: {string.Join("; ", envelope.Errors.Select(e => e.Message))}");
     }
 }

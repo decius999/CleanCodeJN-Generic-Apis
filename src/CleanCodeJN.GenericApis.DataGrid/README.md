@@ -1,6 +1,6 @@
 # CleanCodeJN.GenericApis.DataGrid
 
-A generic, server-side MudBlazor table component for [CleanCodeJN.GenericApis](https://github.com/CleanCodeJN/CleanCodeJN-Generic-Apis).
+A generic, server-side MudBlazor table component for [CleanCodeJN.GenericApis](https://www.nuget.org/packages/CleanCodeJN.GenericApis/).
 
 Drop `<CCJNDataGrid>` onto any Blazor page and point it at your GraphQL endpoint — columns, types, paging, sorting and search are all handled automatically.
 

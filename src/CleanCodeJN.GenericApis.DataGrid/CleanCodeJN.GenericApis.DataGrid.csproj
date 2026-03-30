@@ -10,11 +10,27 @@
     <Authors>Jörg Nieveler</Authors>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
+    <PackageReleaseNotes>
+      - Added full CRUD support: Add, Edit and Delete via GraphQL mutations (createX / updateX / deleteX)
+      - Three separate type parameters: TDto (read), TPostDto (create), TPutDto (update)
+      - Auto-generated forms via reflection: MudTextField, MudNumericField, MudCheckBox, MudDatePicker, MudSelect for enums — per property type
+      - Id fields are rendered as read-only in auto-generated forms
+      - RenderFragment escape hatch: AddFormContent and EditFormContent for fully custom forms
+      - Reusable CCJNDataGridDialog with inline error display (dialog stays open on failure)
+      - DataGridMutationConventions: configurable mutation name prefixes (default: create / update / delete)
+      - ExcludedEditProperties: hide specific DTO properties from Add/Edit forms
+      - OnCustomAdd / OnCustomEdit / OnCustomDelete: override default GraphQL mutations with custom handlers
+      - Nested input objects (e.g. complex DTO properties) are serialized recursively in mutation input literals
+      - Fixed: decimal values now serialized with InvariantCulture (dot separator) for GraphQL compatibility
+      - Fixed: create mutation return selection uses __typename instead of id (PostDto has no Id field)
+      - All UI texts translated to English
+      - AddMudServices() is now called automatically inside AddCleanCodeJNDataGrid()
+    </PackageReleaseNotes>
     <Description>Generic MudBlazor DataGrid component for CleanCodeJN.GenericApis — auto-detects columns from any DTO and connects to the automatic GraphQL endpoint with paging, sorting and search.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

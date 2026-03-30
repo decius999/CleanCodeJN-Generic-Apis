@@ -6,20 +6,65 @@
 
     <MudText Typo="Typo.h5" Class="mb-6">CCJNDataGrid — Demo</MudText>
 
-    <CCJNDataGrid TDto="CustomerGetDto"
+    <MudText Typo="Typo.subtitle1" Class="mb-2 mud-text-secondary">
+        Customers — Auto-generated form
+    </MudText>
+
+    <CCJNDataGrid TDto="CustomerGetDto" TPostDto="CustomerPostDto" TPutDto="CustomerPutDto"
                   GraphQLEndpoint="@Endpoint"
                   EntityName="customer"
-                  Title="Kunden"
+                  Title="Customers"
                   Searchable="true"
-                  ExcludedProperties="@(new HashSet<string> { "AddressInfo", "Invoices" })" />
+                  AllowAdd="true"
+                  AllowEdit="true"
+                  AllowDelete="true"
+                  ExcludedProperties="@(new HashSet<string> { "AddressInfo", "Invoices" })"
+                  ExcludedEditProperties="@(new HashSet<string> { "AddressInfo" })" />
 
     <MudDivider Class="my-8" />
 
-    <CCJNDataGrid TDto="InvoiceGetDto"
+    <MudText Typo="Typo.subtitle1" Class="mb-2 mud-text-secondary">
+        Invoices — Custom form via AddFormContent / EditFormContent
+    </MudText>
+
+    <CCJNDataGrid TDto="InvoiceGetDto" TPostDto="InvoicePostDto" TPutDto="InvoicePutDto"
                   GraphQLEndpoint="@Endpoint"
                   EntityName="invoice"
-                  Title="Rechnungen"
+                  Title="Invoices"
+                  AllowAdd="true"
+                  AllowEdit="true"
+                  AllowDelete="true"
                   ExcludedProperties="@(new HashSet<string> { "Customer" })"
-                  ColumnHeaders="@InvoiceHeaders" />
+                  ColumnHeaders="@InvoiceHeaders">
+
+        <AddFormContent>
+            <MudNumericField T="int"
+                             @bind-Value="context.CustomerId"
+                             Label="Kunden-ID"
+                             Variant="Variant.Outlined"
+                             Class="mb-3 d-block" />
+            <MudNumericField T="decimal"
+                             @bind-Value="context.Amount"
+                             Label="Betrag (€)"
+                             Format="N2"
+                             Variant="Variant.Outlined"
+                             Class="mb-3 d-block" />
+        </AddFormContent>
+
+        <EditFormContent>
+            <MudNumericField T="int"
+                             @bind-Value="context.CustomerId"
+                             Label="Kunden-ID"
+                             Variant="Variant.Outlined"
+                             Class="mb-3 d-block" />
+            <MudNumericField T="decimal"
+                             @bind-Value="context.Amount"
+                             Label="Betrag (€)"
+                             Format="N2"
+                             Variant="Variant.Outlined"
+                             Class="mb-3 d-block" />
+        </EditFormContent>
+
+    </CCJNDataGrid>
 
 </MudContainer>

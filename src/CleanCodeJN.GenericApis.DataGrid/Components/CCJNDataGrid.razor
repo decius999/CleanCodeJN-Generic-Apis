@@ -1,4 +1,6 @@
 @typeparam TDto where TDto : class
+@typeparam TPostDto where TPostDto : class
+@typeparam TPutDto where TPutDto : class
 @using MudBlazor
 
 <MudPaper Elevation="@Elevation" Class="pa-4">
@@ -8,18 +10,31 @@
         <MudText Typo="Typo.h6" Class="mb-4">@Title</MudText>
     }
 
-    @if (Searchable)
+    @if (Searchable || AllowAdd)
     {
-        <MudTextField T="string"
-                      Value="_searchTerm"
-                      ValueChanged="OnSearchTermChanged"
-                      Placeholder="Suchen..."
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Clearable="true"
-                      OnClearButtonClick="OnSearchCleared"
-                      Class="mb-4" />
+        <div class="d-flex align-center gap-4 mb-4">
+            @if (Searchable)
+            {
+                <MudTextField T="string"
+                              Value="_searchTerm"
+                              ValueChanged="OnSearchTermChanged"
+                              Placeholder="Search..."
+                              Variant="Variant.Outlined"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              Clearable="true"
+                              OnClearButtonClick="OnSearchCleared"
+                              Class="flex-grow-1" />
+            }
+            @if (AllowAdd)
+            {
+                <MudIconButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           Icon="@Icons.Material.Filled.Add"
+                           OnClick="OpenAddDialogAsync">
+                </MudIconButton>
+            }
+        </div>
     }
 
     <MudTable T="TDto"
@@ -49,6 +64,10 @@
                     }
                 </MudTh>
             }
+            @if (AllowEdit || AllowDelete)
+            {
+                <MudTh></MudTh>
+            }
         </HeaderContent>
 
         <RowTemplate>
@@ -56,14 +75,32 @@
             {
                 <MudTd DataLabel="@col.Header">@col.GetDisplayValue(context)</MudTd>
             }
+            @if (AllowEdit || AllowDelete)
+            {
+                <MudTd Style="white-space: nowrap; width: 1%">
+                    @if (AllowEdit)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       Size="Size.Small"
+                                       OnClick="() => OpenEditDialogAsync(context)" />
+                    }
+                    @if (AllowDelete)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Size="Size.Small"
+                                       Color="Color.Error"
+                                       OnClick="() => OpenDeleteDialogAsync(context)" />
+                    }
+                </MudTd>
+            }
         </RowTemplate>
 
         <NoRecordsContent>
-            <MudText Typo="Typo.body2" Class="pa-4">Keine Einträge gefunden.</MudText>
+            <MudText Typo="Typo.body2" Class="pa-4">No entries found...</MudText>
         </NoRecordsContent>
 
         <LoadingContent>
-            <MudText Typo="Typo.body2" Class="pa-4">Daten werden geladen...</MudText>
+            <MudText Typo="Typo.body2" Class="pa-4">Data will be loaded...</MudText>
         </LoadingContent>
 
         <PagerContent>

@@ -1,0 +1,64 @@
+@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">@Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        @FormContent
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mt-3">@_errorMessage</MudAlert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="_saving">Cancel</MudButton>
+        <MudButton Color="@SubmitColor" Variant="Variant.Filled" OnClick="Submit" Disabled="_saving">
+            @if (_saving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            @SubmitLabel
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public RenderFragment FormContent { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string SubmitLabel { get; set; } = "Save";
+    [Parameter] public Color SubmitColor { get; set; } = Color.Primary;
+
+    /// <summary>
+    /// Called when the user clicks the submit button.
+    /// Return <c>null</c> on success (dialog closes) or an error message string (dialog stays open).
+    /// </summary>
+    [Parameter] public Func<Task<string>> OnSave { get; set; }
+
+    private bool _saving;
+    private string _errorMessage = string.Empty;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        if (OnSave is null) { MudDialog.Close(DialogResult.Ok(true)); return; }
+
+        _saving = true;
+        _errorMessage = string.Empty;
+        try
+        {
+            var error = await OnSave();
+            if (error is null)
+                MudDialog.Close(DialogResult.Ok(true));
+            else
+                _errorMessage = error;
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}
