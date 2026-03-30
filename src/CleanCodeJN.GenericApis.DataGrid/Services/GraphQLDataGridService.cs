@@ -23,7 +23,7 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
         string endpoint,
         string graphQLQuery,
         string entityName,
-        string? bearerToken = null,
+        string bearerToken = null,
         CancellationToken cancellationToken = default)
     {
         using var client = CreateClient(bearerToken);
@@ -58,7 +58,7 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
     public async Task ExecuteMutationAsync(
         string endpoint,
         string mutation,
-        string? bearerToken = null,
+        string bearerToken = null,
         CancellationToken cancellationToken = default)
     {
         using var client = CreateClient(bearerToken);
@@ -71,7 +71,7 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
         ThrowOnErrors(envelope);
     }
 
-    private HttpClient CreateClient(string? bearerToken)
+    private HttpClient CreateClient(string bearerToken)
     {
         var client = httpClientFactory.CreateClient("CleanCodeJN.DataGrid");
         if (!string.IsNullOrEmpty(bearerToken))
@@ -80,10 +80,10 @@ public class GraphQLDataGridService(IHttpClientFactory httpClientFactory)
         return client;
     }
 
-    private static void ThrowOnErrors(GraphQLResponse? envelope)
+    private static void ThrowOnErrors(GraphQLResponse envelope)
     {
         if (envelope?.Errors is { Count: > 0 })
             throw new InvalidOperationException(
-                $"GraphQL error: {string.Join("; ", envelope.Errors.Select(e => e.Message))}");
+                string.Join("; ", envelope.Errors.Select(e => e.Message)));
     }
 }

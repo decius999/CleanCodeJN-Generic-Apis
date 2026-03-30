@@ -16,7 +16,7 @@ public class GraphQLResponse
     public System.Text.Json.JsonElement? Data { get; set; }
 
     [JsonPropertyName("errors")]
-    public List<GraphQLError>? Errors { get; set; }
+    public List<GraphQLError> Errors { get; set; }
 }
 
 /// <summary>A single GraphQL error entry.</summary>

@@ -1,10 +1,13 @@
 ﻿using CleanCodeJN.GenericApis.Abstractions.Contracts;
+using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
+using MediatR;
 
 namespace CleanCodeJN.GenericApis.Extensions;
 
 /// <summary>
 /// Automatically registers a GraphQL mutation field for updating an entity of type <typeparamref name="TEntity"/>.
+/// Validation runs through the MediatR pipeline, so FluentValidation validators are applied automatically.
 /// </summary>
 /// <typeparam name="TDto">The DTO type returned by the mutation.</typeparam>
 /// <typeparam name="TEntity">The entity type to update.</typeparam>
@@ -31,22 +34,13 @@ public class AutoUpdateMutationTypeExtensions<TDto, TEntity, TKey, TInput>(Graph
 
         field.Resolve(async ctx =>
         {
-            var repository = ctx.Service<IRepository<TEntity, TKey>>();
+            var mediator = ctx.Service<IMediator>();
             var mapper = ctx.Service<ICleanCodeMapper>();
-            var id = ctx.ArgumentValue<TKey>("id");
             var input = ctx.ArgumentValue<TInput>("input");
 
-            var entity = repository.Query().FirstOrDefault(x => x.Id.Equals(id));
-            if (entity == null)
-            {
-                throw new GraphQLException("Entity not found");
-            }
+            var response = await mediator.Send(new PutRequest<TEntity, TInput> { Dto = input });
 
-            mapper.Map(input, entity);
-            await repository.Update(entity, CancellationToken.None);
-
-            return mapper.Map<TDto>(entity);
+            return !response.Succeeded ? throw new GraphQLException(response.Message) : (object)mapper.Map<TDto>(response.Data);
         });
     }
 }
-

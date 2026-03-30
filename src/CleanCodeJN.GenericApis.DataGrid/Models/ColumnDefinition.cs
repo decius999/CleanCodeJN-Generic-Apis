@@ -1,7 +1,7 @@
 namespace CleanCodeJN.GenericApis.DataGrid.Models;
 
 /// <summary>
-/// Describes a single auto-detected column for the <see cref="Components.CCJNDataGrid{TDto}"/>.
+/// Describes a single auto-detected column for <c>CCJNDataGrid</c>.
 /// </summary>
 public class ColumnDefinition<TDto>
 {

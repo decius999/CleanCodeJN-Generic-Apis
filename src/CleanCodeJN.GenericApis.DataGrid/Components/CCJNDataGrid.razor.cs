@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using CleanCodeJN.GenericApis.DataGrid.Models;
 using CleanCodeJN.GenericApis.DataGrid.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 
 namespace CleanCodeJN.GenericApis.DataGrid.Components;
@@ -26,6 +29,7 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 
     [Inject] private GraphQLDataGridService GraphQLService { get; set; } = default!;
     [Inject] private IDialogService DialogService { get; set; } = default!;
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
 
     // ── Required parameters ───────────────────────────────────────────────────
 
@@ -109,6 +113,7 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
     private bool _loading;
     private string _errorMessage = string.Empty;
     private Func<TableState, CancellationToken, Task<TableData<TDto>>> _serverDataDelegate = default!;
+    private MudForm _dialogForm;
 
     // ── Scalar type whitelist ─────────────────────────────────────────────────
 
@@ -260,12 +265,9 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
             return bool.TryParse(search, out var b) ? b.ToString().ToLowerInvariant() : null;
         }
 
-        if (type == typeof(int) || type == typeof(short) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(ushort) || type == typeof(uint))
-        {
-            return int.TryParse(search, out var i) ? i.ToString() : null;
-        }
-
-        return type == typeof(long) || type == typeof(ulong)
+        return type == typeof(int) || type == typeof(short) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(ushort) || type == typeof(uint)
+            ? int.TryParse(search, out var i) ? i.ToString() : null
+            : type == typeof(long) || type == typeof(ulong)
             ? long.TryParse(search, out var l) ? l.ToString() : null
             : type == typeof(decimal)
             ? decimal.TryParse(search, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var d)
@@ -317,12 +319,9 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
             return ((DateTimeOffset)value).ToString("dd.MM.yyyy HH:mm");
         }
 
-        if (type == typeof(DateOnly))
-        {
-            return ((DateOnly)value).ToString("dd.MM.yyyy");
-        }
-
-        return type == typeof(TimeOnly)
+        return type == typeof(DateOnly)
+            ? ((DateOnly)value).ToString("dd.MM.yyyy")
+            : type == typeof(TimeOnly)
             ? ((TimeOnly)value).ToString("HH:mm")
             : type == typeof(TimeSpan)
             ? ((TimeSpan)value).ToString(@"hh\:mm\:ss")
@@ -388,6 +387,8 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
             { d => d.FormContent, formContent },
             { d => d.OnSave, async () =>
                 {
+                    if (_dialogForm is not null) { await _dialogForm.ValidateAsync(); if (!_dialogForm.IsValid) { return string.Empty; } }
+
                     try
                     {
                         if (OnCustomAdd is not null) { await OnCustomAdd(model); } else { await GraphQLService.ExecuteMutationAsync(GraphQLEndpoint, BuildCreateMutation(model), BearerToken); } await ReloadTable();
@@ -413,6 +414,8 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
             { d => d.FormContent, formContent },
             { d => d.OnSave, async () =>
                 {
+                    if (_dialogForm is not null) { await _dialogForm.ValidateAsync(); if (!_dialogForm.IsValid) { return string.Empty; } }
+
                     try
                     {
                         if (OnCustomEdit is not null) { await OnCustomEdit(id!, model); } else { await GraphQLService.ExecuteMutationAsync(GraphQLEndpoint, BuildUpdateMutation(id!, model), BearerToken); } await ReloadTable();
@@ -604,18 +607,81 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 
     private RenderFragment BuildAutoForm<TModel>(TModel model) where TModel : class => builder =>
     {
+        var validator = ServiceProvider.GetService<IValidator<TModel>>();
         var seq = 0;
-        var props = typeof(TModel)
-            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.CanWrite && IsScalarProperty(p) && !ExcludedEditProperties.Contains(p.Name));
 
-        foreach (var prop in props)
+        builder.OpenComponent<MudForm>(seq++);
+        builder.AddAttribute(seq++, "Model", model);
+
+        if (validator is not null)
         {
-            RenderFormField(builder, prop, model, ref seq);
+            Func<object, string, Task<IEnumerable<string>>> validationFunc = async (obj, propName) =>
+            {
+                var ctx = ValidationContext<TModel>.CreateWithOptions(
+                    (TModel)obj, s => s.IncludeProperties(propName));
+                var result = await validator.ValidateAsync(ctx);
+                return result.Errors
+                    .Where(e => e.PropertyName == propName)
+                    .Select(e => e.ErrorMessage);
+            };
+            builder.AddAttribute(seq++, "Validation", validationFunc);
         }
+
+        builder.AddAttribute(seq++, "ChildContent", (RenderFragment)(innerBuilder =>
+        {
+            var innerSeq = 0;
+            var props = typeof(TModel)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead && p.CanWrite && IsScalarProperty(p) && !ExcludedEditProperties.Contains(p.Name));
+
+            foreach (var prop in props)
+            {
+                var forExpr = validator is not null ? TryBuildForExpression(model, prop) : null;
+                RenderFormField(innerBuilder, prop, model, forExpr, ref innerSeq);
+            }
+        }));
+
+        // AddComponentReferenceCapture must come after all AddAttribute calls
+        builder.AddComponentReferenceCapture(seq++, r => _dialogForm = r as MudForm);
+        builder.CloseComponent();
     };
 
-    private void RenderFormField(RenderTreeBuilder b, PropertyInfo prop, object model, ref int seq)
+    /// <summary>
+    /// Builds a typed <c>Expression&lt;Func&lt;T&gt;&gt;</c> for a property so MudBlazor can match
+    /// it to the MudForm validation delegate via the property name.
+    /// Returns null for types whose render component uses a different generic parameter (Guid, Enum,
+    /// DateOnly, non-nullable DateTime) to avoid type mismatches.
+    /// </summary>
+    private static LambdaExpression TryBuildForExpression(object model, PropertyInfo prop)
+    {
+        var type = prop.PropertyType;
+        var underlying = Nullable.GetUnderlyingType(type) ?? type;
+
+        if (underlying == typeof(Guid) || underlying.IsEnum ||
+            underlying == typeof(DateOnly) || underlying == typeof(TimeOnly) || underlying == typeof(TimeSpan))
+        {
+            return null;
+        }
+
+        // MudDatePicker.Date is DateTime? — only compatible when the property is already DateTime?.
+        if (underlying == typeof(DateTime) && type != typeof(DateTime?))
+        {
+            return null;
+        }
+
+        try
+        {
+            var propAccess = Expression.Property(Expression.Constant(model), prop);
+            var funcType = typeof(Func<>).MakeGenericType(type);
+            return Expression.Lambda(funcType, propAccess);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private void RenderFormField(RenderTreeBuilder b, PropertyInfo prop, object model, LambdaExpression forExpr, ref int seq)
     {
         var underlying = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
         var label = ResolveHeader(prop.Name);
@@ -628,32 +694,32 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 
         if (underlying == typeof(string))
         {
-            RenderTextField(b, prop, model, label, ref seq);
+            RenderTextField(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(bool))
         {
-            RenderCheckBox(b, prop, model, label, ref seq);
+            RenderCheckBox(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(int) || underlying == typeof(short) || underlying == typeof(byte)
               || underlying == typeof(sbyte) || underlying == typeof(ushort) || underlying == typeof(uint))
         {
-            RenderNumericField<int>(b, prop, model, label, ref seq);
+            RenderNumericField<int>(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(long) || underlying == typeof(ulong))
         {
-            RenderNumericField<long>(b, prop, model, label, ref seq);
+            RenderNumericField<long>(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(decimal))
         {
-            RenderNumericField<decimal>(b, prop, model, label, ref seq);
+            RenderNumericField<decimal>(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(double))
         {
-            RenderNumericField<double>(b, prop, model, label, ref seq);
+            RenderNumericField<double>(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(float))
         {
-            RenderNumericField<float>(b, prop, model, label, ref seq);
+            RenderNumericField<float>(b, prop, model, label, forExpr, ref seq);
         }
         else if (underlying == typeof(DateTime))
         {
@@ -684,30 +750,44 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
         b.CloseComponent();
     }
 
-    private void RenderTextField(RenderTreeBuilder b, PropertyInfo p, object m, string label, ref int seq)
+    private void RenderTextField(RenderTreeBuilder b, PropertyInfo p, object m, string label, LambdaExpression forExpr, ref int seq)
     {
         b.OpenComponent<MudTextField<string>>(seq++);
         b.AddAttribute(seq++, "Value", (string)p.GetValue(m));
         b.AddAttribute(seq++, "ValueChanged", EventCallback.Factory.Create<string>(this, v => p.SetValue(m, v)));
         b.AddAttribute(seq++, "Label", label);
         b.AddAttribute(seq++, "Variant", Variant.Outlined);
+        b.AddAttribute(seq++, "Immediate", true);
         b.AddAttribute(seq++, "Class", "mb-3 d-block");
+        if (forExpr is not null)
+        {
+            b.AddAttribute(seq++, "For", forExpr);
+        }
+
         b.CloseComponent();
     }
 
-    private void RenderCheckBox(RenderTreeBuilder b, PropertyInfo p, object m, string label, ref int seq)
+    private void RenderCheckBox(RenderTreeBuilder b, PropertyInfo p, object m, string label, LambdaExpression forExpr, ref int seq)
     {
         if (Nullable.GetUnderlyingType(p.PropertyType) != null)
         {
             b.OpenComponent<MudCheckBox<bool?>>(seq++);
             b.AddAttribute(seq++, "Value", (bool?)p.GetValue(m));
             b.AddAttribute(seq++, "ValueChanged", EventCallback.Factory.Create<bool?>(this, v => p.SetValue(m, v)));
+            if (forExpr is not null)
+            {
+                b.AddAttribute(seq++, "For", forExpr);
+            }
         }
         else
         {
             b.OpenComponent<MudCheckBox<bool>>(seq++);
             b.AddAttribute(seq++, "Value", p.GetValue(m) is true);
             b.AddAttribute(seq++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v => p.SetValue(m, v)));
+            if (forExpr is not null)
+            {
+                b.AddAttribute(seq++, "For", forExpr);
+            }
         }
 
         b.AddAttribute(seq++, "Label", label);
@@ -715,23 +795,32 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
         b.CloseComponent();
     }
 
-    private void RenderNumericField<T>(RenderTreeBuilder b, PropertyInfo p, object m, string label, ref int seq) where T : struct
+    private void RenderNumericField<T>(RenderTreeBuilder b, PropertyInfo p, object m, string label, LambdaExpression forExpr, ref int seq) where T : struct
     {
         if (Nullable.GetUnderlyingType(p.PropertyType) != null)
         {
             b.OpenComponent<MudNumericField<T?>>(seq++);
             b.AddAttribute(seq++, "Value", p.GetValue(m) is T val ? (T?)val : null);
             b.AddAttribute(seq++, "ValueChanged", EventCallback.Factory.Create<T?>(this, v => p.SetValue(m, v)));
+            if (forExpr is not null)
+            {
+                b.AddAttribute(seq++, "For", forExpr);
+            }
         }
         else
         {
             b.OpenComponent<MudNumericField<T>>(seq++);
             b.AddAttribute(seq++, "Value", p.GetValue(m) is T val ? val : default);
             b.AddAttribute(seq++, "ValueChanged", EventCallback.Factory.Create<T>(this, v => p.SetValue(m, v)));
+            if (forExpr is not null)
+            {
+                b.AddAttribute(seq++, "For", forExpr);
+            }
         }
 
         b.AddAttribute(seq++, "Label", label);
         b.AddAttribute(seq++, "Variant", Variant.Outlined);
+        b.AddAttribute(seq++, "Immediate", true);
         b.AddAttribute(seq++, "Class", "mb-3 d-block");
         b.CloseComponent();
     }

@@ -13,5 +13,5 @@ public class CustomerPostDtoValidator : AbstractValidator<CustomerPostDto>
     /// </summary>
     public CustomerPostDtoValidator() => RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(100);
+            .MaximumLength(20);
 }
