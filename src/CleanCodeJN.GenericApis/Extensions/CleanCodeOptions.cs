@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using AutoMapper;
+using CleanCodeJN.GenericApis.Tenancy;
 using Mapster;
 
 namespace CleanCodeJN.GenericApis.Extensions;
@@ -69,4 +70,12 @@ public class CleanCodeOptions
     /// Optional Mapster-specific mapping overrides. Only used when <see cref="MappingProvider"/> is <see cref="MappingProvider.Mapster"/>.
     /// </summary>
     public Action<TypeAdapterConfig> MapsterMappingOverrides { get; set; }
+
+    /// <summary>
+    /// Optional multi-tenancy configuration. When set, activates the tenant dispatch
+    /// pipeline: the configured claim is read from the HTTP context on every request,
+    /// handlers tagged with <c>[TenantCommand("name")]</c> are routed automatically,
+    /// and <c>TenantContext.TenantName</c> is available to all handlers in scope.
+    /// </summary>
+    public TenantOptions TenantOptions { get; set; }
 }

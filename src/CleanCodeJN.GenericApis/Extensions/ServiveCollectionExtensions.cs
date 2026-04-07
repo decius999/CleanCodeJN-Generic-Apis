@@ -1,19 +1,19 @@
 ﻿using System.Reflection;
 using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
-using CleanCodeJN.GenericApis.Mappers;
-using Mapster;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Behaviors;
 using CleanCodeJN.GenericApis.Commands;
 using CleanCodeJN.GenericApis.Context;
+using CleanCodeJN.GenericApis.Mappers;
 using CleanCodeJN.GenericApis.Services;
-using Microsoft.AspNetCore.Diagnostics;
+using CleanCodeJN.GenericApis.Tenancy;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using FluentValidation;
 using HotChocolate.Execution.Configuration;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
@@ -127,6 +127,23 @@ public static class ServiveCollectionExtensions
 
         services.AddExceptionHandler<CleanCodeExceptionHandler>();
 
+        if (options.TenantOptions is not null)
+        {
+            services.AddHttpContextAccessor();
+            services.AddScoped<TenantContext>();
+            services.AddSingleton(Options.Create(options.TenantOptions));
+            options.OpenBehaviors.Add(typeof(TenantDispatchBehavior<,>));
+
+            var registry = new TenantCommandRegistry();
+            registry.Scan(assemblies);
+            services.AddSingleton(registry);
+
+            foreach (var handlerType in registry.HandlerTypes)
+            {
+                services.AddScoped(handlerType);
+            }
+        }
+
         services
             .RegisterMinimalApiBaseClasses()
                 .RegisterCommandExecutionContext()
@@ -212,15 +229,9 @@ public static class ServiveCollectionExtensions
     /// <param name="assemblies">The assemblies to scan for entity/DTO pairs.</param>
     /// <param name="options">The CleanCode options specifying the mapping provider and overrides.</param>
     /// <returns>The service collection.</returns>
-    public static IServiceCollection RegisterMapper(this IServiceCollection services, List<Assembly> assemblies, CleanCodeOptions options)
-    {
-        if (options.MappingProvider == MappingProvider.Mapster)
-        {
-            return services.RegisterMapster(assemblies, options.MapsterMappingOverrides);
-        }
-
-        return services.RegisterAutomapper(assemblies, options.MappingOverrides);
-    }
+    public static IServiceCollection RegisterMapper(this IServiceCollection services, List<Assembly> assemblies, CleanCodeOptions options) => options.MappingProvider == MappingProvider.Mapster
+            ? services.RegisterMapster(assemblies, options.MapsterMappingOverrides)
+            : services.RegisterAutomapper(assemblies, options.MappingOverrides);
 
     /// <summary>
     /// Register AutoMapper and exposes it as <see cref="ICleanCodeMapper"/>.

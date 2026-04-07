@@ -1,4 +1,5 @@
 ﻿using CleanCodeJN.GenericApis.Sample.Domain;
+using CleanCodeJN.GenericApis.Tenancy;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +11,11 @@ namespace CleanCodeJN.GenericApis.Sample.DataAccess;
 /// Entity Framework database context for the sample application, providing access to customers and invoices.
 /// </summary>
 /// <param name="configuration">The application configuration used to resolve the connection string.</param>
-public class MyDbContext(IConfiguration configuration) : DbContext, IDataContext
+/// <param name="tenantContext">
+/// Optional scoped tenant context. When present and ConnectionString is set, the tenant-specific
+/// connection string is used. Falls back to "DefaultConnection" from configuration.
+/// </param>
+public class MyDbContext(IConfiguration configuration, TenantContext tenantContext = null) : DbContext, IDataContext
 {
     /// <summary>
     /// Gets or sets the database set of customer entities.
@@ -22,11 +27,17 @@ public class MyDbContext(IConfiguration configuration) : DbContext, IDataContext
     /// </summary>
     public virtual DbSet<Invoice> Invoices { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
-                .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
-                .EnableDetailedErrors()
-                .EnableSensitiveDataLogging()
-                .LogTo(Console.WriteLine, LogLevel.Information);
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = tenantContext?.ConnectionString
+            ?? configuration.GetConnectionString("DefaultConnection");
+
+        optionsBuilder
+            .UseSqlServer(connectionString)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging()
+            .LogTo(Console.WriteLine, LogLevel.Information);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

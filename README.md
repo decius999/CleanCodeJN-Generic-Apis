@@ -177,6 +177,7 @@ public class CustomersApi : IApi
     - [Use IfRequest() to execute an optional request - continue when conditions are not satisfied](#use-ifrequest-to-execute-an-optional-request---continue-when-conditions-are-not-satisfied)
     - [Use IfBreakRequest() to execute an optional request - break whole process when conditions are not satisfied](#use-ifbreakrequest-to-execute-an-optional-request---break-whole-process-when-conditions-are-not-satisfied)
     - [See the how clean your code will look like in the end](#see-the-how-clean-your-code-will-look-like-in-the-end)
+- [🏢 Multi-Tenancy Support](#-multi-tenancy-support)
 - [💬 AI Chat UI — /ai Page](#-ai-chat-ui--ai-page)
 - [🤖 Pluggable LLM Provider](#-pluggable-llm-provider)
 - [🛡️ Pluggable Exception Handler](#️-pluggable-exception-handler)
@@ -193,6 +194,7 @@ public class CustomersApi : IApi
 - 🔀 **Auto-mapping** — Entities ⇄ DTOs by naming convention, no AutoMapper config needed
 - 🧪 **FluentValidation** — validators auto-discovered and executed on POST/PUT
 - 🧼 **IOSP architecture** — clean orchestration of complex business logic
+- 🏢 **Multi-tenancy** — per-tenant handler dispatch + per-tenant DB connection, zero boilerplate
 - 📄 **Command docs** — auto-generated workflow documentation from XML comments at `/docs`
 - 🚀 **.NET 10**, EF Core 10, fully testable & mockable
 
@@ -1120,6 +1122,165 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         GraphQLDeletePrefix = "remove",     // removeCustomer
     };
 });
+```
+
+---
+
+## 🏢 Multi-Tenancy Support
+
+Built-in multi-tenancy lets you route requests to tenant-specific handlers and connect each tenant to its own database — with zero boilerplate and full MediatR pipeline support (caching, logging, custom behaviors all run normally).
+
+### How it works
+
+1. **Configure** the tenant source in `Program.cs`
+2. **Declare** tenant-specific handlers by implementing `IMultiTenantHandler`
+3. **Connect** your `DbContext` to the resolved connection string via `TenantContext`
+
+The `TenantDispatchBehavior` runs as the innermost MediatR pipeline behavior. It extracts the tenant name, populates the scoped `TenantContext`, and routes to the matching handler. If no tenant-specific handler exists the default handler is called as usual.
+
+---
+
+### 1. Configure TenantOptions in Program.cs
+
+```csharp
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    // Read tenant name from a JWT claim (simplest case)
+    options.TenantOptions = new TenantOptions
+    {
+        ClaimName = "tenant_id",
+        ConnectionStringResolver = tenantName => configuration.GetConnectionString(tenantName),
+    };
+});
+```
+
+Need more control? Use the `TenantResolver` hook — it receives the full `HttpContext`:
+
+```csharp
+options.TenantOptions = new TenantOptions
+{
+    // From a request header (e.g. set by an API gateway)
+    TenantResolver = ctx => ctx.Request.Headers["X-Tenant-ID"],
+
+    // From a subdomain: enbw.api.company.com → "enbw"
+    TenantResolver = ctx => ctx.Request.Host.Host.Split('.')[0],
+
+    // From a route segment: /api/enbw/customers → "enbw"
+    TenantResolver = ctx => ctx.GetRouteValue("tenant")?.ToString(),
+
+    // Combined: JWT claim first, header as fallback
+    TenantResolver = ctx =>
+        ctx.User?.FindFirst("tenant_id")?.Value
+        ?? ctx.Request.Headers["X-Tenant-ID"].FirstOrDefault(),
+
+    ConnectionStringResolver = tenantName => configuration.GetConnectionString(tenantName),
+};
+```
+
+Add the connection strings to `appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=...;Database=MyApp;",
+    "Tenant1":           "Server=...;Database=MyApp_Tenant1;",
+    "Tenant2":           "Server=...;Database=MyApp_Tenant2;"
+  }
+}
+```
+
+---
+
+### 2. Declare tenant-specific handlers with IMultiTenantHandler
+
+Implement `IMultiTenantHandler` on any `IRequestHandler` and return a **constant tenant name**. The handler is auto-discovered at startup — no registration, no attributes needed.
+
+```csharp
+// Handles DeleteCustomerRequest only when tenant = "Tenant1"
+public class Tenant1DeleteCustomerCommand(ICommandExecutionContext ctx)
+    : IntegrationCommand<DeleteCustomerRequest, Customer>(ctx), IMultiTenantHandler
+{
+    public string TenantName => "Tenant1";
+
+    public override async Task<BaseResponse<Customer>> Handle(
+        DeleteCustomerRequest request, CancellationToken ct) =>
+        await ExecutionContext
+            .GetCustomerByIdRequest(request.Id)
+            .DeleteCustomerRequest()
+            .Execute<Customer>(ct);
+}
+
+// Handles DeleteCustomerRequest only when tenant = "Tenant2"
+public class Tenant2DeleteCustomerCommand(ICommandExecutionContext ctx)
+    : IntegrationCommand<DeleteCustomerRequest, Customer>(ctx), IMultiTenantHandler
+{
+    public string TenantName => "Tenant2";
+
+    public override async Task<BaseResponse<Customer>> Handle(
+        DeleteCustomerRequest request, CancellationToken ct) =>
+        await ExecutionContext
+            .GetCustomerByIdRequest(request.Id)
+            .DeleteCustomerRequest()
+            .Execute<Customer>(ct);
+}
+
+// Default handler — called for all other tenants (or when TenantOptions is not configured)
+public class DeleteCustomerCommand(ICommandExecutionContext ctx)
+    : IntegrationCommand<DeleteCustomerRequest, Customer>(ctx)
+{
+    public override async Task<BaseResponse<Customer>> Handle(
+        DeleteCustomerRequest request, CancellationToken ct) =>
+        await ExecutionContext
+            .GetCustomerByIdRequest(request.Id)
+            .DeleteCustomerRequest()
+            .Execute<Customer>(ct);
+}
+```
+
+**Dispatch rules:**
+| Tenant claim | Handler invoked |
+|---|---|
+| `"Tenant1"` | `Tenant1DeleteCustomerCommand` |
+| `"Tenant2"` | `Tenant2DeleteCustomerCommand` |
+| anything else / no claim | `DeleteCustomerCommand` (default) |
+
+---
+
+### 3. Connect your DbContext to the tenant connection string
+
+Inject the scoped `TenantContext` into your `DbContext`. It is always populated before the first database operation runs.
+
+```csharp
+public class MyDbContext(IConfiguration configuration, TenantContext tenantContext = null)
+    : DbContext, IDataContext
+{
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = tenantContext?.ConnectionString        // set by TenantDispatchBehavior
+            ?? configuration.GetConnectionString("DefaultConnection"); // fallback (no tenant)
+
+        optionsBuilder.UseSqlServer(connectionString);
+    }
+}
+```
+
+`TenantContext` is optional (`= null`) so the `DbContext` works without multi-tenancy configured at all.
+
+---
+
+### Complete pipeline for a tenant request
+
+```
+HTTP request  →  JWT claim "tenant_id" = "Tenant1"
+    CachingBehavior       (runs as usual)
+    LoggingBehavior       (runs as usual)
+    [your custom behaviors]
+    TenantDispatchBehavior
+        → TenantContext.TenantName      = "Tenant1"
+        → TenantContext.ConnectionString = "Server=...Tenant1..."
+        → Registry finds Tenant1DeleteCustomerCommand
+        → Tenant1DeleteCustomerCommand.Handle()
+            → DbContext.OnConfiguring() uses Tenant1 connection string
 ```
 
 ---

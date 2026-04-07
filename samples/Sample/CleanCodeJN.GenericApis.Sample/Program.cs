@@ -2,6 +2,7 @@
 using CleanCodeJN.GenericApis.Extensions;
 using CleanCodeJN.GenericApis.Sample.DataAccess;
 using CleanCodeJN.GenericApis.Sample.Extensions;
+using CleanCodeJN.GenericApis.Tenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,9 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly,
         typeof(CleanCodeJN.GenericApis.Sample.Domain.AssemblyRegistration).Assembly
     ];
+
     options.ValidatorAssembly = typeof(CleanCodeJN.GenericApis.Sample.Core.AssemblyRegistration).Assembly;
+
     options.GraphQLOptions = new GraphQLOptions
     {
         Get = true,
@@ -33,6 +36,7 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Delete = true,
         EnableIntrospection = true,
     };
+
     options.AiProxyOptions = new AiProxyOptions
     {
         LlmApiKey = configuration["Anthropic:ApiKey"],
@@ -40,7 +44,14 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         Model = "claude-sonnet-4-6",
         MaxTokens = 4096,
     };
+
     options.MappingProvider = MappingProvider.Mapster;
+
+    options.TenantOptions = new TenantOptions
+    {
+        ClaimName = "tenant_id",
+        ConnectionStringResolver = tenantName => configuration.GetConnectionString(tenantName),
+    };
 });
 
 var app = builder.Build();

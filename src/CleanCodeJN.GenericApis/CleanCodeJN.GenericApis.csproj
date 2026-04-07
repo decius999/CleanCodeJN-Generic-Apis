@@ -16,13 +16,20 @@
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;AutoMapper;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
-       Extensions for GraphQL in combination with CleanCodeJN.GenericApis.DataGrid.
+      6.3.0 — Multi-Tenancy Support
+      - New TenantOptions configuration: set ClaimName to read the tenant identifier from a JWT claim, or provide a custom TenantResolver Func&lt;HttpContext, string&gt; for full control (headers, subdomains, routes, query strings, etc.)
+      - New TenantDispatchBehavior MediatR pipeline behavior: extracts the tenant name from the HTTP context, populates the scoped TenantContext (TenantName + ConnectionString) before any handler runs, and routes to the correct tenant-specific handler when one is registered.
+      - New IMultiTenantHandler interface: implement on any IRequestHandler to declare which tenant it serves (public string TenantName =&gt; "Tenant1"). Handlers are auto-discovered at startup — no attributes, no manual registration required.
+      - New TenantContext scoped service: inject into your DbContext to apply per-tenant connection strings transparently.
+      - New ConnectionStringResolver hook in TenantOptions: maps the resolved tenant name to a database connection string (e.g. tenantName =&gt; configuration.GetConnectionString(tenantName)).
+      - All existing MediatR pipeline behaviors (caching, logging, custom) continue to run normally for both tenant-specific and default handlers.
+      - Fully opt-in: set TenantOptions = null (default) to keep existing behaviour unchanged.
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.2.6</VersionPrefix>
+    <VersionPrefix>6.3.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

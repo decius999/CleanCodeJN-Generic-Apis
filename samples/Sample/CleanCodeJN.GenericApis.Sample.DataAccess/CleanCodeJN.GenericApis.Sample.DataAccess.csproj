@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CleanCodeJN.GenericApis.Sample.Domain\CleanCodeJN.GenericApis.Sample.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\CleanCodeJN.GenericApis\CleanCodeJN.GenericApis.csproj" />
   </ItemGroup>
 
 </Project>
