@@ -16,20 +16,13 @@
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;AutoMapper;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
-      6.3.0 — Multi-Tenancy Support
-      - New TenantOptions configuration: set ClaimName to read the tenant identifier from a JWT claim, or provide a custom TenantResolver Func&lt;HttpContext, string&gt; for full control (headers, subdomains, routes, query strings, etc.)
-      - New TenantDispatchBehavior MediatR pipeline behavior: extracts the tenant name from the HTTP context, populates the scoped TenantContext (TenantName + ConnectionString) before any handler runs, and routes to the correct tenant-specific handler when one is registered.
-      - New IMultiTenantHandler interface: implement on any IRequestHandler to declare which tenant it serves (public string TenantName =&gt; "Tenant1"). Handlers are auto-discovered at startup — no attributes, no manual registration required.
-      - New TenantContext scoped service: inject into your DbContext to apply per-tenant connection strings transparently.
-      - New ConnectionStringResolver hook in TenantOptions: maps the resolved tenant name to a database connection string (e.g. tenantName =&gt; configuration.GetConnectionString(tenantName)).
-      - All existing MediatR pipeline behaviors (caching, logging, custom) continue to run normally for both tenant-specific and default handlers.
-      - Fully opt-in: set TenantOptions = null (default) to keep existing behaviour unchanged.
+          Package Updates
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.3.0</VersionPrefix>
+    <VersionPrefix>6.3.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,13 +39,13 @@
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.1" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
-    <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.12" />
-    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.12" />
-    <PackageReference Include="HotChocolate.Data" Version="15.1.12" />
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="Mapster.EFCore" Version="5.1.1" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.14" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.14" />
+    <PackageReference Include="HotChocolate.Data" Version="15.1.14" />
+    <PackageReference Include="Mapster" Version="10.0.7" />
+    <PackageReference Include="Mapster.EFCore" Version="10.0.7" />
     <PackageReference Include="MediatR" Version="14.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="10.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Anthropic.SDK" Version="5.10.0" />
   </ItemGroup>
