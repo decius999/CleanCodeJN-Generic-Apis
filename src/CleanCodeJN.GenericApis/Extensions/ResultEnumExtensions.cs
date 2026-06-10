@@ -32,7 +32,8 @@ public static class ResultEnumExtensions
         ResultEnum.FAILURE_NOT_FOUND => Results.Problem(detail: response.Message, statusCode: (int)HttpStatusCode.NotFound, title: nameof(HttpStatusCode.NotFound)),
         ResultEnum.FAILURE_UNAUTHORIZED => Results.Problem(statusCode: (int)HttpStatusCode.Unauthorized, title: nameof(HttpStatusCode.Unauthorized)),
         ResultEnum.FAILURE_FORBIDDEN => Results.Problem(statusCode: (int)HttpStatusCode.Forbidden, title: nameof(HttpStatusCode.Forbidden)),
-        _ => Results.Problem(detail: response.Message ?? response.Info, statusCode: (int)HttpStatusCode.BadRequest, title: nameof(HttpStatusCode.BadRequest)),
+        _ when result.Succeeded() => Results.Json(data, statusCode: (int)result),
+        _ => Results.Problem(detail: response?.Message ?? response?.Info, statusCode: (int)result, title: ((HttpStatusCode)result).ToString()),
     };
 
     private static Dictionary<string, string[]> BuildErrors(Response response)

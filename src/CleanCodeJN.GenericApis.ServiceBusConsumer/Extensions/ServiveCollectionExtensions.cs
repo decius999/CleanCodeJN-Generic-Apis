@@ -8,6 +8,7 @@ using CleanCodeJN.GenericApis.ServiceBusConsumer.Domain;
 using CleanCodeJN.GenericApis.ServiceBusConsumer.Services;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
+using Mapster;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,7 +37,7 @@ public static class ServiveCollectionExtensions
 
         services.RegisterValidatorsFromAssembly(options.ValidatorAssembly)
             .RegisterGenericCommands(options.ApplicationAssemblies)
-            .RegisterAutomapper(options.ApplicationAssemblies)
+            .RegisterMapster(options.ApplicationAssemblies, config => config.Scan([.. options.MapsterMappingAssemblies]))
             .RegisterServiceBusConsumer<TServiceBusConsumerConfigurationService>(options.ServiceBusConnectionString, options.ApplicationAssemblies)
             .RegisterDbContextAndRepositories<TDataContext>();
 

@@ -1,8 +1,8 @@
 namespace CleanCodeJN.GenericApis.Abstractions.Contracts;
 
 /// <summary>
-/// Abstraction over object-to-object mapping. Enables swapping the mapping provider
-/// (e.g. AutoMapper, Mapster) without changing consuming code.
+/// Abstraction over object-to-object mapping (backed by Mapster),
+/// keeping the mapping library decoupled from consuming code.
 /// </summary>
 public interface ICleanCodeMapper
 {

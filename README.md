@@ -191,7 +191,7 @@ public class CustomersApi : IApi
 - 🤖 **MCP Server** — one line exposes your entire API as AI-callable tools (Claude, Cursor, …)
 - 💬 **AI Chat UI** — ready-made `/ai` Blazor page: chat with your API in natural language
 - 📦 **Paging, filtering & projections** — built-in, no extra code
-- 🔀 **Auto-mapping** — Entities ⇄ DTOs by naming convention, no AutoMapper config needed
+- 🔀 **Auto-mapping** — Entities ⇄ DTOs by naming convention, no mapping config needed
 - 🧪 **FluentValidation** — validators auto-discovered and executed on POST/PUT
 - 🧼 **IOSP architecture** — clean orchestration of complex business logic
 - 🏢 **Multi-tenancy** — per-tenant handler dispatch + per-tenant DB connection, zero boilerplate
@@ -225,9 +225,6 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
     // Assembly with FluentValidation AbstractValidators
     options.ValidatorAssembly = typeof(YourAssembly).Assembly;
 
-    // AutoMapper overrides (only used with MappingProvider.AutoMapper, the default)
-    options.MappingOverrides = cfg => cfg.CreateMap<Foo, FooDto>();
-
     // Use distributed memory cache (default: true)
     options.UseDistributedMemoryCache = true;
 
@@ -250,11 +247,8 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         DisableCertificateValidation = false, // set true only in local dev
     };
 
-    // Mapping provider: AutoMapper (default) or Mapster
-    options.MappingProvider = MappingProvider.AutoMapper;
-
-    // Mapster overrides (only used with MappingProvider.Mapster)
-    options.MapsterMappingOverrides = config => config.NewConfig<Foo, FooDto>().Ignore(x => x.Secret);
+    // Assemblies scanned for custom Mapster IRegister mapping profiles
+    options.MapsterMappingAssemblies = [ typeof(YourAssembly).Assembly ];
 
     // Override DTO suffix and GraphQL prefix naming conventions
     options.NamingConventions = new CleanCodeNamingConventions
@@ -964,44 +958,34 @@ builder.Services.AddCleanCodeJNWithAiChat(options =>
 
 ---
 
-## 🔀 Configurable Mapping Provider
+## 🔀 Mapping with Mapster
 
-CleanCodeJN internally uses an `ICleanCodeMapper` abstraction — you are not locked into any specific mapping library. By default **AutoMapper** is used, but you can switch to **Mapster** (both are free for most projects) with a single option.
+CleanCodeJN internally uses an `ICleanCodeMapper` abstraction backed by **Mapster**. Entity ⇄ DTO pairs are auto-discovered by naming convention — no manual mapping registration required.
 
-Both providers auto-discover Entity ⇄ DTO pairs by naming convention — no manual mapping registration required.
+### Custom mappings via IRegister profiles
 
-### AutoMapper (default)
-
-```csharp
-builder.Services.AddCleanCodeJN<MyDbContext>(options =>
-{
-    // No MappingProvider needed — AutoMapper is the default.
-    // Optionally override specific mappings:
-    options.MappingOverrides = cfg =>
-    {
-        cfg.CreateMap<Customer, CustomerGetDto>()
-           .ForMember(d => d.FullAddress, o => o.MapFrom(s => s.Street + ", " + s.City));
-    };
-});
-```
-
-### Mapster
+To customize mappings, create a Mapster `IRegister` profile and add its assembly to `MapsterMappingAssemblies`. Every `IRegister` implementation found in those assemblies is applied on top of the auto-discovered mappings.
 
 ```csharp
-builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+public class CustomerMappingProfile : IRegister
 {
-    options.MappingProvider = MappingProvider.Mapster;
-
-    // Optionally override specific Mapster mappings:
-    options.MapsterMappingOverrides = config =>
+    public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<Customer, CustomerGetDto>()
               .Map(d => d.FullAddress, s => s.Street + ", " + s.City);
-    };
+    }
+}
+```
+
+```csharp
+builder.Services.AddCleanCodeJN<MyDbContext>(options =>
+{
+    // Assemblies scanned for IRegister mapping profiles
+    options.MapsterMappingAssemblies = [ typeof(CustomerMappingProfile).Assembly ];
 });
 ```
 
-Both providers register `ICleanCodeMapper` in the DI container. Inject it wherever you need object mapping:
+CleanCodeJN registers `ICleanCodeMapper` in the DI container. Inject it wherever you need object mapping:
 
 ```csharp
 public class MyService(ICleanCodeMapper mapper)

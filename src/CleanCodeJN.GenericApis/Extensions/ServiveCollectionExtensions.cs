@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using AutoMapper;
 using CleanCodeJN.GenericApis.Abstractions.Contracts;
 using CleanCodeJN.GenericApis.Abstractions.Responses;
 using CleanCodeJN.GenericApis.API;
@@ -222,30 +221,14 @@ public static class ServiveCollectionExtensions
     }
 
     /// <summary>
-    /// Registers the mapping provider (AutoMapper or Mapster) based on <see cref="CleanCodeOptions.MappingProvider"/>.
-    /// Registers <see cref="ICleanCodeMapper"/> in the DI container.
+    /// Registers Mapster as the mapping provider and exposes it as <see cref="ICleanCodeMapper"/> in the DI container.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="assemblies">The assemblies to scan for entity/DTO pairs.</param>
-    /// <param name="options">The CleanCode options specifying the mapping provider and overrides.</param>
+    /// <param name="options">The CleanCode options specifying the Mapster mapping overrides.</param>
     /// <returns>The service collection.</returns>
-    public static IServiceCollection RegisterMapper(this IServiceCollection services, List<Assembly> assemblies, CleanCodeOptions options) => options.MappingProvider == MappingProvider.Mapster
-            ? services.RegisterMapster(assemblies, options.MapsterMappingOverrides)
-            : services.RegisterAutomapper(assemblies, options.MappingOverrides);
-
-    /// <summary>
-    /// Register AutoMapper and exposes it as <see cref="ICleanCodeMapper"/>.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="assemblies">The Assemblies where your Entities, DTOs and Commands are located.</param>
-    /// <param name="mapping">Optional: The AutoMapper mapping configuration.</param>
-    /// <returns>The service collection.</returns>
-    public static IServiceCollection RegisterAutomapper(this IServiceCollection services, List<Assembly> assemblies, Action<IMapperConfigurationExpression> mapping = null)
-    {
-        services.AddAutoMapper(Scan(mapping, assemblies));
-        services.AddScoped<ICleanCodeMapper, AutoMapperAdapter>();
-        return services;
-    }
+    public static IServiceCollection RegisterMapper(this IServiceCollection services, List<Assembly> assemblies, CleanCodeOptions options)
+        => services.RegisterMapster(assemblies, options.MapsterMappingOverrides);
 
     /// <summary>
     /// Register Mapster and exposes it as <see cref="ICleanCodeMapper"/>.
@@ -434,36 +417,6 @@ public static class ServiveCollectionExtensions
                 schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
-    }
-
-    private static Action<IMapperConfigurationExpression> Scan(Action<IMapperConfigurationExpression> mapping, List<Assembly> assemblies)
-    {
-        var entities = GetTypesImplementingInterfaces(assemblies, typeof(IEntity)).ToDictionary(k => k.Name, v => v);
-        var dtos = GetTypesImplementingInterfaces(assemblies, typeof(IDto)).ToDictionary(k => k.Name, v => v);
-        List<Action<IMapperConfigurationExpression>> mappingConfigs = [];
-
-        foreach (var entity in entities)
-        {
-            foreach (var dto in dtos)
-            {
-                if (dto.Key.StartsWith(entity.Key))
-                {
-                    mappingConfigs.Add(cfg => cfg.CreateMap(entity.Value, dto.Value).ReverseMap());
-                }
-            }
-        }
-
-        void combinedAction(IMapperConfigurationExpression cfg)
-        {
-            foreach (var action in mappingConfigs)
-            {
-                action(cfg);
-            }
-
-            mapping?.Invoke(cfg);
-        }
-
-        return combinedAction;
     }
 
     private static TypeAdapterConfig ScanMapster(Action<TypeAdapterConfig> overrides, List<Assembly> assemblies)

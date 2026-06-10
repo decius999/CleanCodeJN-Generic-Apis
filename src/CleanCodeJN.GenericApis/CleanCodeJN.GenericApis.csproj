@@ -8,13 +8,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <Description>
-      Build production-ready .NET Web APIs in minutes, not days. CleanCodeJN.GenericApis is the ultimate full-stack API framework combining REST (Minimal APIs + MVC Controllers), GraphQL (HotChocolate), and MCP (Model Context Protocol) — all from a single generic setup. Powered by MediatR CQRS, AutoMapper, FluentValidation, and Entity Framework, it eliminates boilerplate for GET, GET by ID, POST, PUT, PATCH, and DELETE operations across every layer. Built-in pipeline behaviors deliver transparent caching and structured logging out of the box. The integrated AI Proxy streams responses from Anthropic Claude directly through your API, while the MCP server automatically exposes all your CRUD endpoints as discoverable tools for AI assistants like Claude, Cursor, and Copilot. Designed around the Integration Operation Segregation Principle (IOSP) for clean, testable, and maintainable business logic — at any scale.
+      Build production-ready .NET Web APIs in minutes, not days. CleanCodeJN.GenericApis is the ultimate full-stack API framework combining REST (Minimal APIs + MVC Controllers), GraphQL (HotChocolate), and MCP (Model Context Protocol) — all from a single generic setup. Powered by MediatR CQRS, Mapster, FluentValidation, and Entity Framework, it eliminates boilerplate for GET, GET by ID, POST, PUT, PATCH, and DELETE operations across every layer. Built-in pipeline behaviors deliver transparent caching and structured logging out of the box. The integrated AI Proxy streams responses from Anthropic Claude directly through your API, while the MCP server automatically exposes all your CRUD endpoints as discoverable tools for AI assistants like Claude, Cursor, and Copilot. Designed around the Integration Operation Segregation Principle (IOSP) for clean, testable, and maintainable business logic — at any scale.
     </Description>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Jörg Nieveler</Authors>
-    <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Automapper, DataRepositories and Entity Framework</Title>
-    <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;AutoMapper;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
+    <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Mapster, DataRepositories and Entity Framework</Title>
+    <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;Mapster;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
           Package Updates
     </PackageReleaseNotes>
@@ -22,7 +22,7 @@
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.3.1</VersionPrefix>
+    <VersionPrefix>6.4.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="BananaCakePop.Middleware" Version="17.0.0" />
     <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="4.1.0" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.1" />

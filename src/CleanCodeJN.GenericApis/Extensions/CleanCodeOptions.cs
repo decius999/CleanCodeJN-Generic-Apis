@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using AutoMapper;
 using CleanCodeJN.GenericApis.Tenancy;
 using Mapster;
 
@@ -19,11 +18,6 @@ public class CleanCodeOptions
     /// The assembly that contains the validators types for using Fluent Validation.
     /// </summary>
     public Assembly ValidatorAssembly { get; set; }
-
-    /// <summary>
-    /// The assembly that contains the automapper mapping profiles.
-    /// </summary>
-    public Action<IMapperConfigurationExpression> MappingOverrides { get; set; }
 
     /// <summary>
     /// If true: Use distributed memory cache. If false: you can add another Distributed Cache implementation.
@@ -62,14 +56,18 @@ public class CleanCodeOptions
     public CleanCodeNamingConventions NamingConventions { get; set; } = new();
 
     /// <summary>
-    /// Selects the object mapping provider. Default is <see cref="MappingProvider.AutoMapper"/>.
+    /// Assemblies scanned for Mapster <see cref="IRegister"/> mapping profiles.
+    /// Add the assemblies that contain your custom mapping profiles here; every
+    /// <see cref="IRegister"/> implementation found is applied on top of the
+    /// auto-discovered Entity ⇄ DTO mappings.
     /// </summary>
-    public MappingProvider MappingProvider { get; set; } = MappingProvider.AutoMapper;
+    public List<Assembly> MapsterMappingAssemblies { get; set; } = [];
 
     /// <summary>
-    /// Optional Mapster-specific mapping overrides. Only used when <see cref="MappingProvider"/> is <see cref="MappingProvider.Mapster"/>.
+    /// Mapster mapping overrides. Always scans <see cref="MapsterMappingAssemblies"/> for
+    /// <see cref="IRegister"/> mapping profiles. This is fixed internally and cannot be set externally.
     /// </summary>
-    public Action<TypeAdapterConfig> MapsterMappingOverrides { get; set; }
+    internal Action<TypeAdapterConfig> MapsterMappingOverrides => config => config.Scan([.. MapsterMappingAssemblies]);
 
     /// <summary>
     /// Optional multi-tenancy configuration. When set, activates the tenant dispatch

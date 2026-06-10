@@ -45,8 +45,6 @@ builder.Services.AddCleanCodeJN<MyDbContext>(options =>
         MaxTokens = 4096,
     };
 
-    options.MappingProvider = MappingProvider.Mapster;
-
     options.TenantOptions = new TenantOptions
     {
         ClaimName = "tenant_id",
