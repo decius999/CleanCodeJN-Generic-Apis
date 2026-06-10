@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
-    <PackageReference Include="CleanCodeJN.GenericApis" Version="6.4.0" />
+    <PackageReference Include="CleanCodeJN.GenericApis" Version="6.4.2" />
     <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="4.1.0" />
     <PackageReference Include="CleanCodeJN.Repository.EntityFramework" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.0" />
