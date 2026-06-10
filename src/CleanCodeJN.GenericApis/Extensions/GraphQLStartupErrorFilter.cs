@@ -1,4 +1,6 @@
-﻿namespace CleanCodeJN.GenericApis.Extensions;
+﻿using HotChocolate.Execution;
+
+namespace CleanCodeJN.GenericApis.Extensions;
 
 /// <summary>
 /// A GraphQL error filter that logs schema and execution errors to the console during startup.

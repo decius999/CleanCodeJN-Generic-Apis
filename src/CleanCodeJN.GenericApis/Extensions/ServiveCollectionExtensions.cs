@@ -12,6 +12,7 @@ using CleanCodeJN.Repository.EntityFramework.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Extensions;
 using FluentValidation;
 using HotChocolate.Execution.Configuration;
+using HotChocolate.Types;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Http.Features;
@@ -334,7 +335,7 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoQueryTypeExtensions<,,>).MakeGenericType(dtoType, entityType, keyType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options));
+                schema.AddTypeExtension((ITypeDefinitionExtension)Activator.CreateInstance(type, options));
             }
         }
     }
@@ -354,7 +355,7 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoDeleteMutationTypeExtensions<,>).MakeGenericType(entityType, keyType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
+                schema.AddTypeExtension((ITypeDefinitionExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
     }
@@ -384,7 +385,7 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoCreateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
+                schema.AddTypeExtension((ITypeDefinitionExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
     }
@@ -414,7 +415,7 @@ public static class ServiveCollectionExtensions
                 }
 
                 var type = typeof(AutoUpdateMutationTypeExtensions<,,,>).MakeGenericType(dtoType, entityType, keyType, inputType);
-                schema.AddTypeExtension((INamedTypeExtension)Activator.CreateInstance(type, options, conventions));
+                schema.AddTypeExtension((ITypeDefinitionExtension)Activator.CreateInstance(type, options, conventions));
             }
         }
     }
