@@ -16,7 +16,7 @@
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Mapster, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;Mapster;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
-          Now uses the free, MIT-licensed MediatR 12.5.0 (last version before MediatR's commercial license). No API changes.
+          Now uses the free, Apache-2.0-licensed MediatR 12.5.0 (last version before MediatR's commercial license). No API changes.
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
