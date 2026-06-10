@@ -194,6 +194,7 @@ public class CustomersApi : IApi
 - 🔀 **Auto-mapping** — Entities ⇄ DTOs by naming convention, no mapping config needed
 - 🧪 **FluentValidation** — validators auto-discovered and executed on POST/PUT
 - 🧼 **IOSP architecture** — clean orchestration of complex business logic
+- 🆓 **Free MediatR** — uses the MIT-licensed MediatR 12.5.0 (last version before MediatR went commercial), so no commercial license is required
 - 🏢 **Multi-tenancy** — per-tenant handler dispatch + per-tenant DB connection, zero boilerplate
 - 📄 **Command docs** — auto-generated workflow documentation from XML comments at `/docs`
 - 🚀 **.NET 10**, EF Core 10, fully testable & mockable
