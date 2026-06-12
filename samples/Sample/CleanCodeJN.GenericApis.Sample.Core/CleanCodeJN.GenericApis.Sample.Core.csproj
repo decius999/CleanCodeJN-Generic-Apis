@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" Version="4.1.0" />
-    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="CleanCodeJN.GenericApis.Abstractions" />
+    <PackageReference Include="FluentValidation" />
   </ItemGroup>
 
 </Project>
