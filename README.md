@@ -167,6 +167,7 @@ public class CustomersApi : IApi
     - [Implement your own specific Request](#implement-your-own-specific-request)
     - [Requests can also be marked as ICachableRequest, which uses IDistributedCache to cache the Response](#requests-can-also-be-marked-as-icachablerequest-which-uses-idistributedcache-to-cache-the-response)
     - [With your own specific Command using CleanCodeJN.Repository](#with-your-own-specific-command-using-cleancodejnrepository)
+    - [Map a custom request to an endpoint — route parameters bound straight into the request](#map-a-custom-request-to-an-endpoint--route-parameters-bound-straight-into-the-request)
     - [Custom Middlewares](#custom-middlewares)
   - [Use IOSP for complex business logic](#use-iosp-for-complex-business-logic)
     - [Derive from BaseIntegrationCommand](#derive-from-baseintegrationcommand)
@@ -680,6 +681,39 @@ public class SpecificDeleteCommand(IRepository<Customer, int> repository) : IReq
     }
 }
 ```
+
+### Map a custom request to an endpoint — route parameters bound straight into the request
+
+For `GET` (list and by-id) and `DELETE`, the route/query parameters can bind **directly into your request** via `[AsParameters]`. The request type carries every parameter itself, so you need **no factory delegate** and **no `IRepository`/mapping in the `IApi`** — and it scales to any number of route parameters (one property per parameter). Property names match the route tokens (case-insensitive).
+
+```C#
+// The request IS the parameter container — bound from the route:
+public record GetOrdersByCustomerRequest(int CustomerId, int Year) : IRequest<BaseListResponse<Order>>;
+public record GetOrderByIdRequest(int Id)                          : IRequest<BaseResponse<Order>>;
+public record DeleteOrderRequest(int Id)                           : IRequest<BaseResponse<Order>>;
+
+public class OrdersApi : IApi
+{
+    public List<string> Tags => ["Orders"];
+    public string Route => "api/v1/Orders";
+
+    public List<Func<WebApplication, RouteHandlerBuilder>> HttpMethods =>
+    [
+        // GET list — returns List<OrderGetDto> (pass the item DTO); request bound from the route
+        app => app.MapGetRequest<Order, OrderGetDto, GetOrdersByCustomerRequest>($"{Route}/customer/{{customerId}}/year/{{year}}", Tags),
+
+        // GET single — returns OrderGetDto
+        app => app.MapGetByIdRequest<Order, OrderGetDto, GetOrderByIdRequest>($"{Route}/{{id}}", Tags),
+
+        // DELETE — id from the path (.../{id}) or the query (?id=), depending on the route you pass
+        app => app.MapDeleteRequest<Order, OrderGetDto, DeleteOrderRequest>($"{Route}/{{id}}", Tags),
+    ];
+}
+```
+
+The repository work stays in the command (handler), exactly like above — e.g. `GetOrdersByCustomerCommand(IRepository<Order, int> repo) : IRequestHandler<GetOrdersByCustomerRequest, BaseListResponse<Order>>`.
+
+> **POST/PUT** carry their payload in the **body**, so they bind the DTO/request from the body — use `MapPostRequest` / `MapPutRequest` with the body request; route-parameter binding (`[AsParameters]`) is not needed there. The only case that still needs a delegate is a body **plus** extra route parameters (e.g. `POST .../{parentId}/child`); use the raw `MapPostRequest(route, tags, handler)` overload for that.
 
 ### Custom Middlewares
 

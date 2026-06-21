@@ -16,13 +16,13 @@
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Mapster, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;Mapster;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
     <PackageReleaseNotes>
-          Removed the proprietary BananaCakePop.Middleware dependency (ChilliCream License 1.0); the package now depends only on free OSS licenses (MIT / Apache-2.0 / BSD). Previously switched to the free, Apache-2.0-licensed MediatR 12.5.0. No API changes.
+          Added parameter-bound request overloads for GET (list and by-id) and DELETE — MapGetRequest / MapGetByIdRequest / MapDeleteRequest&lt;TEntity, TDto, TRequest&gt;. The MediatR request binds its route/query parameters directly via [AsParameters], so no factory delegate (and no IRepository or mapping in the IApi) is needed; this scales to any number of route parameters. The list overload returns List&lt;TDto&gt; (pass the item DTO). Also fixed the XML doc on the list-returning MapGetRequest overload (it returns a list, not a single entity). POST/PUT are unchanged (their payload comes from the body). No breaking changes.
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.4.2</VersionPrefix>
+    <VersionPrefix>6.5.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

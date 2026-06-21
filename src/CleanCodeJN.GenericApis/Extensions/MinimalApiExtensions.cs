@@ -6,6 +6,7 @@ using CleanCodeJN.GenericApis.API;
 using CleanCodeJN.GenericApis.Contracts;
 using CleanCodeJN.Repository.EntityFramework.Contracts;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -133,10 +134,10 @@ public static class MinimalAPIExtensions
       => app.MapGet(route, handler).WithTags(tags.ToArray());
 
     /// <summary>
-    /// Maps a GET endpoint to retrieve a single entity by ID with a request.
+    /// Maps a GET endpoint that returns a <b>list</b> of entities, dispatched via a MediatR request.
     /// </summary>
     /// <typeparam name="TEntity">Entity type.</typeparam>
-    /// <typeparam name="TDto">DTO used in the response.</typeparam>
+    /// <typeparam name="TDto">Response DTO; pass the list type here (e.g. <c>List&lt;FooDto&gt;</c>).</typeparam>
     /// <param name="app">Web application instance.</param>
     /// <param name="route">Endpoint route.</param>
     /// <param name="tags">Swagger/OpenAPI tags.</param>
@@ -144,6 +145,24 @@ public static class MinimalAPIExtensions
     /// <returns>Route handler builder.</returns>
     public static RouteHandlerBuilder MapGetRequest<TEntity, TDto>(this WebApplication app, string route, List<string> tags, Func<IRequest<BaseListResponse<TEntity>>> request) where TEntity : class, IEntity
         => app.MapGet(route, async ([FromServices] ApiBase api) => await api.Handle<TEntity, TDto>(request())).WithTags(tags.ToArray());
+
+    /// <summary>
+    /// Maps a GET endpoint that returns a <b>list</b> of entities, where the MediatR request is bound
+    /// directly from the route/query parameters via <c>[AsParameters]</c> — the request type carries
+    /// all parameters itself, so no factory delegate is needed. Scales to any number of route params.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type.</typeparam>
+    /// <typeparam name="TDto">Item DTO used in the response list.</typeparam>
+    /// <typeparam name="TRequest">MediatR request, bound from the route/query parameters.</typeparam>
+    /// <param name="app">Web application instance.</param>
+    /// <param name="route">Endpoint route; its parameters bind into <typeparamref name="TRequest"/>.</param>
+    /// <param name="tags">Swagger/OpenAPI tags.</param>
+    /// <returns>Route handler builder.</returns>
+    public static RouteHandlerBuilder MapGetRequest<TEntity, TDto, TRequest>(this WebApplication app, string route, List<string> tags)
+        where TEntity : class, IEntity
+        where TRequest : IRequest<BaseListResponse<TEntity>>
+        => app.MapGet(route, async ([AsParameters] TRequest request, [FromServices] ApiBase api)
+                => await api.Handle<TEntity, List<TDto>>(request)).WithTags(tags.ToArray());
 
     /// <summary>
     /// Maps a GET endpoint to retrieve a single entity by ID.
@@ -193,6 +212,25 @@ public static class MinimalAPIExtensions
     /// <returns>Route handler builder.</returns>
     public static RouteHandlerBuilder MapGetByIdRequest<TEntity, TDto, TKey>(this WebApplication app, string route, List<string> tags, Func<TKey, IRequest<BaseResponse<TEntity>>> request) where TEntity : class, IEntity
       => app.MapGet(route + "/{id}", async (TKey id, [FromServices] ApiBase api) => await api.Handle<TEntity, TDto>(request(id))).WithTags(tags.ToArray());
+
+    /// <summary>
+    /// Maps a GET endpoint that returns a single entity, where the MediatR request is bound directly
+    /// from the route/query parameters via <c>[AsParameters]</c> — the request type carries all
+    /// parameters itself, so no factory delegate is needed. The full route (incl. its parameters) is
+    /// taken as-is.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type.</typeparam>
+    /// <typeparam name="TDto">DTO used in the response.</typeparam>
+    /// <typeparam name="TRequest">MediatR request, bound from the route/query parameters.</typeparam>
+    /// <param name="app">Web application instance.</param>
+    /// <param name="route">Endpoint route; its parameters bind into <typeparamref name="TRequest"/>.</param>
+    /// <param name="tags">Swagger/OpenAPI tags.</param>
+    /// <returns>Route handler builder.</returns>
+    public static RouteHandlerBuilder MapGetByIdRequest<TEntity, TDto, TRequest>(this WebApplication app, string route, List<string> tags)
+        where TEntity : class, IEntity
+        where TRequest : IRequest<BaseResponse<TEntity>>
+        => app.MapGet(route, async ([AsParameters] TRequest request, [FromServices] ApiBase api)
+                => await api.Handle<TEntity, TDto>(request)).WithTags(tags.ToArray());
 
     /// <summary>
     /// Maps a PUT endpoint to update an entity.
@@ -365,6 +403,25 @@ public static class MinimalAPIExtensions
     public static RouteHandlerBuilder MapDeleteRequest<TEntity, TDto, TKey>(this WebApplication app, string route, List<string> tags, Func<TKey, IRequest<BaseResponse<TEntity>>> request) where TEntity : class, IEntity<TKey>
         => app.MapDelete(route + "/{id}", async (TKey id, [FromServices] ApiBase api) =>
                 await api.Handle<TEntity, TDto>(request(id))).WithTags(tags.ToArray());
+
+    /// <summary>
+    /// Maps a DELETE endpoint where the MediatR request is bound directly from the route/query
+    /// parameters via <c>[AsParameters]</c> — the request type carries all parameters itself, so no
+    /// factory delegate is needed. The full route (incl. its parameters) is taken as-is, so the id can
+    /// sit in the path (<c>.../{id}</c>) or the query (<c>?id=</c>) depending on the route you pass.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type.</typeparam>
+    /// <typeparam name="TDto">DTO used in the response.</typeparam>
+    /// <typeparam name="TRequest">MediatR request, bound from the route/query parameters.</typeparam>
+    /// <param name="app">Web application instance.</param>
+    /// <param name="route">Endpoint route; its parameters bind into <typeparamref name="TRequest"/>.</param>
+    /// <param name="tags">Swagger/OpenAPI tags.</param>
+    /// <returns>Route handler builder.</returns>
+    public static RouteHandlerBuilder MapDeleteRequest<TEntity, TDto, TRequest>(this WebApplication app, string route, List<string> tags)
+        where TEntity : class, IEntity
+        where TRequest : IRequest<BaseResponse<TEntity>>
+        => app.MapDelete(route, async ([AsParameters] TRequest request, [FromServices] ApiBase api)
+                => await api.Handle<TEntity, TDto>(request)).WithTags(tags.ToArray());
 
     /// <summary>
     /// Use CleanCodeJN Generic Apis and Register all IApi Minimal API Instances
