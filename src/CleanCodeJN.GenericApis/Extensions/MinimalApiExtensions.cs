@@ -427,18 +427,26 @@ public static class MinimalAPIExtensions
     /// Use CleanCodeJN Generic Apis and Register all IApi Minimal API Instances
     /// </summary>
     /// <param name="app">The Web Application</param>
+    /// <param name="assemblies">Optional assemblies for IApi implementations</param>
     /// <returns>Web Application</returns>
-    public static WebApplication UseCleanCodeJNWithMinimalApis(this WebApplication app)
+    public static WebApplication UseCleanCodeJNWithMinimalApis(this WebApplication app, List<Assembly> assemblies = null)
     {
         app.UseExceptionHandler();
 
         var interfaceType = typeof(IApi);
-        var assembly = Assembly.GetCallingAssembly();
 
-        var implementations = assembly.GetTypes().Where(
-            t => interfaceType.IsAssignableFrom(t) &&
-            t != interfaceType &&
-            !t.IsGenericType);
+        if (assemblies is null || assemblies.Count == 0)
+        {
+            assemblies = [Assembly.GetCallingAssembly()];
+        }
+
+        var implementations = assemblies
+            .SelectMany(a => a.GetTypes())
+            .Where(t => interfaceType.IsAssignableFrom(t)
+                        && t != interfaceType
+                        && !t.IsInterface
+                        && !t.IsAbstract
+                        && !t.IsGenericType);
 
         foreach (var implementation in implementations)
         {
