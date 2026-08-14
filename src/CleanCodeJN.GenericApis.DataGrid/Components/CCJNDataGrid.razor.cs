@@ -113,6 +113,21 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
     /// <summary>Heading of the delete dialog.</summary>
     [Parameter] public string DeleteTitle { get; set; } = "Confirm Delete";
 
+    /// <summary>Heading of the add dialog. Falls back to "Add" plus <see cref="Title"/>.</summary>
+    [Parameter] public string AddTitle { get; set; }
+
+    /// <summary>Heading of the edit dialog. Falls back to "Edit" plus <see cref="Title"/>.</summary>
+    [Parameter] public string EditTitle { get; set; }
+
+    /// <summary>Placeholder of the search field.</summary>
+    [Parameter] public string SearchLabel { get; set; } = "Search...";
+
+    /// <summary>Shown in place of the rows while none came back.</summary>
+    [Parameter] public string NoRecordsLabel { get; set; } = "No entries found...";
+
+    /// <summary>Shown in place of the rows while they are being fetched.</summary>
+    [Parameter] public string LoadingLabel { get; set; } = "Data will be loaded...";
+
     // ── CRUD parameters ───────────────────────────────────────────────────────
 
     /// <summary>Show an Add button and open a create dialog.</summary>
@@ -611,7 +626,7 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
 
         var parameters = new DialogParameters<CCJNDataGridDialog>
         {
-            { d => d.Title, string.IsNullOrEmpty(Title) ? "Add" : $"Add {Title}" },
+            { d => d.Title, AddTitle ?? (string.IsNullOrEmpty(Title) ? "Add" : $"Add {Title}") },
             { d => d.FormContent, formContent },
             { d => d.SubmitLabel, SubmitLabel },
             { d => d.CancelLabel, CancelLabel },
@@ -640,7 +655,7 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
 
         var parameters = new DialogParameters<CCJNDataGridDialog>
         {
-            { d => d.Title, string.IsNullOrEmpty(Title) ? "Edit" : $"Edit {Title}" },
+            { d => d.Title, EditTitle ?? (string.IsNullOrEmpty(Title) ? "Edit" : $"Edit {Title}") },
             { d => d.FormContent, formContent },
             { d => d.SubmitLabel, SubmitLabel },
             { d => d.CancelLabel, CancelLabel },

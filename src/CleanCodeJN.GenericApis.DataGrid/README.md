@@ -78,6 +78,11 @@ Add the MudBlazor layout components to your `App.razor` or `MainLayout.razor` if
 | `CancelLabel` | `string` | no | `"Cancel"` | Cancel button in every dialog |
 | `DeleteLabel` | `string` | no | `"Delete"` | Confirming button in the delete dialog |
 | `DeleteTitle` | `string` | no | `"Confirm Delete"` | Heading of the delete dialog |
+| `AddTitle` | `string?` | no | `null` | Heading of the add dialog; falls back to `Add {Title}` |
+| `EditTitle` | `string?` | no | `null` | Heading of the edit dialog; falls back to `Edit {Title}` |
+| `SearchLabel` | `string` | no | `"Search..."` | Placeholder of the search field |
+| `NoRecordsLabel` | `string` | no | `"No entries found..."` | Shown when the query came back empty |
+| `LoadingLabel` | `string` | no | `"Data will be loaded..."` | Shown while rows are being fetched |
 | `DeleteConfirmText` | `string` | no | `"Are you sure…"` | Question asked before deleting |
 
 ## Clickable rows

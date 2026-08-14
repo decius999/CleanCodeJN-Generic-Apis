@@ -1,4 +1,4 @@
-@typeparam TDto where TDto : class
+﻿@typeparam TDto where TDto : class
 @typeparam TPostDto where TPostDto : class
 @typeparam TPutDto where TPutDto : class
 @using MudBlazor
@@ -25,7 +25,7 @@
                 <MudTextField T="string"
                               Value="_searchTerm"
                               ValueChanged="OnSearchTermChanged"
-                              Placeholder="Search..."
+                              Placeholder="@SearchLabel"
                               Variant="Variant.Outlined"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search"
@@ -117,11 +117,11 @@
             </RowTemplate>
 
             <NoRecordsContent>
-                <MudText Typo="Typo.body2" Class="pa-4">No entries found...</MudText>
+                <MudText Typo="Typo.body2" Class="pa-4">@NoRecordsLabel</MudText>
             </NoRecordsContent>
 
             <LoadingContent>
-                <MudText Typo="Typo.body2" Class="pa-4">Data will be loaded...</MudText>
+                <MudText Typo="Typo.body2" Class="pa-4">@LoadingLabel</MudText>
             </LoadingContent>
 
             <PagerContent>
