@@ -93,8 +93,25 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
     /// <summary>Heading of the detail dialog. Falls back to <see cref="Title"/>.</summary>
     [Parameter] public string ViewTitle { get; set; }
 
+    // ── Dialog wording ────────────────────────────────────────────────────────
+
     /// <summary>Label of the detail dialog's only button.</summary>
     [Parameter] public string CloseLabel { get; set; } = "Close";
+
+    /// <summary>Label of the save button in the add and edit dialogs.</summary>
+    [Parameter] public string SubmitLabel { get; set; } = "Save";
+
+    /// <summary>Label of the cancel button in every dialog.</summary>
+    [Parameter] public string CancelLabel { get; set; } = "Cancel";
+
+    /// <summary>Label of the confirming button in the delete dialog.</summary>
+    [Parameter] public string DeleteLabel { get; set; } = "Delete";
+
+    /// <summary>Question asked before deleting.</summary>
+    [Parameter] public string DeleteConfirmText { get; set; } = "Are you sure you want to delete this entry?";
+
+    /// <summary>Heading of the delete dialog.</summary>
+    [Parameter] public string DeleteTitle { get; set; } = "Confirm Delete";
 
     // ── CRUD parameters ───────────────────────────────────────────────────────
 
@@ -103,6 +120,13 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
 
     /// <summary>Show an Edit button per row and open an update dialog.</summary>
     [Parameter] public bool AllowEdit { get; set; }
+
+    /// <summary>
+    /// Open the edit dialog by clicking the row instead of a pencil button, which is then not
+    /// rendered. Takes precedence over <see cref="ViewFormContent"/> — editing already shows
+    /// the values, a separate read-only view would only be in the way.
+    /// </summary>
+    [Parameter] public bool EditOnRowClick { get; set; }
 
     /// <summary>Show a Delete button per row with a confirmation dialog.</summary>
     [Parameter] public bool AllowDelete { get; set; }
@@ -535,11 +559,21 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
             await OnRowClick.InvokeAsync(args.Item);
         }
 
-        if (ViewFormContent is not null)
+        if (EditOnRowClick && AllowEdit)
+        {
+            await OpenEditDialogAsync(args.Item);
+        }
+        else if (ViewFormContent is not null)
         {
             await OpenViewDialogAsync(args.Item);
         }
     }
+
+    /// <summary>
+    /// The action column is worth its width only while a button lives in it — with
+    /// <see cref="EditOnRowClick"/> and no delete right, none does.
+    /// </summary>
+    private bool ShowActions => (AllowEdit && !EditOnRowClick) || AllowDelete;
 
     private string ResolveRowClass(TDto item, int index) => Combine(RowClass, RowClassFunc?.Invoke(item, index), " ");
 
@@ -579,6 +613,8 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
         {
             { d => d.Title, string.IsNullOrEmpty(Title) ? "Add" : $"Add {Title}" },
             { d => d.FormContent, formContent },
+            { d => d.SubmitLabel, SubmitLabel },
+            { d => d.CancelLabel, CancelLabel },
             { d => d.OnSave, async () =>
                 {
                     if (_dialogForm is not null) { await _dialogForm.ValidateAsync(); if (!_dialogForm.IsValid) { return string.Empty; } }
@@ -606,6 +642,8 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
         {
             { d => d.Title, string.IsNullOrEmpty(Title) ? "Edit" : $"Edit {Title}" },
             { d => d.FormContent, formContent },
+            { d => d.SubmitLabel, SubmitLabel },
+            { d => d.CancelLabel, CancelLabel },
             { d => d.OnSave, async () =>
                 {
                     if (_dialogForm is not null) { await _dialogForm.ValidateAsync(); if (!_dialogForm.IsValid) { return string.Empty; } }
@@ -624,13 +662,15 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
     private async Task OpenDeleteDialogAsync(TDto item)
     {
         var id = GetEntityId(item);
-        static void confirmText(RenderTreeBuilder b) => b.AddContent(0, "Are you sure you want to delete this entry?");
+        var question = DeleteConfirmText;
+        void confirmText(RenderTreeBuilder b) => b.AddContent(0, question);
 
         var parameters = new DialogParameters<CCJNDataGridDialog>
         {
-            { d => d.Title, "Confirm Delete" },
+            { d => d.Title, DeleteTitle },
             { d => d.FormContent, confirmText },
-            { d => d.SubmitLabel, "Delete" },
+            { d => d.SubmitLabel, DeleteLabel },
+            { d => d.CancelLabel, CancelLabel },
             { d => d.SubmitColor, Color.Error },
             { d => d.OnSave, async () =>
                 {

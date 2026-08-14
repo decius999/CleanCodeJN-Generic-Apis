@@ -76,7 +76,7 @@
                         }
                     </MudTh>
                 }
-                @if (AllowEdit || AllowDelete)
+                @if (ShowActions)
                 {
                     <MudTh></MudTh>
                 }
@@ -96,10 +96,10 @@
                         }
                     </MudTd>
                 }
-                @if (AllowEdit || AllowDelete)
+                @if (ShowActions)
                 {
                     <MudTd Style="white-space: nowrap; width: 1%" @onclick:stopPropagation="true">
-                        @if (AllowEdit)
+                        @if (AllowEdit && !EditOnRowClick)
                         {
                             <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                            Size="Size.Small"

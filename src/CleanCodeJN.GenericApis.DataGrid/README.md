@@ -73,6 +73,12 @@ Add the MudBlazor layout components to your `App.razor` or `MainLayout.razor` if
 | `ViewTitle` | `string?` | no | `null` | Heading of that dialog; falls back to `Title` |
 | `CloseLabel` | `string` | no | `"Close"` | Label of that dialog's only button |
 | `Columns` | `RenderFragment?` | no | `null` | Explicit `CCJNColumn` children; replaces auto-detection |
+| `EditOnRowClick` | `bool` | no | `false` | A row click opens the edit dialog; the pencil button is dropped |
+| `SubmitLabel` | `string` | no | `"Save"` | Save button in the add and edit dialogs |
+| `CancelLabel` | `string` | no | `"Cancel"` | Cancel button in every dialog |
+| `DeleteLabel` | `string` | no | `"Delete"` | Confirming button in the delete dialog |
+| `DeleteTitle` | `string` | no | `"Confirm Delete"` | Heading of the delete dialog |
+| `DeleteConfirmText` | `string` | no | `"Are you sure…"` | Question asked before deleting |
 
 ## Clickable rows
 
@@ -108,6 +114,17 @@ column. `ExcludedProperties` would drop it from the query as well and the dialog
 
 The same switches exist on `CCJNDataGridDialog` itself (`ShowSubmit`, `ShowCancel`, `CloseLabel`)
 if you open it yourself.
+
+Where rows are editable, a read-only view is usually one dialog too many. `EditOnRowClick` sends
+the click straight into the edit dialog and drops the pencil button; the action column disappears
+entirely once nothing is left in it:
+
+```razor
+<CCJNDataGrid TDto="InvoiceGetDto" ...
+              AllowEdit="true" EditOnRowClick="true"
+              RowClass="cursor-pointer"
+              SubmitLabel="Speichern" CancelLabel="Abbrechen" />
+```
 
 ## Explicit columns
 
