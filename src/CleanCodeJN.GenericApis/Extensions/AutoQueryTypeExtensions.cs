@@ -68,16 +68,22 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
         // ── count field ───────────────────────────────────────────────────────
         // The custom middleware (outermost) runs AFTER UseFiltering has applied
         // the where-clause to the IQueryable, then replaces the result with the count.
+        //
+        // Filtering happens on the projected DTO, exactly as it does for the list.
+        // Counting the entity instead would give the two fields different filter
+        // input types, and a where-clause naming a DTO-only property — one that is
+        // computed from a navigation — would be accepted by the list and rejected
+        // here, taking the whole request down with it.
         var countField = descriptor
             .Field($"{typeof(TEntity).Name.ToLowerInvariant()}Count")
             .Type<NonNullType<IntType>>()
             .Use(next => async ctx =>
             {
                 await next(ctx);
-                if (ctx.Result is IQueryable<TEntity> q)
+                if (ctx.Result is IQueryable<TDto> q)
                     ctx.Result = q.Count();
             })
-            .UseFiltering<TEntity>();
+            .UseFiltering<TDto>();
 
         if (options?.AddAuthorizationWithPolicyName is not null)
             countField.Authorize(options.AddAuthorizationWithPolicyName);
@@ -85,7 +91,9 @@ public class AutoQueryTypeExtensions<TDto, TEntity, TKey>(GraphQLOptions options
         countField.Resolve(ctx =>
         {
             var repository = (IRepository<TEntity, TKey>)ctx.Service(typeof(IRepository<TEntity, TKey>));
-            return repository.Query();
+            var mapper = ctx.Service<ICleanCodeMapper>();
+
+            return mapper.ProjectTo<TEntity, TDto>(repository.Query());
         });
     }
 }
