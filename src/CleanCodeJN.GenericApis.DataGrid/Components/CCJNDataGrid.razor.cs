@@ -90,6 +90,12 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
     /// </summary>
     [Parameter] public RenderFragment<TDto> ViewFormContent { get; set; }
 
+    /// <summary>Heading of the detail dialog. Falls back to <see cref="Title"/>.</summary>
+    [Parameter] public string ViewTitle { get; set; }
+
+    /// <summary>Label of the detail dialog's only button.</summary>
+    [Parameter] public string CloseLabel { get; set; } = "Close";
+
     // ── CRUD parameters ───────────────────────────────────────────────────────
 
     /// <summary>Show an Add button and open a create dialog.</summary>
@@ -530,10 +536,11 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
     {
         var parameters = new DialogParameters<CCJNDataGridDialog>
         {
-            { d => d.Title, string.IsNullOrEmpty(Title) ? "Details" : Title },
+            { d => d.Title, ViewTitle ?? (string.IsNullOrEmpty(Title) ? "Details" : Title) },
             { d => d.FormContent, ViewFormContent(item) },
             { d => d.ShowSubmit, false },
             { d => d.ShowCancel, false },
+            { d => d.CloseLabel, CloseLabel },
         };
 
         await DialogService.ShowAsync<CCJNDataGridDialog>(string.Empty, parameters);

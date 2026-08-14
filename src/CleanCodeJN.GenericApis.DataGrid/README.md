@@ -1,4 +1,4 @@
-# CleanCodeJN.GenericApis.DataGrid
+﻿# CleanCodeJN.GenericApis.DataGrid
 
 A generic, server-side MudBlazor table component for [CleanCodeJN.GenericApis](https://www.nuget.org/packages/CleanCodeJN.GenericApis/).
 
@@ -70,6 +70,8 @@ Add the MudBlazor layout components to your `App.razor` or `MainLayout.razor` if
 | `RowClassFunc` | `Func<TDto,int,string>?` | no | `null` | Per-row CSS class, added on top of `RowClass` |
 | `RowStyleFunc` | `Func<TDto,int,string>?` | no | `null` | Per-row inline style, added on top of `RowStyle` |
 | `ViewFormContent` | `RenderFragment<TDto>?` | no | `null` | Read-only detail dialog opened by a row click, with nothing but a close button |
+| `ViewTitle` | `string?` | no | `null` | Heading of that dialog; falls back to `Title` |
+| `CloseLabel` | `string` | no | `"Close"` | Label of that dialog's only button |
 | `Columns` | `RenderFragment?` | no | `null` | Explicit `CCJNColumn` children; replaces auto-detection |
 
 ## Clickable rows
@@ -88,13 +90,18 @@ that carries just a close button:
 ```razor
 <CCJNDataGrid TDto="InvoiceGetDto" ...
               RowClass="cursor-pointer"
+              ViewTitle="Invoice"
+              CloseLabel="Close"
               HiddenProperties="@(new HashSet<string> { "Notes" })">
-    <ViewFormContent>
-        <MudText Typo="Typo.subtitle2">@context.Number</MudText>
-        <MudText Typo="Typo.body2" Style="white-space:pre-wrap">@context.Notes</MudText>
+    <ViewFormContent Context="row">
+        <MudText Typo="Typo.subtitle2">@row.Number</MudText>
+        <MudText Typo="Typo.body2" Style="white-space:pre-wrap">@row.Notes</MudText>
     </ViewFormContent>
 </CCJNDataGrid>
 ```
+
+The grid carries several templated parameters, so Blazor wants each fragment's item named —
+`Context="row"` above. Writing `@context` without it does not compile.
 
 `Notes` is listed under `HiddenProperties`: the dialog needs the value, the table does not need the
 column. `ExcludedProperties` would drop it from the query as well and the dialog would stay empty.
@@ -113,14 +120,14 @@ rendered. As soon as one is declared, auto-detection is off and the declared col
         <CCJNColumn TDto="InvoiceGetDto" Property="Number" Title="Invoice" />
         <CCJNColumn TDto="InvoiceGetDto" Title="Customer" SortBy="CustomerName"
                     Fields="@(new[] { "CustomerName", "CustomerEmail" })">
-            <CellTemplate>
-                <div>@context.CustomerName</div>
-                <MudText Typo="Typo.caption">@context.CustomerEmail</MudText>
+            <CellTemplate Context="row">
+                <div>@row.CustomerName</div>
+                <MudText Typo="Typo.caption">@row.CustomerEmail</MudText>
             </CellTemplate>
         </CCJNColumn>
         <CCJNColumn TDto="InvoiceGetDto" Property="Status">
-            <CellTemplate>
-                <MudChip T="string" Size="Size.Small">@context.Status</MudChip>
+            <CellTemplate Context="row">
+                <MudChip T="string" Size="Size.Small">@row.Status</MudChip>
             </CellTemplate>
         </CCJNColumn>
     </Columns>
@@ -134,7 +141,7 @@ rendered. As soon as one is declared, auto-detection is off and the declared col
 | `Sortable` | `bool?` | Defaults to on for property-backed columns, off for template-only ones |
 | `SortBy` | `string?` | Property to sort by when it differs from `Property` |
 | `Fields` | `string[]?` | Further properties the template reads; requested but given no column |
-| `CellTemplate` | `RenderFragment<TDto>?` | Custom cell rendering, receiving the row item as `context` |
+| `CellTemplate` | `RenderFragment<TDto>?` | Custom cell rendering, receiving the row item — name it via `Context` |
 
 The key property is always requested, whether or not it has a column — edit and delete need it.
 
