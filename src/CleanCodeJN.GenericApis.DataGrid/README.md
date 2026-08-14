@@ -144,6 +144,8 @@ rendered. As soon as one is declared, auto-detection is off and the declared col
 | `CellTemplate` | `RenderFragment<TDto>?` | Custom cell rendering, receiving the row item — name it via `Context` |
 
 The key property is always requested, whether or not it has a column — edit and delete need it.
+The same goes for the fields of the edit form: it writes all of them back, so a value that was
+never loaded would be saved as its default and quietly overwrite what was there.
 
 ## Column auto-detection
 

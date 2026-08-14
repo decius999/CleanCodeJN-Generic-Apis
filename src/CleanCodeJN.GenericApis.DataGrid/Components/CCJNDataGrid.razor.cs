@@ -326,6 +326,9 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
     /// <summary>
     /// Everything the rows need: the columns themselves, whatever their templates read, the
     /// hidden properties, and always the key — edit and delete are lost without it.
+    /// The edit form's own fields come along even when they have no column: it writes every one
+    /// of them back, so a value left unloaded would be saved as its default and quietly replace
+    /// what was there.
     /// </summary>
     private List<string> SelectionFieldNames()
     {
@@ -343,12 +346,31 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDt
 
         fields.AddRange(HiddenProperties.Select(ToCamelCase));
 
+        if (AllowEdit)
+        {
+            fields.AddRange(EditableFieldNames());
+        }
+
         if (typeof(TDto).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase) is not null)
         {
             fields.Add("id");
         }
 
         return [.. fields.Distinct(StringComparer.Ordinal)];
+    }
+
+    private static IEnumerable<string> EditableFieldNames()
+    {
+        var readable = typeof(TDto)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead && IsScalarProperty(p))
+            .Select(p => p.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return typeof(TPutDto)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanWrite && IsScalarProperty(p) && readable.Contains(p.Name))
+            .Select(p => ToCamelCase(p.Name));
     }
 
     private string BuildWhereClause(string search)
