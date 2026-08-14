@@ -12,14 +12,24 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" Disabled="_saving">Cancel</MudButton>
-        <MudButton Color="@SubmitColor" Variant="Variant.Filled" OnClick="Submit" Disabled="_saving">
-            @if (_saving)
-            {
-                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-            }
-            @SubmitLabel
-        </MudButton>
+        @if (ShowCancel)
+        {
+            <MudButton OnClick="Cancel" Disabled="_saving">@CancelLabel</MudButton>
+        }
+        @if (ShowSubmit)
+        {
+            <MudButton Color="@SubmitColor" Variant="Variant.Filled" OnClick="Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @SubmitLabel
+            </MudButton>
+        }
+        @if (!ShowCancel && !ShowSubmit)
+        {
+            <MudButton OnClick="Cancel">@CloseLabel</MudButton>
+        }
     </DialogActions>
 </MudDialog>
 
@@ -30,6 +40,19 @@
     [Parameter] public string Title { get; set; } = string.Empty;
     [Parameter] public string SubmitLabel { get; set; } = "Save";
     [Parameter] public Color SubmitColor { get; set; } = Color.Primary;
+    [Parameter] public string CancelLabel { get; set; } = "Cancel";
+
+    /// <summary>Show the submit button. Turn off for a read-only dialog.</summary>
+    [Parameter] public bool ShowSubmit { get; set; } = true;
+
+    /// <summary>Show the cancel button. Turn off for a read-only dialog.</summary>
+    [Parameter] public bool ShowCancel { get; set; } = true;
+
+    /// <summary>
+    /// Label of the single button shown when neither submit nor cancel is present — there has
+    /// to be a way out of the dialog.
+    /// </summary>
+    [Parameter] public string CloseLabel { get; set; } = "Close";
 
     /// <summary>
     /// Called when the user clicks the submit button.

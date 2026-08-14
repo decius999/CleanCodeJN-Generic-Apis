@@ -3,6 +3,13 @@
 @typeparam TPutDto where TPutDto : class
 @using MudBlazor
 
+@if (Columns is not null)
+{
+    <CascadingValue TValue="IColumnRegistry<TDto>" Value="this" IsFixed="true">
+        @Columns
+    </CascadingValue>
+}
+
 <MudPaper Elevation="@Elevation" Class="pa-4">
 
     @if (!string.IsNullOrEmpty(Title))
@@ -37,77 +44,92 @@
         </div>
     }
 
-    <MudTable T="TDto"
-              ServerData="_serverDataDelegate"
-              Dense="@Dense"
-              Hover="true"
-              Striped="@Striped"
-              Bordered="false"
-              @ref="_table"
-              Loading="_loading"
-              LoadingProgressColor="Color.Primary"
-              RowsPerPage="@PageSizeOptions[0]">
+    @if (_columnsReady)
+    {
+        <MudTable T="TDto"
+                  ServerData="_serverDataDelegate"
+                  Dense="@Dense"
+                  Hover="@Hover"
+                  Striped="@Striped"
+                  Bordered="false"
+                  @ref="_table"
+                  Loading="_loading"
+                  LoadingProgressColor="Color.Primary"
+                  OnRowClick="OnRowClickedAsync"
+                  RowClassFunc="ResolveRowClass"
+                  RowStyleFunc="ResolveRowStyle"
+                  RowsPerPage="@PageSizeOptions[0]">
 
-        <HeaderContent>
-            @foreach (var col in _columns)
-            {
-                <MudTh>
-                    @if (col.Sortable)
-                    {
-                        <MudTableSortLabel SortLabel="@col.SortFieldName" T="TDto">
+            <HeaderContent>
+                @foreach (var col in _columns)
+                {
+                    <MudTh>
+                        @if (col.Sortable)
+                        {
+                            <MudTableSortLabel SortLabel="@col.SortFieldName" T="TDto">
+                                @col.Header
+                            </MudTableSortLabel>
+                        }
+                        else
+                        {
                             @col.Header
-                        </MudTableSortLabel>
-                    }
-                    else
-                    {
-                        @col.Header
-                    }
-                </MudTh>
-            }
-            @if (AllowEdit || AllowDelete)
-            {
-                <MudTh></MudTh>
-            }
-        </HeaderContent>
+                        }
+                    </MudTh>
+                }
+                @if (AllowEdit || AllowDelete)
+                {
+                    <MudTh></MudTh>
+                }
+            </HeaderContent>
 
-        <RowTemplate>
-            @foreach (var col in _columns)
-            {
-                <MudTd DataLabel="@col.Header">@col.GetDisplayValue(context)</MudTd>
-            }
-            @if (AllowEdit || AllowDelete)
-            {
-                <MudTd Style="white-space: nowrap; width: 1%">
-                    @if (AllowEdit)
-                    {
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                       Size="Size.Small"
-                                       OnClick="() => OpenEditDialogAsync(context)" />
-                    }
-                    @if (AllowDelete)
-                    {
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                       Size="Size.Small"
-                                       Color="Color.Error"
-                                       OnClick="() => OpenDeleteDialogAsync(context)" />
-                    }
-                </MudTd>
-            }
-        </RowTemplate>
+            <RowTemplate>
+                @foreach (var col in _columns)
+                {
+                    <MudTd DataLabel="@col.Header">
+                        @if (col.CellTemplate is not null)
+                        {
+                            @col.CellTemplate(context)
+                        }
+                        else
+                        {
+                            @col.GetDisplayValue(context)
+                        }
+                    </MudTd>
+                }
+                @if (AllowEdit || AllowDelete)
+                {
+                    <MudTd Style="white-space: nowrap; width: 1%" @onclick:stopPropagation="true">
+                        @if (AllowEdit)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                           Size="Size.Small"
+                                           OnClick="() => OpenEditDialogAsync(context)" />
+                        }
+                        @if (AllowDelete)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           Size="Size.Small"
+                                           Color="Color.Error"
+                                           OnClick="() => OpenDeleteDialogAsync(context)" />
+                        }
+                    </MudTd>
+                }
+            </RowTemplate>
 
-        <NoRecordsContent>
-            <MudText Typo="Typo.body2" Class="pa-4">No entries found...</MudText>
-        </NoRecordsContent>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body2" Class="pa-4">No entries found...</MudText>
+            </NoRecordsContent>
 
-        <LoadingContent>
-            <MudText Typo="Typo.body2" Class="pa-4">Data will be loaded...</MudText>
-        </LoadingContent>
+            <LoadingContent>
+                <MudText Typo="Typo.body2" Class="pa-4">Data will be loaded...</MudText>
+            </LoadingContent>
 
-        <PagerContent>
-            <MudTablePager PageSizeOptions="@PageSizeOptions" />
-        </PagerContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="@PageSizeOptions" />
+            </PagerContent>
 
-    </MudTable>
+        </MudTable>
+    }
 
     @if (!string.IsNullOrEmpty(_errorMessage))
     {

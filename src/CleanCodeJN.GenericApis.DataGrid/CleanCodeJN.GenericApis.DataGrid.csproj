@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -11,15 +11,17 @@
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageReleaseNotes>
-      Added Validation support for the MudBlazor DataGrid component, allowing you to easily integrate FluentValidation rules into your data grid
-      operations. This enhancement ensures that your data grid can provide immediate feedback on user input, improving the overall
-      user experience and data integrity when working with CleanCodeJN.GenericApis. Needs to use CleanCodeJN.GenericApis v6.2.6 or higher for the new FluentValidation extensions.
+      Rows and columns are now yours to shape. OnRowClick, RowClass, RowStyle, RowClassFunc and RowStyleFunc make the table clickable,
+      ViewFormContent opens a read-only detail dialog on a row click, and CCJNDataGridDialog gained ShowSubmit, ShowCancel and CloseLabel
+      so a dialog can carry nothing but a close button. Declaring CCJNColumn children switches auto-detection off and puts the set of
+      columns, their order and their cell rendering under your control, while HiddenProperties keeps values in the query that deserve
+      no column of their own.
     </PackageReleaseNotes>
     <Description>Generic MudBlazor DataGrid component for CleanCodeJN.GenericApis — auto-detects columns from any DTO and connects to the automatic GraphQL endpoint with paging, sorting and search.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <VersionPrefix>1.3.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

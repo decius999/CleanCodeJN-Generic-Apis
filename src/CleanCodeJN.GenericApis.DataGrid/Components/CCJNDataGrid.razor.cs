@@ -20,7 +20,7 @@ namespace CleanCodeJN.GenericApis.DataGrid.Components;
 /// <typeparam name="TDto">The DTO type used for displaying rows.</typeparam>
 /// <typeparam name="TPostDto">The DTO type used for the create form. Defaults to <typeparamref name="TDto"/>.</typeparam>
 /// <typeparam name="TPutDto">The DTO type used for the update form. Defaults to <typeparamref name="TDto"/>.</typeparam>
-public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
+public partial class CCJNDataGrid<TDto, TPostDto, TPutDto> : IColumnRegistry<TDto>
     where TDto : class
     where TPostDto : class
     where TPutDto : class
@@ -45,11 +45,50 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
     [Parameter] public bool Searchable { get; set; } = true;
     [Parameter] public bool Dense { get; set; } = false;
     [Parameter] public bool Striped { get; set; } = true;
+    [Parameter] public bool Hover { get; set; } = true;
     [Parameter] public int Elevation { get; set; } = 2;
     [Parameter] public string BearerToken { get; set; }
     [Parameter] public HashSet<string> ExcludedProperties { get; set; } = [];
     [Parameter] public int[] PageSizeOptions { get; set; } = [10, 25, 50, 100];
     [Parameter] public Dictionary<string, string> ColumnHeaders { get; set; }
+
+    /// <summary>
+    /// Properties that are requested from the server but get no column. Use them for values a
+    /// row-click dialog or a cell template needs while the column itself would only cost width.
+    /// Unlike <see cref="ExcludedProperties"/> these stay part of the query.
+    /// </summary>
+    [Parameter] public HashSet<string> HiddenProperties { get; set; } = [];
+
+    // ── Column declaration ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Explicit columns as <c>CCJNColumn</c> children. When set, they replace auto-detection
+    /// entirely and their order is the order of the table.
+    /// </summary>
+    [Parameter] public RenderFragment Columns { get; set; }
+
+    // ── Row parameters ────────────────────────────────────────────────────────
+
+    /// <summary>Raised with the clicked row's item. The edit and delete buttons do not trigger it.</summary>
+    [Parameter] public EventCallback<TDto> OnRowClick { get; set; }
+
+    /// <summary>CSS class put on every row — <c>cursor-pointer</c> for a clickable table, for instance.</summary>
+    [Parameter] public string RowClass { get; set; }
+
+    /// <summary>Inline style put on every row.</summary>
+    [Parameter] public string RowStyle { get; set; }
+
+    /// <summary>Per-row CSS class, receiving the item and its index. Added on top of <see cref="RowClass"/>.</summary>
+    [Parameter] public Func<TDto, int, string> RowClassFunc { get; set; }
+
+    /// <summary>Per-row inline style, receiving the item and its index. Added on top of <see cref="RowStyle"/>.</summary>
+    [Parameter] public Func<TDto, int, string> RowStyleFunc { get; set; }
+
+    /// <summary>
+    /// Read-only detail view for a clicked row. When set, a click opens a dialog showing this
+    /// content with nothing but a close button. <see cref="OnRowClick"/> still fires.
+    /// </summary>
+    [Parameter] public RenderFragment<TDto> ViewFormContent { get; set; }
 
     // ── CRUD parameters ───────────────────────────────────────────────────────
 
@@ -107,6 +146,8 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 
     private MudTable<TDto> _table = default!;
     private List<ColumnDefinition<TDto>> _columns = [];
+    private readonly List<CCJNColumn<TDto>> _declaredColumns = [];
+    private bool _columnsReady;
     private string _searchTerm = string.Empty;
     private string _activeSearchTerm = string.Empty;
     private CancellationTokenSource _debounceCts = new();
@@ -137,15 +178,40 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 
     protected override void OnInitialized()
     {
-        _columns = BuildColumns();
         _serverDataDelegate = LoadServerData;
+
+        if (Columns is null)
+        {
+            _columns = BuildColumns();
+            _columnsReady = true;
+        }
     }
+
+    /// <summary>
+    /// Declared columns announce themselves while the <c>Columns</c> fragment renders, which is
+    /// after <c>OnInitialized</c>. The table therefore waits for the first render before it asks
+    /// the server — otherwise the query would be built from the wrong set of fields.
+    /// </summary>
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender || _columnsReady)
+        {
+            return;
+        }
+
+        _columns = [.. _declaredColumns.Select(ToColumnDefinition)];
+        _columnsReady = true;
+        StateHasChanged();
+    }
+
+    /// <inheritdoc />
+    void IColumnRegistry<TDto>.Register(CCJNColumn<TDto> column) => _declaredColumns.Add(column);
 
     // ── Column detection ──────────────────────────────────────────────────────
 
     private List<ColumnDefinition<TDto>> BuildColumns() => typeof(TDto)
         .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-        .Where(p => p.CanRead && IsScalarProperty(p) && !ExcludedProperties.Contains(p.Name))
+        .Where(p => p.CanRead && IsScalarProperty(p) && !ExcludedProperties.Contains(p.Name) && !HiddenProperties.Contains(p.Name))
         .Select(p =>
         {
             var underlyingType = Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType;
@@ -160,6 +226,33 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
             };
         })
         .ToList();
+
+    private ColumnDefinition<TDto> ToColumnDefinition(CCJNColumn<TDto> column)
+    {
+        var property = string.IsNullOrWhiteSpace(column.Property)
+            ? null
+            : typeof(TDto).GetProperty(column.Property, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+        var underlyingType = property is null
+            ? typeof(object)
+            : Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+        var sortFieldName = column.SortBy ?? property?.Name;
+
+        return new ColumnDefinition<TDto>
+        {
+            Header = column.Title ?? (property is null ? string.Empty : ResolveHeader(property.Name)),
+            FieldName = property is null ? null : ToCamelCase(property.Name),
+            SortFieldName = sortFieldName ?? string.Empty,
+            PropertyType = underlyingType,
+            Sortable = (column.Sortable ?? property is not null) && sortFieldName is not null,
+            AdditionalFieldNames = [.. (column.Fields ?? []).Select(ToCamelCase)],
+            CellTemplate = column.CellTemplate,
+            GetDisplayValue = property is null
+                ? _ => string.Empty
+                : dto => FormatValue(property.GetValue(dto), underlyingType),
+        };
+    }
 
     private string ResolveHeader(string propertyName) => ColumnHeaders is not null && ColumnHeaders.TryGetValue(propertyName, out var custom)
             ? custom
@@ -199,7 +292,7 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 
     private string BuildBatchedGraphQLQuery(int skip, int take, string sortLabel, SortDirection sortDirection, string activeSearch)
     {
-        var fields = string.Join("\n    ", _columns.Select(c => c.FieldName));
+        var fields = string.Join("\n    ", SelectionFieldNames());
         var whereClause = BuildWhereClause(activeSearch);
         var listArgs = new List<string> { $"skip: {skip}", $"take: {take}" };
 
@@ -224,6 +317,34 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
 }}";
     }
 
+    /// <summary>
+    /// Everything the rows need: the columns themselves, whatever their templates read, the
+    /// hidden properties, and always the key — edit and delete are lost without it.
+    /// </summary>
+    private List<string> SelectionFieldNames()
+    {
+        var fields = new List<string>();
+
+        foreach (var column in _columns)
+        {
+            if (column.FieldName is not null)
+            {
+                fields.Add(column.FieldName);
+            }
+
+            fields.AddRange(column.AdditionalFieldNames);
+        }
+
+        fields.AddRange(HiddenProperties.Select(ToCamelCase));
+
+        if (typeof(TDto).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase) is not null)
+        {
+            fields.Add("id");
+        }
+
+        return [.. fields.Distinct(StringComparer.Ordinal)];
+    }
+
     private string BuildWhereClause(string search)
     {
         if (string.IsNullOrWhiteSpace(search))
@@ -234,7 +355,7 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
         var conditions = new List<string>();
         var escaped = EscapeGraphQLString(search);
 
-        foreach (var col in _columns)
+        foreach (var col in _columns.Where(c => c.FieldName is not null))
         {
             if (col.PropertyType == typeof(string))
             {
@@ -372,7 +493,51 @@ public partial class CCJNDataGrid<TDto, TPostDto, TPutDto>
         }
     }
 
+    // ── Rows ──────────────────────────────────────────────────────────────────
+
+    private async Task OnRowClickedAsync(TableRowClickEventArgs<TDto> args)
+    {
+        if (args?.Item is null)
+        {
+            return;
+        }
+
+        if (OnRowClick.HasDelegate)
+        {
+            await OnRowClick.InvokeAsync(args.Item);
+        }
+
+        if (ViewFormContent is not null)
+        {
+            await OpenViewDialogAsync(args.Item);
+        }
+    }
+
+    private string ResolveRowClass(TDto item, int index) => Combine(RowClass, RowClassFunc?.Invoke(item, index), " ");
+
+    private string ResolveRowStyle(TDto item, int index) => Combine(RowStyle, RowStyleFunc?.Invoke(item, index), ";");
+
+    private static string Combine(string constant, string perRow, string separator)
+    {
+        var parts = new[] { constant, perRow }.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+        return parts.Length == 0 ? null : string.Join(separator, parts);
+    }
+
     // ── CRUD: Dialog openers ──────────────────────────────────────────────────
+
+    private async Task OpenViewDialogAsync(TDto item)
+    {
+        var parameters = new DialogParameters<CCJNDataGridDialog>
+        {
+            { d => d.Title, string.IsNullOrEmpty(Title) ? "Details" : Title },
+            { d => d.FormContent, ViewFormContent(item) },
+            { d => d.ShowSubmit, false },
+            { d => d.ShowCancel, false },
+        };
+
+        await DialogService.ShowAsync<CCJNDataGridDialog>(string.Empty, parameters);
+    }
 
     private async Task OpenAddDialogAsync()
     {

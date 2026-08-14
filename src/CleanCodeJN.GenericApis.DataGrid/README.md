@@ -62,6 +62,81 @@ Add the MudBlazor layout components to your `App.razor` or `MainLayout.razor` if
 | `ExcludedProperties` | `HashSet<string>` | no | `[]` | DTO property names to hide (e.g. navigation properties) |
 | `PageSizeOptions` | `int[]` | no | `[10,25,50,100]` | Page-size choices in the pager footer |
 | `ColumnHeaders` | `Dictionary<string,string>?` | no | `null` | Custom column headers — maps property name → display label |
+| `HiddenProperties` | `HashSet<string>` | no | `[]` | Requested from the server but given no column — for values a row dialog or cell template needs |
+| `Hover` | `bool` | no | `true` | Highlight the row under the cursor |
+| `OnRowClick` | `EventCallback<TDto>` | no | — | Raised with the clicked row's item; the edit and delete buttons do not trigger it |
+| `RowClass` | `string?` | no | `null` | CSS class on every row — e.g. `cursor-pointer` for a clickable table |
+| `RowStyle` | `string?` | no | `null` | Inline style on every row |
+| `RowClassFunc` | `Func<TDto,int,string>?` | no | `null` | Per-row CSS class, added on top of `RowClass` |
+| `RowStyleFunc` | `Func<TDto,int,string>?` | no | `null` | Per-row inline style, added on top of `RowStyle` |
+| `ViewFormContent` | `RenderFragment<TDto>?` | no | `null` | Read-only detail dialog opened by a row click, with nothing but a close button |
+| `Columns` | `RenderFragment?` | no | `null` | Explicit `CCJNColumn` children; replaces auto-detection |
+
+## Clickable rows
+
+`OnRowClick` gives you the item, `RowClass` the cursor:
+
+```razor
+<CCJNDataGrid TDto="InvoiceGetDto" ...
+              RowClass="cursor-pointer"
+              OnRowClick="OpenAsync" />
+```
+
+For a plain detail view there is no need to write a dialog at all — `ViewFormContent` opens one
+that carries just a close button:
+
+```razor
+<CCJNDataGrid TDto="InvoiceGetDto" ...
+              RowClass="cursor-pointer"
+              HiddenProperties="@(new HashSet<string> { "Notes" })">
+    <ViewFormContent>
+        <MudText Typo="Typo.subtitle2">@context.Number</MudText>
+        <MudText Typo="Typo.body2" Style="white-space:pre-wrap">@context.Notes</MudText>
+    </ViewFormContent>
+</CCJNDataGrid>
+```
+
+`Notes` is listed under `HiddenProperties`: the dialog needs the value, the table does not need the
+column. `ExcludedProperties` would drop it from the query as well and the dialog would stay empty.
+
+The same switches exist on `CCJNDataGridDialog` itself (`ShowSubmit`, `ShowCancel`, `CloseLabel`)
+if you open it yourself.
+
+## Explicit columns
+
+Declare `CCJNColumn` children to control which columns appear, in which order, and how a cell is
+rendered. As soon as one is declared, auto-detection is off and the declared columns are the table:
+
+```razor
+<CCJNDataGrid TDto="InvoiceGetDto" ... >
+    <Columns>
+        <CCJNColumn TDto="InvoiceGetDto" Property="Number" Title="Invoice" />
+        <CCJNColumn TDto="InvoiceGetDto" Title="Customer" SortBy="CustomerName"
+                    Fields="@(new[] { "CustomerName", "CustomerEmail" })">
+            <CellTemplate>
+                <div>@context.CustomerName</div>
+                <MudText Typo="Typo.caption">@context.CustomerEmail</MudText>
+            </CellTemplate>
+        </CCJNColumn>
+        <CCJNColumn TDto="InvoiceGetDto" Property="Status">
+            <CellTemplate>
+                <MudChip T="string" Size="Size.Small">@context.Status</MudChip>
+            </CellTemplate>
+        </CCJNColumn>
+    </Columns>
+</CCJNDataGrid>
+```
+
+| Column parameter | Type | Description |
+|---|---|---|
+| `Property` | `string?` | DTO property shown; omit for a column built entirely by the template |
+| `Title` | `string?` | Header text; falls back to the property name split on capitals |
+| `Sortable` | `bool?` | Defaults to on for property-backed columns, off for template-only ones |
+| `SortBy` | `string?` | Property to sort by when it differs from `Property` |
+| `Fields` | `string[]?` | Further properties the template reads; requested but given no column |
+| `CellTemplate` | `RenderFragment<TDto>?` | Custom cell rendering, receiving the row item as `context` |
+
+The key property is always requested, whether or not it has a column — edit and delete need it.
 
 ## Column auto-detection
 
