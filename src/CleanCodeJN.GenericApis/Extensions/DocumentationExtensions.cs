@@ -167,12 +167,18 @@ public static class DocumentationExtensions
     private static string FindSourceFile(string fullClassName, string projectRoot, List<string> allCsFiles)
         => allCsFiles.FirstOrDefault(x => x.Contains(fullClassName.Split('.').Last() + ".cs"));
 
+    /// <summary>
+    /// Walks up from the assembly directory to the folder holding the solution file. Both the
+    /// classic <c>.sln</c> and the XML based <c>.slnx</c> introduced with .NET 9 are accepted –
+    /// without <c>.slnx</c> no source files are found in a solution using the new format, and
+    /// the command steps silently stay empty.
+    /// </summary>
     private static string FindProjectRoot(string startDir)
     {
         var dir = new DirectoryInfo(startDir);
         while (dir != null)
         {
-            if (dir.GetFiles("*.sln").Any())
+            if (dir.EnumerateFiles("*.sln").Any() || dir.EnumerateFiles("*.slnx").Any())
             {
                 return dir.FullName;
             }
