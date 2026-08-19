@@ -267,7 +267,7 @@ public class CommandExecutionContext(IMediator commandBus) : ICommandExecutionCo
             {
                 var responseItem = await commandBus.Send(requestItem, cancellationToken);
 
-                if (!((dynamic)responseItem).Success)
+                if (!((dynamic)responseItem).Succeeded)
                 {
                     return new Response(ResultEnum.FAILURE_BAD_REQUEST);
                 }

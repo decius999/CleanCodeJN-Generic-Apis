@@ -15,12 +15,12 @@
     <Authors>Jörg Nieveler</Authors>
     <Title>CRUD support for Generic WebAPIs (REST and GraphQL) with the power of Mediator pattern, Mapster, DataRepositories and Entity Framework</Title>
     <PackageTags>CRUD;WebAPI;ASP.NET;MinimalAPIs;MVC;Controllers;IOSP;EntityFramework;MediatR;CQRS;CleanCode;Mapster;FluentValidation;GraphQL;HotChocolate;MCP;ModelContextProtocol;AI;Anthropic;Claude;Caching;Logging;IntegrationOperationSegregationPrinciple;GenericRepository;DotNet</PackageTags>
-    <PackageReleaseNotes>Command documentation: the project root is now also detected in solutions using the .slnx format. Without it no source files were found and the command steps stayed empty without any error.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes WithRequests: the result of each request was checked against a property named Success, but Response defines Succeeded. Every WithRequests block therefore threw a RuntimeBinderException after the requests had already run.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</RepositoryUrl>
     <PackageProjectUrl>https://github.com/decius999/CleanCodeJN-Generic-Apis</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>CleanCodeJN-Icon-Green.png</PackageIcon>
-    <VersionPrefix>6.5.3</VersionPrefix>
+    <VersionPrefix>6.5.4</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
